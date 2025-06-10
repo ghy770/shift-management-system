@@ -491,7 +491,7 @@
 
         const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
         const shiftTypes = ['לילה', 'בוקר', 'צהרים', 'ערב'];
-        const shiftHours = ['01:00-07:00', '07:00-13:00', '13:00-19:00', '19:00-01:00'];
+        const shiftHours = ['22:00-06:00', '06:00-14:00', '14:00-18:00', '18:00-22:00'];
 
         // Setup functions
         function setupGoogleSheets() {
@@ -718,9 +718,4 @@
                     const dayClass = day === 6 ? 'sabbath-day' : '';
                     
                     for (let shift = 0; shift < 4; shift++) {
-                        const cellId = `${role.name}_${day}_${shift}`;
-                        const assigned = scheduleData[cellId];
-                        const isMyShift = assigned && currentUser && currentUser.type === 'חייל' && assigned === `${currentUser.firstName} ${currentUser.lastName}`;
-                        const canEdit = currentUser && (currentUser.type === 'admin' || currentUser.type === 'מנהל');
-                        const cellClass = `shift-cell ${assigned ? 'assigned' : ''} ${isMyShift ? 'my-shift' : ''} ${dayClass}`;
-                        const onClick = canEdit ? `onclick="cellClick('${cellId}')" 
+                        const cellId = `${role.
