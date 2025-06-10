@@ -1,4 +1,228 @@
-<!DOCTYPE html>
+function submitAvailability() {
+            if (!currentUser || currentUser.type !== 'חייל') return;
+            
+            if (!availabilityData[currentUser.id]) {
+                availabilityData[currentUser.id] = { unavailableShifts: new Set(), submitted: false };
+            }
+            
+            availabilityData[currentUser.id].submitted = true;
+            availabilityData[currentUser.id].submittedAt = new Date().toISOString();
+            
+            syncData();
+            showNotification('✅ זמינות נשלחה בהצלחה!', 'success');
+        }
+
+        // Availability form generation
+        function generateAvailabilityForm() {
+            if (!currentUser || currentUser.type !== 'חייל') return;
+            
+            const container = document.getElementById('availabilityForm');
+            if (!container) return;
+            
+            if (!availabilityData[currentUser.id]) {
+                availabilityData[currentUser.id] = { unavailableShifts: new Set(), submitted: false };
+            }
+            
+            let html = `
+                <table class="schedule-table">
+                <thead><tr><th>יום</th>`;
+            
+            for (let shift = 0; shift < 4; shift++) {
+                html += `<th>${shiftTypes[shift]}<br><small>${shiftHours[shift]}</small></th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            for (let day = 0; day < 7; day++) {
+                html += `<tr><td style="font-weight: 700;">${dayNames[day]}</td>`;
+                
+                for (let shift = 0; shift < 4; shift++) {
+                    const cellId = `avail_${day}_${shift}`;
+                    const shiftKey = `${day}_${shift}`;
+                    const isUnavailable = availabilityData[currentUser.id].unavailableShifts.has(shiftKey);
+                    const cellClass = isUnavailable ? 'shift-cell unavailable' : 'shift-cell available';
+                    const cellText = isUnavailable ? 'לא זמין' : 'זמין';
+                    
+                    html += `<td class="${cellClass}" id="${cellId}" 
+                            onclick="toggleAvailabilityStatus(${day}, ${shift})" 
+                            style="cursor: pointer; min-height: 60px;">
+                        <div id="${cellId}_text">${cellText}</div>
+                    </td>`;
+                }
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+            updateSelectedCount();
+        }
+
+        function toggleAvailabilityStatus(day, shift) {
+            if (!currentUser || currentUser.type !== 'חייל') return;
+            
+            const cellId = `avail_${day}_${shift}`;
+            const cell = document.getElementById(cellId);
+            const textElement = document.getElementById(cellId + '_text');
+            
+            if (!cell || !textElement) return;
+            
+            if (!availabilityData[currentUser.id]) {
+                availabilityData[currentUser.id] = { unavailableShifts: new Set(), submitted: false };
+            }
+            
+            const shiftKey = `${day}_${shift}`;
+            const userData = availabilityData[currentUser.id];
+            const isCurrentlyUnavailable = userData.unavailableShifts.has(shiftKey);
+            
+            if (isCurrentlyUnavailable) {
+                userData.unavailableShifts.delete(shiftKey);
+                cell.classList.remove('unavailable');
+                cell.classList.add('available');
+                textElement.textContent = 'זמין';
+            } else {
+                if (userData.unavailableShifts.size >= 7) {
+                    showNotification('ניתן לבחור עד 7 משמרות שלא זמין להן בלבד', 'warning');
+                    return;
+                }
+                userData.unavailableShifts.add(shiftKey);
+                cell.classList.remove('available');
+                cell.classList.add('unavailable');
+                textElement.textContent = 'לא זמין';
+            }
+            
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            const countElement = document.getElementById('selectedCount');
+            if (countElement && currentUser && availabilityData[currentUser.id]) {
+                const count = availabilityData[currentUser.id].unavailableShifts.size;
+                countElement.textContent = `נבחרו: ${count} מתוך 7 משמרות`;
+                
+                if (count >= 7) {
+                    countElement.style.color = '#dc3545';
+                    countElement.innerHTML = `נבחרו: ${count} מתוך 7 משמרות <strong>(מקסימום הושג)</strong>`;
+                } else {
+                    countElement.style.color = '#666';
+                }
+            }
+        }
+
+        // Availability management functions
+        function updateAvailabilityManagement() {
+            const soldiers = users.filter(u => u.type === 'חייל');
+            const select = document.getElementById('soldierAvailabilitySelect');
+            
+            // Update soldier select
+            if (select) {
+                select.innerHTML = '<option value="">בחר חייל...</option>';
+                soldiers.forEach(soldier => {
+                    select.innerHTML += `<option value="${soldier.id}">${soldier.firstName} ${soldier.lastName}</option>`;
+                });
+            }
+            
+            // Update overview stats
+            let submittedCount = 0;
+            soldiers.forEach(soldier => {
+                const availability = availabilityData[soldier.id];
+                if (availability && availability.submitted) {
+                    submittedCount++;
+                }
+            });
+            
+            const totalElement = document.getElementById('totalSoldiers');
+            const submittedElement = document.getElementById('submittedCount');
+            const percentageElement = document.getElementById('completionPercentage');
+            
+            if (totalElement) totalElement.textContent = soldiers.length;
+            if (submittedElement) submittedElement.textContent = submittedCount;
+            if (percentageElement) {
+                const percentage = soldiers.length > 0 ? Math.round((submittedCount / soldiers.length) * 100) : 0;
+                percentageElement.textContent = `${percentage}%`;
+            }
+        }
+
+        function showSoldierAvailability() {
+            const select = document.getElementById('soldierAvailabilitySelect');
+            const display = document.getElementById('soldierAvailabilityDisplay');
+            
+            if (!select || !display || !select.value) {
+                if (display) display.innerHTML = '';
+                return;
+            }
+            
+            const soldierId = parseInt(select.value);
+            const soldier = users.find(u => u.id === soldierId);
+            const availability = availabilityData[soldierId];
+            
+            if (!soldier) return;
+            
+            let html = `<h4>זמינות עבור: ${soldier.firstName} ${soldier.lastName}</h4>`;
+            
+            if (!availability || !availability.submitted) {
+                html += '<div class="alert alert-warning">החייל עדיין לא שלח זמינות</div>';
+            } else {
+                const unavailableCount = availability.unavailableShifts ? availability.unavailableShifts.size : 0;
+                html += `<div class="alert alert-success">זמינות נשלחה ב-${new Date(availability.submittedAt).toLocaleDateString('he-IL')}</div>`;
+                html += `<div class="alert alert-info">החייל לא זמין ל-${unavailableCount} משמרות</div>`;
+                
+                if (availability.unavailableShifts && availability.unavailableShifts.size > 0) {
+                    html += '<h5>משמרות שהחייל לא זמין להן:</h5><ul>';
+                    availability.unavailableShifts.forEach(shiftKey => {
+                        const [day, shift] = shiftKey.split('_').map(Number);
+                        html += `<li>${dayNames[day]} - ${shiftTypes[shift]} (${shiftHours[shift]})</li>`;
+                    });
+                    html += '</ul>';
+                }
+            }
+            
+            display.innerHTML = html;
+        }
+
+        function toggleAvailabilityStatus() {
+            const isOpen = document.getElementById('availabilityOpenToggle').checked;
+            systemSettings.availabilityOpen = isOpen;
+            syncData();
+            showNotification(isOpen ? 'זמינות נפתחה לכל החיילים' : 'זמינות נסגרה', 'success');
+        }
+
+        function clearAllAvailability() {
+            if (confirm('האם לנקות את כל נתוני הזמינות? פעולה זו בלתי הפיכה!')) {
+                availabilityData = {};
+                updateAvailabilityManagement();
+                syncData();
+                showNotification('כל נתוני הזמינות נוקו', 'success');
+            }
+        }
+
+        function exportAvailabilityData() {
+            const data = { availabilityData, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, (key, value) => {
+                if (value instanceof Set) return Array.from(value);
+                return value;
+            }, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'availability_export.json';
+            a.click();
+            showNotification('נתוני זמינות יוצאו בהצלחה!', 'success');
+        }
+
+        // Settings functions
+        function loadSettingsValues() {
+            document.getElementById('availabilityDay').value = systemSettings.availabilityDay || 0;
+            document.getElementById('availabilityHour').value = systemSettings.availabilityHour || '08:00';
+            document.getElementById('availabilityOpenNow').checked = systemSettings.availabilityOpen || false;
+            document.getElementById('showHebrewDates').checked = systemSettings.showHebrewDates !== false;
+            document.getElementById('showHolidays').checked = systemSettings.showHolidays !== false;
+            document.getElementById('highlightWeekends').checked = systemSettings.highlightWeekends !== false;
+            document.getElementById('maxShiftsPerSoldier').value = systemSettings.maxShiftsPerSoldier || 7;
+            document.getElementById('maxNightShifts').value = systemSettings.maxNightShifts || 2;
+        }
+
+        function saveAvailabilitySettings() {
+            systemSettings.availabilityDay = parseInt(document.getElementById('availabilityDay').value);
+            systemSettings.availabilityH<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
     <meta charset="utf-8"/>
@@ -387,6 +611,7 @@
                     <option value="admin">מנהל כללי</option>
                     <option value="manual">כניסה ידנית</option>
                 </select>
+                <button class="nav-tab" id="settingsTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
             </div>
 
             <div id="manualLogin" style="display: none;">
@@ -424,7 +649,7 @@
                 <button class="nav-tab active" onclick="showTab('schedule')">📅 לוח משמרות</button>
                 <button class="nav-tab" id="availabilityTab" onclick="showTab('availability')" style="display: none;">⏰ זמינות</button>
                 <button class="nav-tab" id="managementTab" onclick="showTab('management')" style="display: none;">⚙️ ניהול</button>
-                <button class="nav-tab" id="settingsTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
+                <button class="nav-tab" id="availabilityMgmtTab" onclick="showTab('availabilityMgmt')" style="display: none;">👥 ניהול זמינות</button>
             </div>
 
             <!-- Schedule Tab -->
@@ -445,10 +670,65 @@
             <div class="tab-content" id="availabilityContent">
                 <h2>⏰ זמינות למשמרות</h2>
                 <div id="availabilitySection">
-                    <div class="alert alert-success">מילוי זמינות פתוח! סמן את המשמרות שאתה לא יכול לבצע.</div>
+                    <div class="alert alert-success">מילוי זמינות פתוח! סמן את המשמרות שאתה לא יכול לבצע (עד 7 משמרות).</div>
+                    <div class="alert alert-info" style="margin-bottom: 20px;">
+                        <strong>הוראות:</strong> לחץ על משמרות שאתה <strong>לא יכול</strong> לבצע.
+                        <br>משמרות אדומות = לא זמין | משמרות ירוקות = זמין
+                        <br><span id="selectedCount">נבחרו: 0 מתוך 7 משמרות</span>
+                    </div>
                     <div id="availabilityForm"></div>
                     <div style="text-align: center; margin-top: 20px;">
                         <button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Availability Management Tab -->
+            <div class="tab-content" id="availabilityMgmtContent">
+                <h2>👥 ניהול זמינות חיילים</h2>
+                
+                <div class="settings-panel">
+                    <h3>📊 סטטוס זמינות כללי</h3>
+                    <div id="availabilityOverview">
+                        <div class="user-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2em; font-weight: 900; color: #667eea;" id="totalSoldiers">0</div>
+                                <div style="font-weight: 800;">סה״כ חיילים</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2em; font-weight: 900; color: #28a745;" id="submittedCount">0</div>
+                                <div style="font-weight: 800;">שלחו זמינות</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 2em; font-weight: 900; color: #ffc107;" id="completionPercentage">0%</div>
+                                <div style="font-weight: 800;">אחוז השלמה</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-panel">
+                    <h3>📝 זמינות לפי חייל</h3>
+                    <div class="form-group">
+                        <label>בחר חייל לצפייה בזמינות:</label>
+                        <select id="soldierAvailabilitySelect" onchange="showSoldierAvailability()">
+                            <option value="">בחר חייל...</option>
+                        </select>
+                    </div>
+                    <div id="soldierAvailabilityDisplay"></div>
+                </div>
+
+                <div class="settings-panel">
+                    <h3>🔧 הגדרות זמינות</h3>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="availabilityOpenToggle" onchange="toggleAvailabilityStatus()"/>
+                            פתח/סגור זמינות לכל החיילים
+                        </label>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <button class="btn btn-small" onclick="clearAllAvailability()">🗑️ נקה כל הזמינויות</button>
+                        <button class="btn btn-small" onclick="exportAvailabilityData()">📤 יצא נתוני זמינות</button>
                     </div>
                 </div>
             </div>
@@ -482,7 +762,96 @@
             <!-- Settings Tab -->
             <div class="tab-content" id="settingsContent">
                 <h2>🔧 הגדרות מערכת</h2>
-                <div class="alert alert-info">הגדרות מערכת יתווספו בהמשך</div>
+                
+                <div class="settings-panel">
+                    <h3>📋 כללי שיבוץ אוטומטי מתקדם</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4>🎯 כללי השיבוץ החדשים:</h4>
+                        <ul style="margin: 10px 0; padding-right: 20px;">
+                            <li><strong>🚫 אין משמרות רצופות:</strong> חייל לא יעבוד יומיים ברצף</li>
+                            <li><strong>📊 6 משמרות רגילות בדיוק:</strong> כל חייל מקבל 6 משמרות ש.ג או סייר (לא פחות, לא יותר)</li>
+                            <li><strong>⏰ משמרת 4 שעות אחת:</strong> כל חייל מקבל משמרת סייר 4 שעות אחת בלבד</li>
+                            <li><strong>🔴 ש.ג - חובה:</strong> כל משמרות ש.ג חייבות להיות מאויישות</li>
+                            <li><strong>🟡 סייר - תלוי במספר חיילים:</strong> אם חייל הגיע ל-6 משמרות, משמרות הסייר נשארות ריקות</li>
+                            <li><strong>✅ התחשבות בזמינות:</strong> האלגוריתם מתחשב בזמינות שהחיילים הגישו</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="settings-panel">
+                    <h3>📅 הגדרות זמינות</h3>
+                    <div class="form-group">
+                        <label>יום פתיחת זמינות:</label>
+                        <select id="availabilityDay">
+                            <option value="0">ראשון</option>
+                            <option value="1">שני</option>
+                            <option value="2">שלישי</option>
+                            <option value="3">רביעי</option>
+                            <option value="4">חמישי</option>
+                            <option value="5">שישי</option>
+                            <option value="6">שבת</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>שעת פתיחה:</label>
+                        <input id="availabilityHour" type="time" value="08:00"/>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="availabilityOpenNow" onchange="toggleAvailabilityGlobal()"/>
+                            פתח זמינות עכשיו לכל החיילים
+                        </label>
+                    </div>
+                    <button class="btn btn-small" onclick="saveAvailabilitySettings()">💾 שמור הגדרות זמינות</button>
+                </div>
+
+                <div class="settings-panel">
+                    <h3>🎨 הגדרות תצוגה</h3>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="showHebrewDates" checked onchange="toggleHebrewDates()"/>
+                            הצג תאריכים עבריים
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="showHolidays" checked onchange="toggleHolidays()"/>
+                            הצג חגים יהודיים
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="highlightWeekends" checked onchange="toggleWeekendHighlight()"/>
+                            הדגש ימי שבת
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-panel">
+                    <h3>📊 הגדרות מתקדמות</h3>
+                    <div class="form-group">
+                        <label>מספר משמרות מקסימלי לחייל:</label>
+                        <input id="maxShiftsPerSoldier" type="number" value="7" min="1" max="15"/>
+                    </div>
+                    <div class="form-group">
+                        <label>מספר משמרות לילה מקסימלי לחייל:</label>
+                        <input id="maxNightShifts" type="number" value="2" min="0" max="7"/>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <button class="btn btn-small" onclick="resetSystemSettings()">🔄 איפוס הגדרות</button>
+                        <button class="btn btn-small" onclick="exportSystemSettings()">📤 יצא הגדרות</button>
+                        <button class="btn btn-small" onclick="importSystemSettings()">📥 יבא הגדרות</button>
+                    </div>
+                </div>
+
+                <div class="settings-panel">
+                    <h3>🔧 כלים מתקדמים</h3>
+                    <div style="margin: 15px 0;">
+                        <button class="btn btn-small" onclick="generateTestData()">🧪 צור נתוני בדיקה</button>
+                        <button class="btn btn-small" onclick="clearAllData()">🗑️ נקה את כל הנתונים</button>
+                        <button class="btn btn-small" onclick="showSystemInfo()">ℹ️ מידע מערכת</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -494,10 +863,19 @@
             {id: 1, firstName: 'מנהל', lastName: 'כללי', phone: '0585123770', type: 'admin'}
         ];
         let scheduleData = {};
+        let availabilityData = {};
         let systemSettings = {
             googleSheetsConnected: true,
             spreadsheetId: '18qudJ3r3wSDLjvmsc8tvZommbDx34VD1W_FqL7VeX2Q',
-            apiKey: 'AIzaSyCBTKCqCqeRc_AWXIhiS33Z99q5z08_1Jg'
+            apiKey: 'AIzaSyCBTKCqCqeRc_AWXIhiS33Z99q5z08_1Jg',
+            availabilityOpen: true,
+            availabilityDay: 0,
+            availabilityHour: '08:00',
+            showHebrewDates: true,
+            showHolidays: true,
+            highlightWeekends: true,
+            maxShiftsPerSoldier: 7,
+            maxNightShifts: 2
         };
 
         const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
@@ -607,6 +985,11 @@
                 // Save data to localStorage as backup
                 localStorage.setItem('users', JSON.stringify(users));
                 localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
+                localStorage.setItem('availabilityData', JSON.stringify(availabilityData, (key, value) => {
+                    if (value instanceof Set) return Array.from(value);
+                    return value;
+                }));
+                localStorage.setItem('systemSettings', JSON.stringify(systemSettings));
                 showNotification('✅ סנכרון הושלם', 'success');
             }, 1500);
         }
@@ -681,6 +1064,7 @@
             // Hide all special tabs first
             document.getElementById('availabilityTab').style.display = 'none';
             document.getElementById('managementTab').style.display = 'none';
+            document.getElementById('availabilityMgmtTab').style.display = 'none';
             document.getElementById('settingsTab').style.display = 'none';
             document.getElementById('managerButtons').style.display = 'none';
             document.getElementById('soldierButtons').style.display = 'none';
@@ -691,6 +1075,7 @@
                 document.getElementById('soldierButtons').style.display = 'block';
             } else if (isManager) {
                 document.getElementById('managerButtons').style.display = 'block';
+                document.getElementById('availabilityMgmtTab').style.display = 'block';
                 document.getElementById('settingsTab').style.display = 'block';
                 
                 if (isAdmin) {
@@ -712,11 +1097,16 @@
                 document.getElementById('scheduleTab').classList.add('active');
             } else if (tabName === 'availability') {
                 document.getElementById('availabilityContent').classList.add('active');
+                generateAvailabilityForm();
+            } else if (tabName === 'availabilityMgmt') {
+                document.getElementById('availabilityMgmtContent').classList.add('active');
+                updateAvailabilityManagement();
             } else if (tabName === 'management') {
                 document.getElementById('managementContent').classList.add('active');
                 updateUsersList();
             } else if (tabName === 'settings') {
                 document.getElementById('settingsContent').classList.add('active');
+                loadSettingsValues();
             }
             
             event.target.classList.add('active');
@@ -816,15 +1206,15 @@
 
             for (let i = 0; i < 7; i++) {
                 const date = currentWeek[i];
-                const holiday = getHoliday(date);
+                const holiday = systemSettings.showHolidays ? getHoliday(date) : null;
                 const dayClass = getDayClass(i, date);
-                const hebrewDate = getHebrewDate(date);
+                const hebrewDate = systemSettings.showHebrewDates ? getHebrewDate(date) : '';
                 
-                html += `<th colspan="4" class="day-header ${dayClass}">
+                html += `<th colspan="4" class="day-header ${systemSettings.highlightWeekends ? dayClass : ''}">
                     <div>${dayNames[i]}</div>
                     <div style="font-size: 9px; line-height: 1.2; margin-top: 4px;">
                         ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
-                        <br>${hebrewDate}
+                        ${hebrewDate ? `<br>${hebrewDate}` : ''}
                         ${holiday ? `<div class="holiday-name" style="font-size: 8px; color: #1a1a1a; font-weight: 800; margin-top: 2px;">${holiday}</div>` : ''}
                     </div>
                 </th>`;
@@ -852,7 +1242,7 @@
                 
                 for (let day = 0; day < 7; day++) {
                     const date = currentWeek[day];
-                    const dayClass = getDayClass(day, date);
+                    const dayClass = systemSettings.highlightWeekends ? getDayClass(day, date) : '';
                     
                     for (let shift = 0; shift < 4; shift++) {
                         const cellId = `${role.name}_${day}_${shift}`;
@@ -987,6 +1377,31 @@
                     scheduleData = JSON.parse(savedSchedule);
                 } catch (e) {
                     console.warn('Could not load saved schedule');
+                }
+            }
+
+            const savedAvailability = localStorage.getItem('availabilityData');
+            if (savedAvailability) {
+                try {
+                    const availData = JSON.parse(savedAvailability);
+                    Object.keys(availData).forEach(key => {
+                        if (availData[key].unavailableShifts && Array.isArray(availData[key].unavailableShifts)) {
+                            availData[key].unavailableShifts = new Set(availData[key].unavailableShifts);
+                        }
+                    });
+                    availabilityData = availData;
+                } catch (e) {
+                    console.warn('Could not load saved availability');
+                }
+            }
+
+            const savedSettings = localStorage.getItem('systemSettings');
+            if (savedSettings) {
+                try {
+                    const loadedSettings = JSON.parse(savedSettings);
+                    systemSettings = { ...systemSettings, ...loadedSettings };
+                } catch (e) {
+                    console.warn('Could not load saved settings');
                 }
             }
 
