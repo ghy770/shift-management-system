@@ -842,7 +842,78 @@
                     }
                 });
             }
+// User management functions
+        function addUser() {
+            const firstName = document.getElementById('newFirstName').value.trim();
+            const lastName = document.getElementById('newLastName').value.trim();
+            const phone = document.getElementById('newPhone').value.trim();
+            const userType = document.getElementById('newUserType').value;
+            const password = document.getElementById('newUserPassword').value.trim();
 
+            if (!firstName || !lastName || !phone) {
+                showNotification('יש למלא את כל השדות', 'warning');
+                return;
+            }
+
+            if (users.find(u => u.phone === phone)) {
+                showNotification('מספר טלפון כבר קיים', 'warning');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                firstName,
+                lastName,
+                phone,
+                type: userType,
+                password: password || ''
+            };
+
+            users.push(newUser);
+
+            document.getElementById('newFirstName').value = '';
+            document.getElementById('newLastName').value = '';
+            document.getElementById('newPhone').value = '';
+            document.getElementById('newUserPassword').value = '';
+
+            updateUsersList();
+            showNotification(`${userType} נוסף בהצלחה!`, 'success');
+        }
+
+        function updateUsersList() {
+            const container = document.getElementById('usersList');
+            
+            if (users.length <= 1) {
+                container.innerHTML = '<div class="alert alert-info">רק המנהל הכללי קיים במערכת</div>';
+                return;
+            }
+
+            let html = '';
+            users.forEach(user => {
+                if (user.type !== 'admin') {
+                    html += `
+                        <div class="user-item">
+                            <div>
+                                <strong>${user.firstName} ${user.lastName}</strong><br>
+                                <small>${user.phone} | ${user.type}</small>
+                            </div>
+                            <button class="btn btn-small" style="background: #dc3545;" onclick="removeUser(${user.id})">הסר</button>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function removeUser(id) {
+            const user = users.find(u => u.id === id);
+            if (user && confirm(`האם להסיר את ${user.firstName} ${user.lastName}?`)) {
+                users = users.filter(u => u.id !== id);
+                updateUsersList();
+                showNotification('משתמש הוסר', 'success');
+            }
+        }
             console.log('🚀 מערכת ניהול משמרות מוכנה!');
             showNotification('ברוכים הבאים למערכת! 🎉', 'success');
         });
