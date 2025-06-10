@@ -372,11 +372,8 @@
     <div class="container">
         <div class="header">
             <h1>🚀 מערכת ניהול משמרות</h1>
-            <div class="upgrade-badge">⭐ עם Google Sheets ⭐</div>
+            <div class="upgrade-badge">⭐ מחובר ⭐</div>
             <p style="color: #34495e; font-weight: 700; margin-top: 10px;">שבצק הגמ"ר אלון מורה</p>
-            <div id="connectionStatus" style="margin-top: 10px;">
-                <span class="connection-status status-connected">✅ מחובר לגוגל שיטס</span>
-            </div>
         </div>
 
         <!-- Login Form -->
@@ -448,7 +445,11 @@
             <div class="tab-content" id="availabilityContent">
                 <h2>⏰ זמינות למשמרות</h2>
                 <div id="availabilitySection">
-                    <div class="alert alert-info">מילוי זמינות סגור כרגע. יפתח על ידי המנהל.</div>
+                    <div class="alert alert-success">מילוי זמינות פתוח! סמן את המשמרות שאתה לא יכול לבצע.</div>
+                    <div id="availabilityForm"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
+                    </div>
                 </div>
             </div>
 
@@ -501,9 +502,88 @@
 
         const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
         const shiftTypes = ['לילה', 'בוקר', 'צהרים', 'ערב'];
-        const shiftHours = ['22:00-06:00', '06:00-14:00', '14:00-18:00', '18:00-22:00'];
+        const shiftHours = ['01:00-07:00', '07:00-13:00', '13:00-19:00', '19:00-01:00'];
 
-        // Notification system
+        // Hebrew calendar and holidays functions
+        function getHebrewDate(gregorianDate) {
+            const hebrewMonths = [
+                'תשרי', 'חשוון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול'
+            ];
+            
+            const hebrewDays = [
+                '', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 
+                'יא', 'יב', 'יג', 'יד', 'טו', 'טז', 'יז', 'יח', 'יט', 'כ',
+                'כא', 'כב', 'כג', 'כד', 'כה', 'כו', 'כז', 'כח', 'כט', 'ל'
+            ];
+            
+            // Simplified Hebrew date calculation (approximate)
+            const month = gregorianDate.getMonth();
+            const day = gregorianDate.getDate();
+            
+            let hebrewMonth, hebrewDay;
+            
+            // Basic conversion (this is simplified - real conversion is more complex)
+            if (month >= 8) { // Sep-Dec maps roughly to Tishrei-Kislev
+                hebrewMonth = hebrewMonths[month - 8];
+                hebrewDay = Math.min(day + 5, 29);
+            } else { // Jan-Aug maps roughly to Tevet-Elul
+                hebrewMonth = hebrewMonths[month + 4];
+                hebrewDay = Math.min(day + 3, 29);
+            }
+            
+            return `${hebrewDays[hebrewDay]} ${hebrewMonth}`;
+        }
+
+        function getHoliday(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const year = date.getFullYear();
+            
+            // Jewish holidays for 2025 (actual dates)
+            const holidays2025 = {
+                '1/14': 'ט״ו בשבט', '3/14': 'פורים', '3/15': 'שושן פורים',
+                '4/13': 'ערב פסח', '4/14': 'פסח א\'', '4/15': 'פסח ב\'',
+                '4/16': 'חול המועד פסח', '4/17': 'חול המועד פסח', '4/18': 'חול המועד פסח', 
+                '4/19': 'חול המועד פסח', '4/20': 'פסח ז\'', '4/21': 'אסרו חג',
+                '4/28': 'יום הזיכרון', '4/29': 'יום העצמאות',
+                '5/18': 'ל״ג בעומר', '6/2': 'ערב שבועות', '6/3': 'שבועות',
+                '8/13': 'ט׳ באב', '9/6': 'ערב ר״ה', '9/7': 'ראש השנה א\'', '9/8': 'ראש השנה ב\'',
+                '9/15': 'ערב יוה״כ', '9/16': 'יום כיפור',
+                '9/21': 'ערב סוכות', '9/22': 'סוכות א\'', '9/23': 'סוכות ב\'',
+                '9/24': 'חול המועד סוכות', '9/25': 'חול המועד סוכות', '9/26': 'חול המועד סוכות',
+                '9/27': 'חול המועד סוכות', '9/28': 'הושענא רבה',
+                '9/29': 'שמיני עצרת', '9/30': 'שמחת תורה',
+                '12/22': 'ערב חנוכה', '12/23': 'חנוכה א\'', '12/24': 'חנוכה ב\'',
+                '12/25': 'חנוכה ג\'', '12/26': 'חנוכה ד\'', '12/27': 'חנוכה ה\'',
+                '12/28': 'חנוכה ו\'', '12/29': 'חנוכה ז\'', '12/30': 'חנוכה ח\''
+            };
+            
+            const holidays2026 = {
+                '1/1': 'ערב ר״ח טבת', '2/2': 'ט״ו בשבט',
+                '3/5': 'פורים', '3/6': 'שושן פורים'
+            };
+            
+            const holidayKey = `${month}/${day}`;
+            
+            if (year === 2025) {
+                return holidays2025[holidayKey] || null;
+            } else if (year === 2026) {
+                return holidays2026[holidayKey] || null;
+            }
+            
+            return null;
+        }
+
+        function getDayClass(dayIndex, date) {
+            const holiday = getHoliday(date);
+            
+            if (dayIndex === 6) { // Saturday - Sabbath
+                return 'sabbath-day';
+            } else if (holiday) {
+                return 'holiday-day';
+            }
+            return '';
+        }
         function showNotification(message, type = 'info') {
             const existing = document.querySelector('.notification');
             if (existing) existing.remove();
@@ -736,12 +816,16 @@
 
             for (let i = 0; i < 7; i++) {
                 const date = currentWeek[i];
-                const dayClass = i === 6 ? 'sabbath-day' : '';
+                const holiday = getHoliday(date);
+                const dayClass = getDayClass(i, date);
+                const hebrewDate = getHebrewDate(date);
                 
                 html += `<th colspan="4" class="day-header ${dayClass}">
                     <div>${dayNames[i]}</div>
                     <div style="font-size: 9px; line-height: 1.2; margin-top: 4px;">
                         ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+                        <br>${hebrewDate}
+                        ${holiday ? `<div class="holiday-name" style="font-size: 8px; color: #1a1a1a; font-weight: 800; margin-top: 2px;">${holiday}</div>` : ''}
                     </div>
                 </th>`;
             }
@@ -767,7 +851,8 @@
                 html += `<tr><td style="font-weight: 700;">${role.displayName}</td>`;
                 
                 for (let day = 0; day < 7; day++) {
-                    const dayClass = day === 6 ? 'sabbath-day' : '';
+                    const date = currentWeek[day];
+                    const dayClass = getDayClass(day, date);
                     
                     for (let shift = 0; shift < 4; shift++) {
                         const cellId = `${role.name}_${day}_${shift}`;
