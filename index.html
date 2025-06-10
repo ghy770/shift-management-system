@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>מערכת ניהול משמרות משודרגת</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.8em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upgrade-badge {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-top: 10px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 0 auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: #1a1a1a;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a1a;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-small {
+            padding: 12px 24px;
+            font-size: 14px;
+            width: auto;
+            margin: 5px;
+        }
+
+        .dashboard {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .nav-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 5px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a1a1a;
+            transition: all 0.3s;
+            border-radius: 8px;
+            margin: 2px;
+        }
+
+        .nav-tab.active {
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+        }
+
+        .schedule-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 6px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .schedule-table td {
+            padding: 8px 4px;
+            border: 2px solid #e1e8ed;
+            text-align: center;
+            font-weight: 700;
+            min-height: 50px;
+            vertical-align: middle;
+            color: #1a1a1a;
+        }
+
+        .shift-cell {
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 45px;
+        }
+
+        .shift-cell:hover {
+            background: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .shift-cell.assigned {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: #1a1a1a;
+            font-weight: 800;
+        }
+
+        .shift-cell.my-shift {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%) !important;
+            color: #1a1a1a;
+            font-weight: 800;
+            border: 3px solid #fbc02d !important;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-left: 5px solid #667eea;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+
+        .notification.success { border-left-color: #28a745; }
+        .notification.warning { border-left-color: #ffc107; }
+        .notification.error { border-left-color: #dc3545; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #1a1a1a;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #1a1a1a;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #1a1a1a;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .setup-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 0 auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+        }
+
+        .setup-step {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sabbath-day {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%) !important;
+        }
+
+        .holiday-day {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%) !important;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tab { font-size: 14px; padding: 12px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 מערכת ניהול משמרות</h1>
+            <div class="upgrade-badge">⭐ עם Google Sheets ⭐</div>
+            <p style="color: #34495e; font-weight: 700; margin-top: 10px;">שבצק הגמ"ר אלון מורה</p>
+            <div id="connectionStatus" style="margin-top: 10px;">
+                <span class="connection-status status-disconnected">❌ לא מחובר לגוגל שיטס</span>
+            </div>
+        </div>
+
+        <!-- Setup Form -->
+        <div class="setup-form" id="setupForm">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50; font-weight: 700;">הגדרת חיבור לגוגל שיטס</h2>
+            
+            <div class="setup-step">
+                <h3>📝 שלב 1: יצירת Google Sheets</h3>
+                <p>צור גוגל שיטס חדש עם השמות הבאים:</p>
+                <ul style="margin: 10px 0; padding-right: 20px;">
+                    <li><strong>users</strong> - למשתמשים</li>
+                    <li><strong>schedule</strong> - ללוח משמרות</li>
+                    <li><strong>availability</strong> - לזמינות</li>
+                    <li><strong>settings</strong> - להגדרות</li>
+                </ul>
+            </div>
+
+            <div class="setup-step">
+                <h3>🔗 שלב 2: הגדרת API</h3>
+                <div class="form-group">
+                    <label>ID של הגוגל שיטס:</label>
+                    <input id="spreadsheetId" type="text" placeholder="הכנס את ה-ID מה-URL של הגוגל שיטס"/>
+                </div>
+                <div class="form-group">
+                    <label>API Key של Google Sheets:</label>
+                    <input id="apiKey" type="text" placeholder="הכנס את ה-API Key"/>
+                </div>
+            </div>
+
+            <button class="btn" onclick="setupGoogleSheets()">🔗 התחבר לגוגל שיטס</button>
+            <button class="btn btn-small" onclick="skipSetup()" style="background: #6c757d; margin-top: 10px;">⏩ המשך בלי חיבור (מצב דמו)</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-form" id="loginForm" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50; font-weight: 700;">כניסה למערכת</h2>
+            
+            <div class="form-group">
+                <label>בחר משתמש:</label>
+                <select id="quickLogin">
+                    <option value="">בחר משתמש...</option>
+                    <option value="admin">מנהל כללי</option>
+                    <option value="manual">כניסה ידנית</option>
+                </select>
+            </div>
+
+            <div id="manualLogin" style="display: none;">
+                <div class="form-group">
+                    <label>שם פרטי:</label>
+                    <input id="firstName" placeholder="הכנס שם פרטי" type="text"/>
+                </div>
+                <div class="form-group">
+                    <label>שם משפחה:</label>
+                    <input id="lastName" placeholder="הכנס שם משפחה" type="text"/>
+                </div>
+                <div class="form-group">
+                    <label>מספר טלפון:</label>
+                    <input id="phone" placeholder="הכנס מספר טלפון" type="tel"/>
+                </div>
+                <div class="form-group">
+                    <label>סוג משתמש:</label>
+                    <select id="userType">
+                        <option value="חייל">חייל</option>
+                        <option value="צופה">צופה</option>
+                        <option value="מנהל">מנהל</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn" onclick="login()">כניסה למערכת</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard" id="dashboard">
+            <button class="logout-btn" onclick="logout()">יציאה</button>
+            <div class="user-info" id="userInfo"></div>
+            
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('schedule')">📅 לוח משמרות</button>
+                <button class="nav-tab" id="availabilityTab" onclick="showTab('availability')" style="display: none;">⏰ זמינות</button>
+                <button class="nav-tab" id="managementTab" onclick="showTab('management')" style="display: none;">⚙️ ניהול</button>
+                <button class="nav-tab" id="settingsTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div class="tab-content active" id="scheduleTab">
+                <h2>📅 לוח משמרות שבועי</h2>
+                <div id="managerButtons" style="margin-bottom: 15px; display: none;">
+                    <button class="btn btn-small" onclick="autoSchedule()">🎯 שיבוץ אוטומטי</button>
+                    <button class="btn btn-small" onclick="clearSchedule()">🗑️ נקה לוח</button>
+                    <button class="btn btn-small" onclick="syncData()">🔄 סנכרון עם גוגל שיטס</button>
+                </div>
+                <div id="soldierButtons" style="margin-bottom: 15px; display: none;">
+                    <button class="btn btn-small" onclick="syncData()">🔄 רענן נתונים</button>
+                </div>
+                <div id="scheduleContainer"></div>
+            </div>
+
+            <!-- Availability Tab -->
+            <div class="tab-content" id="availabilityContent">
+                <h2>⏰ זמינות למשמרות</h2>
+                <div id="availabilitySection">
+                    <div class="alert alert-info">מילוי זמינות סגור כרגע. יפתח על ידי המנהל.</div>
+                </div>
+            </div>
+
+            <!-- Management Tab -->
+            <div class="tab-content" id="managementContent">
+                <h2>⚙️ ניהול המערכת</h2>
+                <div class="alert alert-info">תכונות ניהול יתווספו בהמשך</div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settingsContent">
+                <h2>🔧 הגדרות מערכת</h2>
+                <div class="alert alert-info">הגדרות מערכת יתווספו בהמשך</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let users = [
+            {id: 1, firstName: 'מנהל', lastName: 'כללי', phone: '0585123770', type: 'admin'}
+        ];
+        let scheduleData = {};
+        let systemSettings = {
+            googleSheetsConnected: false
+        };
+
+        const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+        const shiftTypes = ['לילה', 'בוקר', 'צהרים', 'ערב'];
+        const shiftHours = ['01:00-07:00', '07:00-13:00', '13:00-19:00', '19:00-01:00'];
+
+        // Setup functions
+        function setupGoogleSheets() {
+            const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!spreadsheetId || !apiKey) {
+                showNotification('יש למלא את כל השדות', 'warning');
+                return;
+            }
+
+            // Save to localStorage for demo
+            localStorage.setItem('spreadsheetId', spreadsheetId);
+            localStorage.setItem('apiKey', apiKey);
+            
+            systemSettings.googleSheetsConnected = true;
+            updateConnectionStatus(true);
+            showSetupForm(false);
+            showLoginForm(true);
+            showNotification('✅ החיבור הוגדר בהצלחה! (מצב דמו)', 'success');
+        }
+
+        function skipSetup() {
+            showSetupForm(false);
+            showLoginForm(true);
+            showNotification('ℹ️ עובד במצב דמו מקומי', 'info');
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.innerHTML = '<span class="connection-status status-connected">✅ מחובר לגוגל שיטס</span>';
+            } else {
+                statusElement.innerHTML = '<span class="connection-status status-disconnected">❌ לא מחובר לגוגל שיטס</span>';
+            }
+        }
+
+        function showSetupForm(show) {
+            document.getElementById('setupForm').style.display = show ? 'block' : 'none';
+        }
+
+        function showLoginForm(show) {
+            document.getElementById('loginForm').style.display = show ? 'block' : 'none';
+        }
+
+        function syncData() {
+            if (systemSettings.googleSheetsConnected) {
+                showNotification('🔄 מסנכרן עם גוגל שיטס...', 'info');
+                setTimeout(() => {
+                    showNotification('✅ סנכרון הושלם', 'success');
+                }, 1500);
+            } else {
+                showNotification('❌ לא מחובר לגוגל שיטס', 'error');
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${message}</span>
+                    <span style="cursor: pointer; font-weight: bold; margin-right: 10px;" onclick="this.parentElement.parentElement.remove()">×</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 4000);
+        }
+
+        // Login functions
+        function login() {
+            const quickLogin = document.getElementById('quickLogin').value;
+            
+            if (quickLogin === 'admin') {
+                const password = prompt('הכנס סיסמה עבור המנהל הכללי:');
+                if (password === '322770') {
+                    currentUser = users[0];
+                    showDashboard();
+                    showNotification('התחברת בהצלחה!', 'success');
+                } else {
+                    showNotification('סיסמה שגויה', 'error');
+                }
+            } else if (quickLogin === 'manual') {
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const userType = document.getElementById('userType').value;
+
+                if (!firstName || !lastName || !phone) {
+                    showNotification('יש למלא את כל השדות החובה', 'warning');
+                    return;
+                }
+
+                currentUser = {
+                    id: Date.now(),
+                    firstName,
+                    lastName,
+                    phone,
+                    type: userType
+                };
+                users.push(currentUser);
+                showDashboard();
+                showNotification(`ברוך הבא ${firstName}!`, 'success');
+            } else {
+                showNotification('יש לבחור סוג כניסה', 'warning');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            showNotification('התנתקת מהמערכת', 'info');
+        }
+
+        // Dashboard functions
+        function showDashboard() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            document.getElementById('userInfo').innerHTML = 
+                `ברוך הבא ${currentUser.firstName} ${currentUser.lastName} | ${currentUser.type}`;
+
+            // Show/hide tabs based on user type
+            const isAdmin = currentUser.type === 'admin';
+            const isManager = currentUser.type === 'מנהל' || isAdmin;
+            const isSoldier = currentUser.type === 'חייל';
+
+            // Hide all special tabs first
+            document.getElementById('availabilityTab').style.display = 'none';
+            document.getElementById('managementTab').style.display = 'none';
+            document.getElementById('settingsTab').style.display = 'none';
+            document.getElementById('managerButtons').style.display = 'none';
+            document.getElementById('soldierButtons').style.display = 'none';
+
+            // Show tabs based on user type
+            if (isSoldier) {
+                document.getElementById('availabilityTab').style.display = 'block';
+                document.getElementById('soldierButtons').style.display = 'block';
+            } else if (isManager) {
+                document.getElementById('managerButtons').style.display = 'block';
+                document.getElementById('settingsTab').style.display = 'block';
+                
+                if (isAdmin) {
+                    document.getElementById('managementTab').style.display = 'block';
+                }
+            }
+
+            generateScheduleTable();
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            if (tabName === 'schedule') {
+                document.getElementById('scheduleTab').classList.add('active');
+            } else if (tabName === 'availability') {
+                document.getElementById('availabilityContent').classList.add('active');
+            } else if (tabName === 'management') {
+                document.getElementById('managementContent').classList.add('active');
+            } else if (tabName === 'settings') {
+                document.getElementById('settingsContent').classList.add('active');
+            }
+            
+            event.target.classList.add('active');
+        }
+
+        // Schedule functions
+        function generateScheduleTable() {
+            const container = document.getElementById('scheduleContainer');
+            
+            const today = new Date();
+            const currentWeek = [];
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                currentWeek.push(date);
+            }
+            
+            let html = '<table class="schedule-table"><thead><tr><th>תפקיד</th>';
+
+            for (let i = 0; i < 7; i++) {
+                const date = currentWeek[i];
+                const dayClass = i === 6 ? 'sabbath-day' : '';
+                
+                html += `<th colspan="4" class="day-header ${dayClass}">
+                    <div>${dayNames[i]}</div>
+                    <div style="font-size: 9px; line-height: 1.2; margin-top: 4px;">
+                        ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+                    </div>
+                </th>`;
+            }
+            html += '</tr><tr><th></th>';
+
+            for (let day = 0; day < 7; day++) {
+                for (let shift = 0; shift < 4; shift++) {
+                    html += `<th style="font-size: 10px; text-align: center;">
+                        <div>${shiftTypes[shift]}</div>
+                        <div style="font-size: 8px; font-style: italic; margin-top: 2px;">${shiftHours[shift]}</div>
+                    </th>`;
+                }
+            }
+            html += '</tr></thead><tbody>';
+
+            const roles = [
+                { name: 'ש.ג', displayName: 'ש.ג' },
+                { name: 'סייר', displayName: 'סייר' },
+                { name: 'סייר 4 שעות', displayName: 'סייר 4 שעות' }
+            ];
+            
+            roles.forEach(role => {
+                html += `<tr><td style="font-weight: 700;">${role.displayName}</td>`;
+                
+                for (let day = 0; day < 7; day++) {
+                    const dayClass = day === 6 ? 'sabbath-day' : '';
+                    
+                    for (let shift = 0; shift < 4; shift++) {
+                        const cellId = `${role.name}_${day}_${shift}`;
+                        const assigned = scheduleData[cellId];
+                        const isMyShift = assigned && currentUser && currentUser.type === 'חייל' && assigned === `${currentUser.firstName} ${currentUser.lastName}`;
+                        const canEdit = currentUser && (currentUser.type === 'admin' || currentUser.type === 'מנהל');
+                        const cellClass = `shift-cell ${assigned ? 'assigned' : ''} ${isMyShift ? 'my-shift' : ''} ${dayClass}`;
+                        const onClick = canEdit ? `onclick="cellClick('${cellId}')" 
