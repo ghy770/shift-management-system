@@ -473,7 +473,26 @@
             <!-- Settings Tab -->
             <div class="tab-content" id="settingsContent">
                 <h2>🔧 הגדרות מערכת</h2>
-                <div class="alert alert-info">הגדרות מערכת יתווספו בהמשך</div>
+               <div class="settings-panel">
+    <h3>👥 הוספת משתמשים</h3>
+    <div class="user-form">
+        <input id="newFirstName" placeholder="שם פרטי" type="text"/>
+        <input id="newLastName" placeholder="שם משפחה" type="text"/>
+        <input id="newPhone" placeholder="מספר טלפון" type="tel"/>
+        <select id="newUserType">
+            <option value="חייל">חייל</option>
+            <option value="צופה">צופה</option>
+            <option value="מנהל">מנהל</option>
+        </select>
+        <input id="newUserPassword" placeholder="סיסמה (אופציונלי)" type="password"/>
+        <button class="btn btn-small" onclick="addUser()">הוסף משתמש</button>
+    </div>
+</div>
+
+<div>
+    <h3>📋 רשימת משתמשים</h3>
+    <div class="user-list" id="usersList"></div>
+</div>
             </div>
         </div>
     </div>
