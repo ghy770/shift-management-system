@@ -718,4 +718,115 @@
                     const dayClass = day === 6 ? 'sabbath-day' : '';
                     
                     for (let shift = 0; shift < 4; shift++) {
-                        const cellId = `${role.
+                        const cellId = `${role.name}_${day}_${shift}`;
+                        const assigned = scheduleData[cellId];
+                        const isMyShift = assigned && currentUser && currentUser.type === 'חייל' && assigned === `${currentUser.firstName} ${currentUser.lastName}`;
+                        const canEdit = currentUser && (currentUser.type === 'admin' || currentUser.type === 'מנהל');
+                        const cellClass = `shift-cell ${assigned ? 'assigned' : ''} ${isMyShift ? 'my-shift' : ''} ${dayClass}`;
+                        const onClick = canEdit ? `onclick="cellClick('${cellId}')"` : '';
+                        const cursor = canEdit ? 'cursor: pointer;' : 'cursor: default;';
+                        
+                        html += `<td class="${cellClass}" id="${cellId}" ${onClick} 
+                                style="${cursor}">${assigned || ''}</td>`;
+                    }
+                }
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function cellClick(cellId) {
+            if (currentUser.type !== 'admin' && currentUser.type !== 'מנהל') return;
+
+            const assigned = scheduleData[cellId];
+            const employees = users.filter(u => u.type === 'חייל');
+
+            if (assigned) {
+                if (confirm(`האם להסיר את ${assigned}?`)) {
+                    delete scheduleData[cellId];
+                    generateScheduleTable();
+                    showNotification('חייל הוסר מהמשמרת', 'success');
+                }
+            } else if (employees.length > 0) {
+                const options = employees.map((emp, i) => `${i+1}. ${emp.firstName} ${emp.lastName}`).join('\n');
+                const choice = prompt(`בחר חייל:\n${options}\n\nהכנס מספר:`);
+                
+                if (choice && !isNaN(choice) && choice > 0 && choice <= employees.length) {
+                    const selectedEmp = employees[choice - 1];
+                    scheduleData[cellId] = `${selectedEmp.firstName} ${selectedEmp.lastName}`;
+                    generateScheduleTable();
+                    showNotification(`${selectedEmp.firstName} ${selectedEmp.lastName} שובץ למשמרת`, 'success');
+                }
+            } else {
+                showNotification('אין חיילים במערכת', 'warning');
+            }
+        }
+
+        function autoSchedule() {
+            const employees = users.filter(u => u.type === 'חייל');
+            if (employees.length === 0) {
+                showNotification('אין חיילים במערכת', 'warning');
+                return;
+            }
+
+            if (!confirm('האם לבצע שיבוץ אוטומטי?')) return;
+
+            scheduleData = {};
+            showNotification('מבצע שיבוץ אוטומטי...', 'info');
+
+            const allShifts = [];
+            const roles = ['ש.ג', 'סייר', 'סייר 4 שעות'];
+            
+            for (let day = 0; day < 7; day++) {
+                for (let shift = 0; shift < 4; shift++) {
+                    for (const role of roles) {
+                        allShifts.push(`${role}_${day}_${shift}`);
+                    }
+                }
+            }
+
+            allShifts.sort(() => Math.random() - 0.5);
+
+            let empIndex = 0;
+            allShifts.forEach(shiftId => {
+                if (employees[empIndex]) {
+                    const emp = employees[empIndex];
+                    scheduleData[shiftId] = `${emp.firstName} ${emp.lastName}`;
+                    empIndex = (empIndex + 1) % employees.length;
+                }
+            });
+
+            generateScheduleTable();
+            showNotification('✅ שיבוץ אוטומטי הושלם!', 'success');
+        }
+
+        function clearSchedule() {
+            if (confirm('האם לנקות את הלוח?')) {
+                scheduleData = {};
+                generateScheduleTable();
+                showNotification('לוח נוקה', 'success');
+            }
+        }
+
+        // Show/hide manual login
+        document.addEventListener('DOMContentLoaded', function() {
+            const quickLoginSelect = document.getElementById('quickLogin');
+            if (quickLoginSelect) {
+                quickLoginSelect.addEventListener('change', function() {
+                    const manualLogin = document.getElementById('manualLogin');
+                    if (this.value === 'manual') {
+                        manualLogin.style.display = 'block';
+                    } else {
+                        manualLogin.style.display = 'none';
+                    }
+                });
+            }
+
+            console.log('🚀 מערכת ניהול משמרות מוכנה!');
+            showNotification('ברוכים הבאים למערכת! 🎉', 'success');
+        });
+    </script>
+</body>
+</html>
