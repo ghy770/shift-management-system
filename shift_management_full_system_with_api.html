@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>מערכת ניהול משמרות</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            color: #1a1a1a;
+            font-weight: bold;
+            direction: rtl;
+        }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .tab { display: none; }
+        .tab.active { display: block; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tabs button {
+            padding: 10px 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            background: #fff;
+            cursor: pointer;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table, th, td { border: 1px solid #ccc; }
+        th, td { padding: 10px; text-align: center; }
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🚀 מערכת ניהול משמרות</h1>
+    <div class="tabs">
+        <button onclick="showTab('dashboard')">לוח בקרה</button>
+        <button onclick="showTab('schedule')">לוח משמרות</button>
+        <button onclick="showTab('availability')">זמינות</button>
+        <button onclick="showTab('management')">ניהול</button>
+    </div>
+
+    <div id="dashboard" class="tab active">
+        <h2>📊 לוח בקרה</h2>
+        <div>סה"כ משתמשים: <span id="totalUsers">0</span></div>
+        <div>סה"כ משמרות: <span id="totalShifts">0</span></div>
+    </div>
+
+    <div id="schedule" class="tab">
+        <h2>📅 לוח משמרות</h2>
+        <div id="scheduleTableContainer">טוען...</div>
+    </div>
+
+    <div id="availability" class="tab">
+        <h2>⏰ טופס זמינות</h2>
+        <div id="availabilityTableContainer">טוען...</div>
+    </div>
+
+    <div id="management" class="tab">
+        <h2>⚙️ ניהול משתמשים</h2>
+        <table id="usersTable">
+            <thead>
+                <tr><th>שם פרטי</th><th>שם משפחה</th><th>טלפון</th><th>סוג</th><th>סיסמה</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+const GOOGLE_API_BASE = "https://script.google.com/macros/s/AKfycbycr9nb62TudgqNUbL--jK278HxGUE2-Yr9JthTORIYC-OVOU7ffAI0d-YMPvGYLUcbDA/exec";
+
+let users = [];
+let availabilityData = [];
+let scheduleData = [];
+
+function showTab(tabId) {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+}
+
+async function fetchData(endpoint, callback) {
+    try {
+        const res = await fetch(GOOGLE_API_BASE + "?action=" + endpoint);
+        const data = await res.json();
+        console.log(`📥 Loaded ${endpoint}:`, data);
+        if (callback) callback(data);
+    } catch (error) {
+        console.error(`⚠️ Error fetching ${endpoint}:`, error);
+    }
+}
+
+function renderUsers(users) {
+    const tbody = document.querySelector("#usersTable tbody");
+    tbody.innerHTML = "";
+    users.forEach(u => {
+        const row = `<tr><td>${u.firstName}</td><td>${u.lastName}</td><td>${u.phone}</td><td>${u.type}</td><td>${u.password}</td></tr>`;
+        tbody.innerHTML += row;
+    });
+    document.getElementById("totalUsers").innerText = users.length;
+}
+
+function renderSchedule(data) {
+    const container = document.getElementById("scheduleTableContainer");
+    if (data.length === 0) return container.innerHTML = "אין נתונים";
+    let html = "<table><thead><tr>";
+    Object.keys(data[0]).forEach(key => html += `<th>${key}</th>`);
+    html += "</tr></thead><tbody>";
+    data.forEach(row => {
+        html += "<tr>";
+        Object.values(row).forEach(val => html += `<td>${val}</td>`);
+        html += "</tr>";
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+    document.getElementById("totalShifts").innerText = data.length;
+}
+
+function renderAvailability(data) {
+    const container = document.getElementById("availabilityTableContainer");
+    if (data.length === 0) return container.innerHTML = "אין זמינות";
+    let html = "<table><thead><tr>";
+    Object.keys(data[0]).forEach(key => html += `<th>${key}</th>`);
+    html += "</tr></thead><tbody>";
+    data.forEach(row => {
+        html += "<tr>";
+        Object.values(row).forEach(val => html += `<td>${val}</td>`);
+        html += "</tr>";
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    fetchData("getUsers", data => { users = data; renderUsers(data); });
+    fetchData("getAvailability", data => { availabilityData = data; renderAvailability(data); });
+    fetchData("getSchedule", data => { scheduleData = data; renderSchedule(data); });
+});
+</script>
+</body>
+</html>
