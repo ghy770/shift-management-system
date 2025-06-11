@@ -1900,32 +1900,27 @@
             showNotification('ברוכים הבאים למערכת המשופרת! 🎉', 'success');
         });
     </script>
-    <script>
-const GOOGLE_API_BASE = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
 
-async function fetchUsers() {
-  const res = await fetch(GOOGLE_API_BASE + "?action=getUsers");
-  const users = await res.json();
-  console.log("📥 Loaded users from Google Sheets:", users);
-  // הכנס למשתנה users
-}
+<script>
+const GOOGLE_API_BASE = "https://script.google.com/macros/s/AKfycbycr9nb62TudgqNUbL--jK278HxGUE2-Yr9JthTORIYC-OVOU7ffAI0d-YMPvGYLUcbDA/exec";
 
-async function fetchAvailability() {
-  const res = await fetch(GOOGLE_API_BASE + "?action=getAvailability");
-  const data = await res.json();
-  console.log("📥 זמינות:", data);
-}
-
-async function fetchSchedule() {
-  const res = await fetch(GOOGLE_API_BASE + "?action=getSchedule");
-  const data = await res.json();
-  console.log("📥 שיבוץ:", data);
+async function fetchData(endpoint, callback) {
+  try {
+    const res = await fetch(GOOGLE_API_BASE + "?action=" + endpoint);
+    const data = await res.json();
+    console.log(`📥 Loaded ${endpoint}:`, data);
+    if (callback) callback(data);
+  } catch (error) {
+    console.error(`⚠️ Error fetching ${endpoint}:`, error);
+  }
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  fetchUsers();
-  fetchAvailability();
-  fetchSchedule();
+  fetchData("getUsers", (data) => {
+    // ניתן להכניס כאן קוד שמעדכן את users = data
+  });
+  fetchData("getAvailability");
+  fetchData("getSchedule");
 });
 </script>
 
