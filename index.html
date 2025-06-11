@@ -1,7 +1,6 @@
-<!DOCTYPE html
+<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
-   
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>מערכת ניהול משמרות משופרת</title>
@@ -75,19 +74,6 @@
             max-width: 450px;
             backdrop-filter: blur(10px);
         }
-fetch(GOOGLE_API_BASE, {
-  method: "POST",
-  body: JSON.stringify({
-    action: "saveUsers",
-    data: users
-  }),
-  headers: {
-    "Content-Type": "application/json"
-  }
-})
-.then(res => res.text())
-.then(msg => console.log("✔️ Saved to Google Sheets:", msg))
-.catch(err => console.error("❌ Error saving:", err));
 
         .form-group {
             margin-bottom: 25px;
