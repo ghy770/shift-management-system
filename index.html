@@ -1900,5 +1900,34 @@
             showNotification('ברוכים הבאים למערכת המשופרת! 🎉', 'success');
         });
     </script>
+    <script>
+const GOOGLE_API_BASE = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+async function fetchUsers() {
+  const res = await fetch(GOOGLE_API_BASE + "?action=getUsers");
+  const users = await res.json();
+  console.log("📥 Loaded users from Google Sheets:", users);
+  // הכנס למשתנה users
+}
+
+async function fetchAvailability() {
+  const res = await fetch(GOOGLE_API_BASE + "?action=getAvailability");
+  const data = await res.json();
+  console.log("📥 זמינות:", data);
+}
+
+async function fetchSchedule() {
+  const res = await fetch(GOOGLE_API_BASE + "?action=getSchedule");
+  const data = await res.json();
+  console.log("📥 שיבוץ:", data);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  fetchUsers();
+  fetchAvailability();
+  fetchSchedule();
+});
+</script>
+
 </body>
 </html>
