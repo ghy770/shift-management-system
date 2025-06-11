@@ -651,6 +651,7 @@
     </div>
 
     <script>
+const GOOGLE_API_BASE = "https://script.google.com/macros/s/AKfycbwDzw3DBpMalq67aqiebbxKipFs-8LgvGwcK77u4LTlJTj2uAiq1hQ6tHl2jVokPK90Wg/exec";
         // Global variables
         let currentUser = null;
         let users = [
@@ -1899,8 +1900,23 @@
             console.log('✅ מערכת ניהול משמרות מוכנה!');
             showNotification('ברוכים הבאים למערכת המשופרת! 🎉', 'success');
         });
-    </script>
-    const GOOGLE_API_BASE = "https://script.google.com/macros/s/AKfycbwDzw3DBpMalq67aqiebbxKipFs-8LgvGwcK77u4LTlJTj2uAiq1hQ6tHl2jVokPK90Wg/exec";
+    
+function saveUsersData(usersArray) {
+  fetch(GOOGLE_API_BASE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: "saveUsers",
+      data: usersArray
+    })
+  })
+  .then(res => res.text())
+  .then(txt => console.log("✅ saveUsers response:", txt))
+  .catch(err => console.error("❌ saveUsers error:", err));
+}
 
+</script>
 </body>
 </html>
