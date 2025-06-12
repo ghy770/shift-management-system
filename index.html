@@ -653,7 +653,70 @@
     <script>
         // Global variables
         console.log('🚀 מערכת ניהול משמרות מתחילה...');
-        
+        function saveData() {
+    console.log('💾 שומר נתונים דרך fetch...');
+
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'saveUsers',
+            users: users
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(d => console.log('✅ משתמשים נשמרו:', d))
+    .catch(e => console.error('❌ שגיאה בשמירת משתמשים:', e));
+
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'saveSchedule',
+            schedule: scheduleData
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(d => console.log('✅ לוח משמרות נשמר:', d))
+    .catch(e => console.error('❌ שגיאה בלוח משמרות:', e));
+
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'saveAvailability',
+            availability: convertAvailabilityDataToObject()
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(d => console.log('✅ זמינות נשמרה:', d))
+    .catch(e => console.error('❌ שגיאה בשמירת זמינות:', e));
+
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'updateSettings',
+            settings: systemSettings
+        }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(d => console.log('✅ הגדרות נשמרו:', d))
+    .catch(e => console.error('❌ שגיאה בשמירת הגדרות:', e));
+}
+function convertAvailabilityDataToObject() {
+    const result = {};
+    for (const userId in availabilityData) {
+        const data = availabilityData[userId];
+        result[userId] = {
+            unavailableShifts: Array.from(data.unavailableShifts || []),
+            submitted: data.submitted || false,
+            submittedAt: data.submittedAt || null
+        };
+    }
+    return result;
+}
+
         // Apps Script URL for data storage
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMtkba6qzP61YlCgU3LmyiHkMZ7vFpR_pgnT9W5iwEu91T0m1U07gPC6djQQogul3E/exec';
 
