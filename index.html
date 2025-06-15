@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html dir="rtl" lang="he">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>מערכת ניהול משמרות משופרת</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>מערכת ניהול משמרות משופרת</title>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -550,281 +551,248 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 מערכת ניהול משמרות מתקדמת</h1>
-            <div class="upgrade-badge">⭐ גרסה משודרגת עם ניהול משימות דינמי ⭐</div>
-            <p style="color: #34495e; font-weight: 700; margin-top: 10px;">שבצק הגמ"ר אלון מורה</p>
-        </div>
-
-        <!-- Login Form -->
-        <div class="login-form" id="loginForm">
-            <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50; font-weight: 700;">כניסה למערכת</h2>
-            
-            <div class="form-group">
-                <label>בחר משתמש:</label>
-                <select id="quickLogin" onchange="handleLoginTypeChange()">
-                    <option value="">בחר משתמש...</option>
-                    <option value="admin">מנהל כללי</option>
-                    <option value="userList">בחר מרשימת משתמשים</option>
-                    <option value="manual">כניסה ידנית</option>
-                </select>
-            </div>
-
-            <div id="userListSelect" style="display: none;">
-                <div class="form-group">
-                    <label>בחר משתמש קיים:</label>
-                    <select id="existingUsers">
-                        <option value="">בחר משתמש...</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="manualLogin" style="display: none;">
-                <div class="form-group">
-                    <label>שם פרטי:</label>
-                    <input id="firstName" placeholder="הכנס שם פרטי" type="text"/>
-                </div>
-                <div class="form-group">
-                    <label>שם משפחה:</label>
-                    <input id="lastName" placeholder="הכנס שם משפחה" type="text"/>
-                </div>
-                <div class="form-group">
-                    <label>מספר טלפון:</label>
-                    <input id="phone" placeholder="הכנס מספר טלפון" type="tel"/>
-                </div>
-                <div class="form-group">
-                    <label>סוג משתמש:</label>
-                    <select id="userType">
-                        <option value="חייל">חייל</option>
-                        <option value="צופה">צופה</option>
-                        <option value="מנהל">מנהל</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn" onclick="login()">כניסה למערכת</button>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="dashboard" id="dashboard">
-            <button class="logout-btn" onclick="logout()">יציאה</button>
-            <div class="user-info" id="userInfo"></div>
-            
-            <div class="nav-tabs" id="navigationTabs">
-                <button class="nav-tab active" id="dashboardNavTab" onclick="showTab('dashboard')">📊 לוח בקרה</button>
-                <button class="nav-tab" id="scheduleNavTab" onclick="showTab('schedule')">📅 לוח משמרות</button>
-                <button class="nav-tab" id="availabilityNavTab" onclick="showTab('availability')" style="display: none;">⏰ זמינות</button>
-                <button class="nav-tab" id="reportsNavTab" onclick="showTab('reports')" style="display: none;">📈 דוחות</button>
-                <button class="nav-tab" id="managementNavTab" onclick="showTab('management')" style="display: none;">⚙️ ניהול</button>
-                <button class="nav-tab" id="taskManagementNavTab" onclick="showTab('taskManagement')" style="display: none;">🔧 ניהול משימות</button>
-                <button class="nav-tab" id="availabilityMgmtNavTab" onclick="showTab('availabilityMgmt')" style="display: none;">👥 ניהול זמינות</button>
-                <button class="nav-tab" id="settingsNavTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
-            </div>
-
-            <!-- Dashboard Tab -->
-            <div class="tab-content active" id="dashboardTab">
-                <h2>📊 לוח בקרה - סטטיסטיקות מתקדמות</h2>
-                
-                <div class="stats-grid" id="mainStats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalSoldiers">0</div>
-                        <div class="stat-label">סה״כ חיילים</div>
+<div class="container">
+<div class="header">
+<h1>🚀 מערכת ניהול משמרות מתקדמת</h1>
+<div class="upgrade-badge">⭐ גרסה משודרגת עם ניהול משימות דינמי ⭐</div>
+<p style="color: #34495e; font-weight: 700; margin-top: 10px;">שבצק הגמ"ר אלון מורה</p>
+</div>
+<!-- Login Form -->
+<div class="login-form" id="loginForm">
+<h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50; font-weight: 700;">כניסה למערכת</h2>
+<div class="form-group">
+<label>בחר משתמש:</label>
+<select id="quickLogin" onchange="handleLoginTypeChange()">
+<option value="">בחר משתמש...</option>
+<option value="admin">מנהל כללי</option>
+<option value="userList">בחר מרשימת משתמשים</option>
+<option value="manual">כניסה ידנית</option>
+</select>
+</div>
+<div id="userListSelect" style="display: none;">
+<div class="form-group">
+<label>בחר משתמש קיים:</label>
+<select id="existingUsers">
+<option value="">בחר משתמש...</option>
+</select>
+</div>
+</div>
+<div id="manualLogin" style="display: none;">
+<div class="form-group">
+<label>שם פרטי:</label>
+<input id="firstName" placeholder="הכנס שם פרטי" type="text"/>
+</div>
+<div class="form-group">
+<label>שם משפחה:</label>
+<input id="lastName" placeholder="הכנס שם משפחה" type="text"/>
+</div>
+<div class="form-group">
+<label>מספר טלפון:</label>
+<input id="phone" placeholder="הכנס מספר טלפון" type="tel"/>
+</div>
+<div class="form-group">
+<label>סוג משתמש:</label>
+<select id="userType">
+<option value="חייל">חייל</option>
+<option value="צופה">צופה</option>
+<option value="מנהל">מנהל</option>
+</select>
+</div>
+</div>
+<button class="btn" onclick="login()">כניסה למערכת</button>
+</div>
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+<button class="logout-btn" onclick="logout()">יציאה</button>
+<div class="user-info" id="userInfo"></div>
+<div class="nav-tabs" id="navigationTabs">
+<button class="nav-tab active" id="dashboardNavTab" onclick="showTab('dashboard')">📊 לוח בקרה</button>
+<button class="nav-tab" id="scheduleNavTab" onclick="showTab('schedule')">📅 לוח משמרות</button>
+<button class="nav-tab" id="availabilityNavTab" onclick="showTab('availability')" style="display: none;">⏰ זמינות</button>
+<button class="nav-tab" id="reportsNavTab" onclick="showTab('reports')" style="display: none;">📈 דוחות</button>
+<button class="nav-tab" id="managementNavTab" onclick="showTab('management')" style="display: none;">⚙️ ניהול</button>
+<button class="nav-tab" id="taskManagementNavTab" onclick="showTab('taskManagement')" style="display: none;">🔧 ניהול משימות</button>
+<button class="nav-tab" id="availabilityMgmtNavTab" onclick="showTab('availabilityMgmt')" style="display: none;">👥 ניהול זמינות</button>
+<button class="nav-tab" id="settingsNavTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
+</div>
+<!-- Dashboard Tab -->
+<div class="tab-content active" id="dashboardTab">
+<h2>📊 לוח בקרה - סטטיסטיקות מתקדמות</h2>
+<div class="stats-grid" id="mainStats">
+<div class="stat-card">
+<div class="stat-number" id="totalSoldiers">0</div>
+<div class="stat-label">סה״כ חיילים</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="totalShifts">0</div>
+<div class="stat-label">משמרות מאויישות</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="availabilitySubmitted">0</div>
+<div class="stat-label">שלחו זמינות</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="coveragePercentage">0%</div>
+<div class="stat-label">כיסוי משמרות</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="totalTasks">3</div>
+<div class="stat-label">סה״כ משימות</div>
+</div>
+</div>
+<div class="chart-container">
+<h3>📈 התפלגות משמרות מפורטת לפי חייל</h3>
+<div class="user-stats-detailed" id="detailedUserStats">טוען נתונים...</div>
+</div>
+<div class="chart-container">
+<h3>🎯 המלצות לשיפור</h3>
+<div id="recommendations">טוען המלצות...</div>
+</div>
+</div>
+<!-- Schedule Tab -->
+<div class="tab-content" id="scheduleTab">
+<h2>📅 לוח משמרות שבועי</h2>
+<div id="managerButtons" style="margin-bottom: 15px; display: none;">
+<button class="btn btn-small btn-success" onclick="autoSchedule()">🎯 שיבוץ אוטומטי</button>
+<button class="btn btn-small btn-warning" onclick="optimizeSchedule()">🔧 אופטימיזציה</button>
+<button class="btn btn-small btn-danger" onclick="clearSchedule()">🗑️ נקה לוח</button>
+</div>
+<div id="soldierButtons" style="margin-bottom: 15px; display: none;">
+<button class="btn btn-small" onclick="showMyShifts()">👤 המשמרות שלי</button>
+</div>
+<div id="viewerButtons" style="margin-bottom: 15px; display: none;">
+<div class="alert alert-info">
+<strong>מצב צפייה בלבד</strong> - ניתן לצפות בלוח המשמרות ללא אפשרות עריכה
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalShifts">0</div>
-                        <div class="stat-label">משמרות מאויישות</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="availabilitySubmitted">0</div>
-                        <div class="stat-label">שלחו זמינות</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="coveragePercentage">0%</div>
-                        <div class="stat-label">כיסוי משמרות</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalTasks">3</div>
-                        <div class="stat-label">סה״כ משימות</div>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <h3>📈 התפלגות משמרות מפורטת לפי חייל</h3>
-                    <div class="user-stats-detailed" id="detailedUserStats">טוען נתונים...</div>
-                </div>
-
-                <div class="chart-container">
-                    <h3>🎯 המלצות לשיפור</h3>
-                    <div id="recommendations">טוען המלצות...</div>
-                </div>
-            </div>
-
-            <!-- Schedule Tab -->
-            <div class="tab-content" id="scheduleTab">
-                <h2>📅 לוח משמרות שבועי</h2>
-                <div id="managerButtons" style="margin-bottom: 15px; display: none;">
-                    <button class="btn btn-small btn-success" onclick="autoSchedule()">🎯 שיבוץ אוטומטי</button>
-                    <button class="btn btn-small btn-warning" onclick="optimizeSchedule()">🔧 אופטימיזציה</button>
-                    <button class="btn btn-small btn-danger" onclick="clearSchedule()">🗑️ נקה לוח</button>
-                </div>
-                <div id="soldierButtons" style="margin-bottom: 15px; display: none;">
-                    <button class="btn btn-small" onclick="showMyShifts()">👤 המשמרות שלי</button>
-                </div>
-                <div id="viewerButtons" style="margin-bottom: 15px; display: none;">
-                    <div class="alert alert-info">
-                        <strong>מצב צפייה בלבד</strong> - ניתן לצפות בלוח המשמרות ללא אפשרות עריכה
-                    </div>
-                </div>
-                <div id="scheduleContainer"></div>
-            </div>
-
-            <!-- Task Management Tab -->
-            <div class="tab-content" id="taskManagementTab">
-                <h2>🔧 ניהול משימות דינמי</h2>
-                
-                <div class="task-management-panel">
-                    <h3>📋 הוספת משימה חדשה</h3>
-                    <div class="user-form">
-                        <input id="newTaskName" placeholder="שם המשימה (למשל: סייר נוסף)" type="text"/>
-                        <select id="newTaskType">
-                            <option value="flexible">משימה גמישה</option>
-                            <option value="fixed">משימה קבועה</option>
-                        </select>
-                        <input id="newTaskSoldiers" placeholder="מספר חיילים נדרש (ברירת מחדל: 1)" type="number" min="1" max="5" value="1"/>
-                        <button class="btn btn-small btn-success" onclick="addTask()">➕ הוסף משימה</button>
-                    </div>
-                    
-                    <div class="alert alert-info">
-                        <strong>הסבר:</strong><br>
-                        • <strong>משימה קבועה:</strong> לא ניתן למחוק (כמו ש.ג)<br>
-                        • <strong>משימה גמישה:</strong> ניתן למחוק ולערוך (כמו סייר, סייר 4 שעות)<br>
+</div>
+<div id="scheduleContainer"></div>
+</div>
+<!-- Task Management Tab -->
+<div class="tab-content" id="taskManagementTab">
+<h2>🔧 ניהול משימות דינמי</h2>
+<div class="task-management-panel">
+<h3>📋 הוספת משימה חדשה</h3>
+<div class="user-form">
+<input id="newTaskName" placeholder="שם המשימה (למשל: סייר נוסף)" type="text"/>
+<select id="newTaskType">
+<option value="flexible">משימה גמישה</option>
+<option value="fixed">משימה קבועה</option>
+</select>
+<input id="newTaskSoldiers" max="5" min="1" placeholder="מספר חיילים נדרש (ברירת מחדל: 1)" type="number" value="1"/>
+<button class="btn btn-small btn-success" onclick="addTask()">➕ הוסף משימה</button>
+</div>
+<div class="alert alert-info">
+<strong>הסבר:</strong><br/>
+                        • <strong>משימה קבועה:</strong> לא ניתן למחוק (כמו ש.ג)<br/>
+                        • <strong>משימה גמישה:</strong> ניתן למחוק ולערוך (כמו סייר, סייר 4 שעות)<br/>
                         • מספר החיילים קובע כמה עמודות יתווספו ללוח המשמרות
                     </div>
-                </div>
-
-                <div class="task-management-panel">
-                    <h3>📝 רשימת משימות קיימות</h3>
-                    <div class="task-list" id="tasksList">
-                        <!-- Tasks will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Availability Tab -->
-            <div class="tab-content" id="availabilityTab">
-                <h2>⏰ זמינות למשמרות</h2>
-                <div id="availabilitySection">
-                    <div class="alert alert-success" id="availabilityStatus">טוען מצב זמינות...</div>
-                    <div class="alert alert-info" style="margin-bottom: 20px;" id="availabilityInstructions">
-                        <strong>הוראות מילוי זמינות:</strong> 
-                        <br>• ברירת מחדל: כל המשמרות מסומנות כ"זמין" (ירוק) ✅
-                        <br>• לחץ על משמרת כדי לסמן אותה כ"לא זמין" (אדום) ❌
-                        <br>• ניתן לסמן עד 7 משמרות כלא זמין
-                        <br>• לחץ שוב כדי לשנות חזרה לזמין
-                        <br><span id="selectedCount" style="font-weight: bold; color: #2196f3;">נבחרו: 0 מתוך 7 משמרות כלא זמין</span>
-                    </div>
-                    <div id="availabilityForm"></div>
-                    <div style="text-align: center; margin-top: 20px;" id="submitButtonContainer">
-                        <button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports Tab -->
-            <div class="tab-content" id="reportsTab">
-                <h2>📈 דוחות מתקדמים</h2>
-                
-                <div class="chart-container">
-                    <h3>📊 דוח כללי</h3>
-                    <div id="reportsDisplay">טוען דוחות...</div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn btn-small" onclick="generateFullReport()">📄 צור דוח מלא</button>
-                    <button class="btn btn-small" onclick="exportReports()">📤 יצא דוחות</button>
-                </div>
-            </div>
-
-            <!-- Management Tab -->
-            <div class="tab-content" id="managementTab">
-                <h2>⚙️ ניהול המערכת</h2>
-                
-                <div class="settings-panel">
-                    <h3>👥 הוספת משתמשים</h3>
-                    <div class="user-form">
-                        <input id="newFirstName" placeholder="שם פרטי" type="text"/>
-                        <input id="newLastName" placeholder="שם משפחה" type="text"/>
-                        <input id="newPhone" placeholder="מספר טלפון" type="tel"/>
-                        <input id="newPassword" placeholder="סיסמה (אופציונלי)" type="password"/>
-                        <select id="newUserType">
-                            <option value="חייל">חייל</option>
-                            <option value="צופה">צופה</option>
-                            <option value="מנהל">מנהל</option>
-                        </select>
-                        <button class="btn btn-small" onclick="addUser()">הוסף משתמש</button>
-                    </div>
-                </div>
-
-                <div>
-                    <h3>📋 רשימת משתמשים</h3>
-                    <div class="user-list" id="usersList"></div>
-                </div>
-            </div>
-
-            <!-- Availability Management Tab -->
-            <div class="tab-content" id="availabilityMgmtTab">
-                <h2>👥 ניהול זמינות חיילים</h2>
-                
-                <div class="settings-panel">
-                    <h3>🔧 הגדרות זמינות נוכחיות</h3>
-                    <div class="form-group">
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="availabilityOpenToggle" onchange="toggleAvailabilityStatus()"/>
+</div>
+<div class="task-management-panel">
+<h3>📝 רשימת משימות קיימות</h3>
+<div class="task-list" id="tasksList">
+<!-- Tasks will be populated here -->
+</div>
+</div>
+</div>
+<!-- Availability Tab -->
+<div class="tab-content" id="availabilityTab">
+<h2>⏰ זמינות למשמרות</h2>
+<div id="availabilitySection">
+<div class="alert alert-success" id="availabilityStatus">טוען מצב זמינות...</div>
+<div class="alert alert-info" id="availabilityInstructions" style="margin-bottom: 20px;">
+<strong>הוראות מילוי זמינות:</strong>
+<br/>• ברירת מחדל: כל המשמרות מסומנות כ"זמין" (ירוק) ✅
+                        <br/>• לחץ על משמרת כדי לסמן אותה כ"לא זמין" (אדום) ❌
+                        <br/>• ניתן לסמן עד 7 משמרות כלא זמין
+                        <br/>• לחץ שוב כדי לשנות חזרה לזמין
+                        <br/><span id="selectedCount" style="font-weight: bold; color: #2196f3;">נבחרו: 0 מתוך 7 משמרות כלא זמין</span>
+</div>
+<div id="availabilityForm"></div>
+<div id="submitButtonContainer" style="text-align: center; margin-top: 20px;">
+<button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
+</div>
+</div>
+</div>
+<!-- Reports Tab -->
+<div class="tab-content" id="reportsTab">
+<h2>📈 דוחות מתקדמים</h2>
+<div class="chart-container">
+<h3>📊 דוח כללי</h3>
+<div id="reportsDisplay">טוען דוחות...</div>
+</div>
+<div style="text-align: center; margin-top: 20px;">
+<button class="btn btn-small" onclick="generateFullReport()">📄 צור דוח מלא</button>
+<button class="btn btn-small" onclick="exportReports()">📤 יצא דוחות</button>
+</div>
+</div>
+<!-- Management Tab -->
+<div class="tab-content" id="managementTab">
+<h2>⚙️ ניהול המערכת</h2>
+<div class="settings-panel">
+<h3>👥 הוספת משתמשים</h3>
+<div class="user-form">
+<input id="newFirstName" placeholder="שם פרטי" type="text"/>
+<input id="newLastName" placeholder="שם משפחה" type="text"/>
+<input id="newPhone" placeholder="מספר טלפון" type="tel"/>
+<input id="newPassword" placeholder="סיסמה (אופציונלי)" type="password"/>
+<select id="newUserType">
+<option value="חייל">חייל</option>
+<option value="צופה">צופה</option>
+<option value="מנהל">מנהל</option>
+</select>
+<button class="btn btn-small" onclick="addUser()">הוסף משתמש</button>
+</div>
+</div>
+<div>
+<h3>📋 רשימת משתמשים</h3>
+<div class="user-list" id="usersList"></div>
+</div>
+</div>
+<!-- Availability Management Tab -->
+<div class="tab-content" id="availabilityMgmtTab">
+<h2>👥 ניהול זמינות חיילים</h2>
+<div class="settings-panel">
+<h3>🔧 הגדרות זמינות נוכחיות</h3>
+<div class="form-group">
+<label style="display: flex; align-items: center; gap: 10px;">
+<input id="availabilityOpenToggle" onchange="toggleAvailabilityStatus()" type="checkbox"/>
                             פתח/סגור זמינות לכל החיילים
                         </label>
-                    </div>
-                    <div style="margin: 15px 0;">
-                        <button class="btn btn-small btn-success" onclick="openAvailabilityForAll()">🟢 פתח זמינות לכולם</button>
-                        <button class="btn btn-small btn-danger" onclick="closeAvailabilityForAll()">🔴 סגור זמינות</button>
-                        <button class="btn btn-small btn-warning" onclick="remindAvailability()">📢 שלח תזכורות</button>
-                    </div>
-                    
-                    <div class="alert alert-info" id="availabilitySystemStatus">
-                        <strong>מצב מערכת הזמינות:</strong> <span id="systemAvailabilityStatus">טוען...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings Tab -->
-            <div class="tab-content" id="settingsTab">
-                <h2>🔧 הגדרות מערכת</h2>
-                
-                <div class="settings-panel">
-                    <h3>🎯 כללי שיבוץ אוטומטי</h3>
-                    <div class="form-group">
-                        <label>מספר משמרות מקסימלי לחייל בשבוע:</label>
-                        <input id="maxShiftsPerWeek" type="number" value="6" min="1" max="28"/>
-                    </div>
-                    <button class="btn btn-small" onclick="saveSettings()">💾 שמור הגדרות</button>
-                </div>
-
-                <div class="settings-panel">
-                    <h3>🔧 כלים מתקדמים</h3>
-                    <div style="margin: 15px 0;">
-                        <button class="btn btn-small" onclick="generateTestData()">🧪 צור נתוני בדיקה</button>
-                        <button class="btn btn-small btn-warning" onclick="backupData()">💾 גבה נתונים</button>
-                        <button class="btn btn-small btn-danger" onclick="clearAllData()">🗑️ נקה נתונים</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec';
-</script>
-
+</div>
+<div style="margin: 15px 0;">
+<button class="btn btn-small btn-success" onclick="openAvailabilityForAll()">🟢 פתח זמינות לכולם</button>
+<button class="btn btn-small btn-danger" onclick="closeAvailabilityForAll()">🔴 סגור זמינות</button>
+<button class="btn btn-small btn-warning" onclick="remindAvailability()">📢 שלח תזכורות</button>
+</div>
+<div class="alert alert-info" id="availabilitySystemStatus">
+<strong>מצב מערכת הזמינות:</strong> <span id="systemAvailabilityStatus">טוען...</span>
+</div>
+</div>
+</div>
+<!-- Settings Tab -->
+<div class="tab-content" id="settingsTab">
+<h2>🔧 הגדרות מערכת</h2>
+<div class="settings-panel">
+<h3>🎯 כללי שיבוץ אוטומטי</h3>
+<div class="form-group">
+<label>מספר משמרות מקסימלי לחייל בשבוע:</label>
+<input id="maxShiftsPerWeek" max="28" min="1" type="number" value="6"/>
+</div>
+<button class="btn btn-small" onclick="saveSettings()">💾 שמור הגדרות</button>
+</div>
+<div class="settings-panel">
+<h3>🔧 כלים מתקדמים</h3>
+<div style="margin: 15px 0;">
+<button class="btn btn-small" onclick="generateTestData()">🧪 צור נתוני בדיקה</button>
+<button class="btn btn-small btn-warning" onclick="backupData()">💾 גבה נתונים</button>
+<button class="btn btn-small btn-danger" onclick="clearAllData()">🗑️ נקה נתונים</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
         // Global variables
         console.log('🚀 מערכת ניהול משמרות מתחילה...');
 
@@ -1318,7 +1286,6 @@ const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5P
             };
 
             users.push(newUser);
-    saveUserToServer(newUser);
 
             // אתחול נתוני זמינות עבור חייל חדש
             if (userType === 'חייל') {
@@ -2352,30 +2319,89 @@ const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5P
             console.log('✅ מערכת ניהול משמרות משודרגת מוכנה!');
             showNotification('ברוכים הבאים למערכת המשודרגת עם ניהול משימות דינמי! 🎉', 'success');
         });
+    </script>
+<script>
+const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec';
 
-function saveUserToServer(user) {
+function sendDataToScript(action, data) {
   fetch(APP_SCRIPT_URL, {
     method: 'POST',
-    body: JSON.stringify({
-      action: 'saveUser',
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phone: user.phone,
-      type: user.type,
-      password: user.password || '',
-      createdAt: user.createdAt || new Date().toISOString()
-    }),
+    body: JSON.stringify({ action, ...data }),
     headers: { 'Content-Type': 'application/json' }
   })
-  .then(res => res.json())
-  .then(data => {
-    console.log('✅ המשתמש נשמר בגיליון:', data);
-  })
-  .catch(err => {
-    console.error('❌ שגיאה בשמירת המשתמש:', err);
-  });
+    .then(r => r.json())
+    .then(res => console.log('✅ Response:', res))
+    .catch(err => console.error('❌ Error sending data:', err));
 }
-    </script>
-</body>
+
+function loadFromScript() {
+  fetch(`${APP_SCRIPT_URL}?action=loadAllData`)
+    .then(r => r.json())
+    .then(res => {
+      if (res.success) {
+        const data = res.data;
+        users = data.users;
+        scheduleData = data.schedule;
+        availabilityData = {};
+
+        Object.entries(data.availability).forEach(([id, a]) => {
+          availabilityData[id] = {
+            unavailableShifts: new Set(a.unavailableShifts),
+            submitted: a.submitted,
+            submittedAt: a.submittedAt
+          };
+        });
+
+        systemSettings = data.settings;
+        taskSystem.tasks = data.tasks;
+        updateLoginUsersList?.();
+        console.log('✅ Loaded from Google Sheets');
+      } else {
+        console.error('❌ Failed loading data:', res);
+      }
+    })
+    .catch(err => console.error('❌ Fetch error:', err));
+}
+
+window.onload = () => {
+  loadFromScript();
+};
+
+
+
+function saveData() {
+  if (!users || !scheduleData || !systemSettings || !taskSystem || !availabilityData) {
+    console.error('❌ Missing data for saving');
+    return;
+  }
+
+  // שמירת לוח משמרות
+  sendDataToScript('saveFullSchedule', { schedule: scheduleData });
+
+  // שמירת הגדרות מערכת
+  sendDataToScript('saveSettings', { settings: systemSettings });
+
+  // שמירת משימות
+  sendDataToScript('saveTasks', { tasks: taskSystem.tasks });
+
+  // שמירת משתמשים
+  users.forEach(user => {
+    if (user.type !== 'admin') {
+      sendDataToScript('saveUser', user);
+    }
+  });
+
+  // שמירת זמינות
+  Object.entries(availabilityData).forEach(([id, data]) => {
+    sendDataToScript('saveAvailability', {
+      userId: id,
+      unavailableShifts: Array.from(data.unavailableShifts || []),
+      submitted: data.submitted || false,
+      timestamp: data.submittedAt || new Date().toISOString()
+    });
+  });
+
+  console.log('✅ All data sent to Google Sheets.');
+}
+</script></body>
 </html>
