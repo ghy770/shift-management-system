@@ -780,20 +780,6 @@
 <input id="maxShiftsPerWeek" max="28" min="1" type="number" value="6"/>
 </div>
 <button class="btn btn-small" onclick="saveSettings()">💾 שמור הגדרות</button>
-<div style="margin-top: 20px;">
-<h4>🧰 גיבוי וייבוא JSON</h4>
-<button class="btn btn-small btn-success" onclick="exportDataAsJSON()">📤 ייצא לקובץ JSON</button>
-<input accept=".json" onchange="importDataFromJSONFile(event)" style="margin-top: 10px;" type="file"/>
-</div>
-<div style="margin-top: 20px;">
-<h4>🧰 גיבוי ושחזור</h4>
-<button class="btn btn-small btn-success" onclick="exportDataAsJSON()">📤 ייצוא JSON</button>
-<input accept=".json" onchange="importDataFromJSONFile(event)" style="margin-top: 10px;" type="file"/>
-<button class="btn btn-small btn-warning" onclick="saveBackupToLocalStorage()" style="margin-top: 10px;">💾 שמור גיבוי מקומי</button>
-<button class="btn btn-small btn-danger" onclick="backupToGoogleDrive()" style="margin-top: 10px;">📤 שלח ל־Google Drive</button>
-</div>
-
-<button class="btn btn-small btn-info" onclick="restoreFromGoogleDrive()" style="margin-top: 10px;">📥 שחזר מ־Google Drive</button>
 </div>
 <div class="settings-panel">
 <h3>🔧 כלים מתקדמים</h3>
@@ -1300,6 +1286,7 @@
             };
 
             users.push(newUser);
+    saveUserToServer(newUser);
 
             // אתחול נתוני זמינות עבור חייל חדש
             if (userType === 'חייל') {
@@ -2333,261 +2320,88 @@
             console.log('✅ מערכת ניהול משמרות משודרגת מוכנה!');
             showNotification('ברוכים הבאים למערכת המשודרגת עם ניהול משימות דינמי! 🎉', 'success');
         });
+
+function saveUserToServer(user) {
+  fetch(APP_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'saveUser',
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      type: user.type,
+      password: user.password || '',
+      createdAt: user.createdAt || new Date().toISOString()
+    }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log('✅ המשתמש נשמר בגיליון:', data);
+  })
+  .catch(err => {
+    console.error('❌ שגיאה בשמירת המשתמש:', err);
+  });
+}
     </script>
+
 <script>
-const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec';
+const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec";
 
-function sendDataToScript(action, data) {
-  fetch(APP_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action, ...data }),
-    headers: { 'Content-Type': 'application/json' }
-  })
-    .then(r => r.json())
-    .then(res => console.log('✅ Response:', res))
-    .catch(err => console.error('❌ Error sending data:', err));
-}
-
-function loadFromScript() {
-  fetch(`${APP_SCRIPT_URL}?action=loadAllData`)
-    .then(r => r.json())
-    .then(res => {
-      if (res.success) {
-        const data = res.data;
-        users = data.users;
-        scheduleData = data.schedule;
-        availabilityData = {};
-
-        Object.entries(data.availability).forEach(([id, a]) => {
-          availabilityData[id] = {
-            unavailableShifts: new Set(a.unavailableShifts),
-            submitted: a.submitted,
-            submittedAt: a.submittedAt
-          };
-        });
-
-        systemSettings = data.settings;
-        taskSystem.tasks = data.tasks;
-        updateLoginUsersList?.();
-        console.log('✅ Loaded from Google Sheets');
-      } else {
-        console.error('❌ Failed loading data:', res);
-      }
-    })
-    .catch(err => console.error('❌ Fetch error:', err));
-}
-
-window.onload = () => {
-  loadFromScript();
-  startAutoBackup(5);
-};
-
-
-
-function saveData() {
-  if (!users || !scheduleData || !systemSettings || !taskSystem || !availabilityData) {
-    console.error('❌ Missing data for saving');
-    return;
-  }
-
-  // שמירת לוח משמרות
-  sendDataToScript('saveFullSchedule', { schedule: scheduleData });
-
-  // שמירת הגדרות מערכת
-  sendDataToScript('saveSettings', { settings: systemSettings });
-
-  // שמירת משימות
-  sendDataToScript('saveTasks', { tasks: taskSystem.tasks });
-
-  // שמירת משתמשים
-  users.forEach(user => {
-    if (user.type !== 'admin') {
-      sendDataToScript('saveUser', user);
-    }
-  });
-
-  // שמירת זמינות
-  Object.entries(availabilityData).forEach(([id, data]) => {
-    sendDataToScript('saveAvailability', {
-      userId: id,
-      unavailableShifts: Array.from(data.unavailableShifts || []),
-      submitted: data.submitted || false,
-      timestamp: data.submittedAt || new Date().toISOString()
-    });
-  });
-
-  console.log('✅ All data sent to Google Sheets.');
-}
-
-
-
-function exportDataAsJSON() {
-  const fullData = {
-    users,
-    scheduleData,
-    availabilityData,
-    systemSettings,
-    taskSystem
-  };
-  const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'shift_management_backup.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function importDataFromJSONFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.users) users = data.users;
-      if (data.scheduleData) scheduleData = data.scheduleData;
-      if (data.availabilityData) {
-        availabilityData = {};
-        Object.entries(data.availabilityData).forEach(([id, val]) => {
-          availabilityData[id] = {
-            unavailableShifts: new Set(val.unavailableShifts),
-            submitted: val.submitted,
-            submittedAt: val.submittedAt
-          };
-        });
-      }
-      if (data.systemSettings) systemSettings = data.systemSettings;
-      if (data.taskSystem) taskSystem = data.taskSystem;
-      showNotification('✅ נתונים יובאו בהצלחה מהקובץ!', 'success');
-      updateLoginUsersList?.();
-      generateScheduleTable?.();
-    } catch (err) {
-      console.error('❌ Error parsing imported JSON:', err);
-      showNotification('❌ כשל בייבוא נתונים: ' + err.message, 'error');
-    }
-  };
-  reader.readAsText(file);
-}
-
-
-
-function saveBackupToLocalStorage() {
-  const fullData = {
-    users,
-    scheduleData,
-    availabilityData,
-    systemSettings,
-    taskSystem
-  };
-  localStorage.setItem('shiftManagementBackup', JSON.stringify(fullData));
-  console.log('✅ Backup saved to LocalStorage');
-}
-
-function restoreBackupFromLocalStorage() {
-  const json = localStorage.getItem('shiftManagementBackup');
-  if (!json) return;
+async function sendToScript(action, data = {}) {
   try {
-    const data = JSON.parse(json);
-    if (data.users) users = data.users;
-    if (data.scheduleData) scheduleData = data.scheduleData;
-    if (data.availabilityData) {
-      availabilityData = {};
-      Object.entries(data.availabilityData).forEach(([id, val]) => {
-        availabilityData[id] = {
-          unavailableShifts: new Set(val.unavailableShifts),
-          submitted: val.submitted,
-          submittedAt: val.submittedAt
-        };
-      });
-    }
-    if (data.systemSettings) systemSettings = data.systemSettings;
-    if (data.taskSystem) taskSystem = data.taskSystem;
-    updateLoginUsersList?.();
-    generateScheduleTable?.();
-    showNotification('✅ שוחזר גיבוי מקומי!', 'success');
+    const res = await fetch(APP_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action, ...data })
+    });
+    return await res.json();
   } catch (err) {
-    console.error('❌ Error restoring backup:', err);
+    console.error("❌ Error sending to script:", err);
+    return { success: false, error: err.toString() };
   }
 }
 
-function backupToGoogleDrive() {
-  const fullData = {
-    users,
-    scheduleData,
-    availabilityData: Object.fromEntries(Object.entries(availabilityData).map(([id, val]) => [
-      id, {
-        unavailableShifts: Array.from(val.unavailableShifts),
-        submitted: val.submitted,
-        submittedAt: val.submittedAt
-      }
-    ])),
-    systemSettings,
-    taskSystem
-  };
-
-  fetch(APP_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'saveBackupToDrive', ...fullData }),
-    headers: { 'Content-Type': 'application/json' }
-  })
-    .then(r => r.json())
-    .then(res => {
-      if (res.success) {
-        showNotification(`✅ הגיבוי נשמר בדרייב: <a href="${res.url}" target="_blank">צפה בקובץ</a>`, 'success');
-      } else {
-        throw new Error(res.error);
-      }
-    })
-    .catch(err => {
-      showNotification('❌ שגיאה בשליחת הגיבוי ל־Google Drive: ' + err.message, 'error');
-    });
+async function loadAllDataFromScript() {
+  try {
+    const res = await fetch(APP_SCRIPT_URL + "?action=loadAllData");
+    const data = await res.json();
+    if (data.success) {
+      users = data.data.users || [];
+      availabilityData = data.data.availability || {};
+      scheduleData = data.data.schedule || {};
+      systemSettings = data.data.settings || {};
+      taskSystem = { tasks: data.data.tasks || [] };
+      console.log("✅ Data loaded from Google Sheets");
+      updateUIFromData();
+    } else {
+      console.error("❌ Failed to load data:", data.error);
+    }
+  } catch (err) {
+    console.error("❌ Error loading data from script:", err);
+  }
 }
 
-// Load local backup first, then Google Sheets
-window.onload = () => {
-  restoreBackupFromLocalStorage();
-  loadFromScript();
-  startAutoBackup(5);
-};
-
-
-
-function restoreFromGoogleDrive() {
-  fetch(`${APP_SCRIPT_URL}?action=loadLatestBackupFromDrive`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.users) users = data.users;
-      if (data.scheduleData) scheduleData = data.scheduleData;
-      if (data.availabilityData) {
-        availabilityData = {};
-        Object.entries(data.availabilityData).forEach(([id, val]) => {
-          availabilityData[id] = {
-            unavailableShifts: new Set(val.unavailableShifts),
-            submitted: val.submitted,
-            submittedAt: val.submittedAt
-          };
-        });
-      }
-      if (data.systemSettings) systemSettings = data.systemSettings;
-      if (data.taskSystem) taskSystem = data.taskSystem;
-      updateLoginUsersList?.();
-      generateScheduleTable?.();
-      showNotification('✅ נתונים שוחזרו מה־Drive!', 'success');
-    })
-    .catch(err => {
-      console.error('❌ Error restoring from Drive:', err);
-      showNotification('❌ שחזור מה־Drive נכשל: ' + err.message, 'error');
-    });
+function saveUserToScript(user) {
+  return sendToScript("saveUser", user);
 }
 
-function startAutoBackup(intervalMinutes = 5) {
-  setInterval(() => {
-    backupToGoogleDrive();
-  }, intervalMinutes * 60 * 1000);
-  console.log(`📦 גיבוי אוטומטי יבוצע כל ${intervalMinutes} דקות`);
+function saveAvailabilityToScript(data) {
+  return sendToScript("saveAvailability", data);
 }
-</script></body>
+
+function saveFullScheduleToScript(schedule) {
+  return sendToScript("saveFullSchedule", { schedule });
+}
+
+function saveSettingsToScript(settings) {
+  return sendToScript("saveSettings", { settings });
+}
+
+function saveTasksToScript(tasks) {
+  return sendToScript("saveTasks", { tasks });
+}
+</script>
+</body>
 </html>
