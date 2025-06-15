@@ -780,6 +780,20 @@
 <input id="maxShiftsPerWeek" max="28" min="1" type="number" value="6"/>
 </div>
 <button class="btn btn-small" onclick="saveSettings()">💾 שמור הגדרות</button>
+<div style="margin-top: 20px;">
+<h4>🧰 גיבוי וייבוא JSON</h4>
+<button class="btn btn-small btn-success" onclick="exportDataAsJSON()">📤 ייצא לקובץ JSON</button>
+<input accept=".json" onchange="importDataFromJSONFile(event)" style="margin-top: 10px;" type="file"/>
+</div>
+<div style="margin-top: 20px;">
+<h4>🧰 גיבוי ושחזור</h4>
+<button class="btn btn-small btn-success" onclick="exportDataAsJSON()">📤 ייצוא JSON</button>
+<input accept=".json" onchange="importDataFromJSONFile(event)" style="margin-top: 10px;" type="file"/>
+<button class="btn btn-small btn-warning" onclick="saveBackupToLocalStorage()" style="margin-top: 10px;">💾 שמור גיבוי מקומי</button>
+<button class="btn btn-small btn-danger" onclick="backupToGoogleDrive()" style="margin-top: 10px;">📤 שלח ל־Google Drive</button>
+</div>
+
+<button class="btn btn-small btn-info" onclick="restoreFromGoogleDrive()" style="margin-top: 10px;">📥 שחזר מ־Google Drive</button>
 </div>
 <div class="settings-panel">
 <h3>🔧 כלים מתקדמים</h3>
@@ -2365,6 +2379,7 @@ function loadFromScript() {
 
 window.onload = () => {
   loadFromScript();
+  startAutoBackup(5);
 };
 
 
@@ -2402,6 +2417,177 @@ function saveData() {
   });
 
   console.log('✅ All data sent to Google Sheets.');
+}
+
+
+
+function exportDataAsJSON() {
+  const fullData = {
+    users,
+    scheduleData,
+    availabilityData,
+    systemSettings,
+    taskSystem
+  };
+  const blob = new Blob([JSON.stringify(fullData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shift_management_backup.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importDataFromJSONFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.users) users = data.users;
+      if (data.scheduleData) scheduleData = data.scheduleData;
+      if (data.availabilityData) {
+        availabilityData = {};
+        Object.entries(data.availabilityData).forEach(([id, val]) => {
+          availabilityData[id] = {
+            unavailableShifts: new Set(val.unavailableShifts),
+            submitted: val.submitted,
+            submittedAt: val.submittedAt
+          };
+        });
+      }
+      if (data.systemSettings) systemSettings = data.systemSettings;
+      if (data.taskSystem) taskSystem = data.taskSystem;
+      showNotification('✅ נתונים יובאו בהצלחה מהקובץ!', 'success');
+      updateLoginUsersList?.();
+      generateScheduleTable?.();
+    } catch (err) {
+      console.error('❌ Error parsing imported JSON:', err);
+      showNotification('❌ כשל בייבוא נתונים: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+
+
+function saveBackupToLocalStorage() {
+  const fullData = {
+    users,
+    scheduleData,
+    availabilityData,
+    systemSettings,
+    taskSystem
+  };
+  localStorage.setItem('shiftManagementBackup', JSON.stringify(fullData));
+  console.log('✅ Backup saved to LocalStorage');
+}
+
+function restoreBackupFromLocalStorage() {
+  const json = localStorage.getItem('shiftManagementBackup');
+  if (!json) return;
+  try {
+    const data = JSON.parse(json);
+    if (data.users) users = data.users;
+    if (data.scheduleData) scheduleData = data.scheduleData;
+    if (data.availabilityData) {
+      availabilityData = {};
+      Object.entries(data.availabilityData).forEach(([id, val]) => {
+        availabilityData[id] = {
+          unavailableShifts: new Set(val.unavailableShifts),
+          submitted: val.submitted,
+          submittedAt: val.submittedAt
+        };
+      });
+    }
+    if (data.systemSettings) systemSettings = data.systemSettings;
+    if (data.taskSystem) taskSystem = data.taskSystem;
+    updateLoginUsersList?.();
+    generateScheduleTable?.();
+    showNotification('✅ שוחזר גיבוי מקומי!', 'success');
+  } catch (err) {
+    console.error('❌ Error restoring backup:', err);
+  }
+}
+
+function backupToGoogleDrive() {
+  const fullData = {
+    users,
+    scheduleData,
+    availabilityData: Object.fromEntries(Object.entries(availabilityData).map(([id, val]) => [
+      id, {
+        unavailableShifts: Array.from(val.unavailableShifts),
+        submitted: val.submitted,
+        submittedAt: val.submittedAt
+      }
+    ])),
+    systemSettings,
+    taskSystem
+  };
+
+  fetch(APP_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'saveBackupToDrive', ...fullData }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success) {
+        showNotification(`✅ הגיבוי נשמר בדרייב: <a href="${res.url}" target="_blank">צפה בקובץ</a>`, 'success');
+      } else {
+        throw new Error(res.error);
+      }
+    })
+    .catch(err => {
+      showNotification('❌ שגיאה בשליחת הגיבוי ל־Google Drive: ' + err.message, 'error');
+    });
+}
+
+// Load local backup first, then Google Sheets
+window.onload = () => {
+  restoreBackupFromLocalStorage();
+  loadFromScript();
+  startAutoBackup(5);
+};
+
+
+
+function restoreFromGoogleDrive() {
+  fetch(`${APP_SCRIPT_URL}?action=loadLatestBackupFromDrive`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.users) users = data.users;
+      if (data.scheduleData) scheduleData = data.scheduleData;
+      if (data.availabilityData) {
+        availabilityData = {};
+        Object.entries(data.availabilityData).forEach(([id, val]) => {
+          availabilityData[id] = {
+            unavailableShifts: new Set(val.unavailableShifts),
+            submitted: val.submitted,
+            submittedAt: val.submittedAt
+          };
+        });
+      }
+      if (data.systemSettings) systemSettings = data.systemSettings;
+      if (data.taskSystem) taskSystem = data.taskSystem;
+      updateLoginUsersList?.();
+      generateScheduleTable?.();
+      showNotification('✅ נתונים שוחזרו מה־Drive!', 'success');
+    })
+    .catch(err => {
+      console.error('❌ Error restoring from Drive:', err);
+      showNotification('❌ שחזור מה־Drive נכשל: ' + err.message, 'error');
+    });
+}
+
+function startAutoBackup(intervalMinutes = 5) {
+  setInterval(() => {
+    backupToGoogleDrive();
+  }, intervalMinutes * 60 * 1000);
+  console.log(`📦 גיבוי אוטומטי יבוצע כל ${intervalMinutes} דקות`);
 }
 </script></body>
 </html>
