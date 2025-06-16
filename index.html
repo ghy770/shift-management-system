@@ -2527,11 +2527,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        await testConnection();
+        (async () => { await testConnection(); })();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            await loadData();
+            (async () => { await loadData(); })();
         }, 1000);
     }, 500);
     
@@ -2966,11 +2966,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        await testConnection();
+        (async () => { await testConnection(); })();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            await loadData();
+            (async () => { await loadData(); })();
         }, 1000);
     }, 500);
     
