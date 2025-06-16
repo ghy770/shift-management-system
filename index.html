@@ -550,7 +550,346 @@
         }
     </style>
 </head>
-<body><script>const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec";</script>
+<body>
+       <script>
+       const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec";
+       </script>
+       // הוסף את הקוד הזה בתחילת קובץ ה-HTML שלך, לפני הפונקציות הקיימות
+
+// Global variables - הוסף את המשתנה הזה
+const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-nlZjJDdJ9ru5PDKkFaz0_iUlKxKD75S14I0zqUmdBdn9MaQCfixvCKvNK3uWfyjX_w/exec";
+
+// פונקציות חדשות לטעינה ושמירה
+async function loadDataFromServer() {
+    try {
+        console.log('🔄 טוען נתונים מהשרת...');
+        const response = await fetch(APP_SCRIPT_URL + '?action=loadAllData');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            // טען משתמשים
+            if (result.data.users && result.data.users.length > 0) {
+                users = [users[0]]; // שמור את המנהל הכללי
+                result.data.users.forEach(row => {
+                    if (row[0]) { // אם יש ID
+                        users.push({
+                            id: row[0],
+                            firstName: row[1],
+                            lastName: row[2],
+                            phone: row[3],
+                            type: row[4],
+                            password: row[5] || null
+                        });
+                    }
+                });
+            }
+            
+            // טען זמינות
+            if (result.data.availability) {
+                result.data.availability.forEach(row => {
+                    const userId = row[0];
+                    const unavailableShifts = JSON.parse(row[1] || '[]');
+                    const submitted = row[2] === 'true' || row[2] === true;
+                    
+                    availabilityData[userId] = {
+                        unavailableShifts: new Set(unavailableShifts),
+                        submitted: submitted,
+                        submittedAt: row[3]
+                    };
+                });
+            }
+            
+            // טען לוח משמרות
+            if (result.data.schedule) {
+                scheduleData = {};
+                result.data.schedule.forEach(row => {
+                    if (row[0] && row[1]) {
+                        scheduleData[row[0]] = row[1];
+                    }
+                });
+            }
+            
+            // טען הגדרות
+            if (result.data.settings) {
+                result.data.settings.forEach(row => {
+                    const key = row[0];
+                    const value = JSON.parse(row[1]);
+                    systemSettings[key] = value;
+                });
+            }
+            
+            // טען משימות
+            if (result.data.tasks) {
+                taskSystem.tasks = [
+                    { id: 'sg', name: 'ש.ג', type: 'fixed', soldiers: 1, order: 1 },
+                    { id: 'sayer', name: 'סייר', type: 'flexible', soldiers: 1, order: 2 },
+                    { id: 'sayer4h', name: 'סייר 4 שעות', type: 'flexible', soldiers: 1, order: 3 }
+                ];
+                
+                result.data.tasks.forEach(row => {
+                    if (row[0] && !taskSystem.tasks.find(t => t.id === row[0])) {
+                        taskSystem.tasks.push({
+                            id: row[0],
+                            name: row[1],
+                            type: row[2],
+                            soldiers: row[3] || 1,
+                            order: taskSystem.tasks.length + 1
+                        });
+                    }
+                });
+            }
+            
+            console.log('✅ נתונים נטענו בהצלחה מהשרת');
+            return true;
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בטעינת נתונים:', error);
+        showNotification('שגיאה בטעינת נתונים מהשרת', 'warning');
+        return false;
+    }
+}
+
+async function saveUserToServer(user) {
+    try {
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveUser',
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phone: user.phone,
+                type: user.type,
+                password: user.password || '',
+                createdAt: user.createdAt || new Date().toISOString()
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ משתמש נשמר בגיליון:', result);
+        } else {
+            console.error('❌ שגיאה בשמירת משתמש:', result.error);
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בשמירת המשתמש:', error);
+    }
+}
+
+async function saveAvailabilityToServer(userId, availabilityData) {
+    try {
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveAvailability',
+                userId: userId,
+                unavailableShifts: Array.from(availabilityData.unavailableShifts || []),
+                submitted: availabilityData.submitted,
+                timestamp: availabilityData.submittedAt || new Date().toISOString()
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ זמינות נשמרה בגיליון');
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בשמירת זמינות:', error);
+    }
+}
+
+async function saveScheduleToServer() {
+    try {
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveFullSchedule',
+                schedule: scheduleData
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ לוח משמרות נשמר בגיליון');
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בשמירת לוח משמרות:', error);
+    }
+}
+
+async function saveTasksToServer() {
+    try {
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveTasks',
+                tasks: taskSystem.tasks
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ משימות נשמרו בגיליון');
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בשמירת משימות:', error);
+    }
+}
+
+async function saveSettingsToServer() {
+    try {
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'saveSettings',
+                settings: systemSettings
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('✅ הגדרות נשמרו בגיליון');
+        }
+    } catch (error) {
+        console.error('❌ שגיאה בשמירת הגדרות:', error);
+    }
+}
+
+// עדכון הפונקציה saveData הקיימת
+function saveData() {
+    console.log('💾 שומר נתונים בזיכרון ובשרת...');
+    
+    // שמור בשרת (אסינכרוני)
+    saveScheduleToServer();
+    saveTasksToServer();
+    saveSettingsToServer();
+}
+
+// עדכון פונקציית addUser
+function addUser() {
+    const firstName = document.getElementById('newFirstName').value.trim();
+    const lastName = document.getElementById('newLastName').value.trim();
+    const phone = document.getElementById('newPhone').value.trim();
+    const password = document.getElementById('newPassword').value.trim();
+    const userType = document.getElementById('newUserType').value;
+
+    if (!firstName || !lastName || !phone) {
+        showNotification('יש למלא את שם פרטי, שם משפחה ומספר טלפון', 'warning');
+        return;
+    }
+
+    if (users.find(u => u.phone === phone)) {
+        showNotification('מספר טלפון כבר קיים', 'warning');
+        return;
+    }
+
+    const newUser = {
+        id: Date.now(),
+        firstName,
+        lastName,
+        phone,
+        type: userType,
+        password: password || null,
+        createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    
+    // שמור בשרת מיד
+    saveUserToServer(newUser);
+
+    // אתחול נתוני זמינות עבור חייל חדש
+    if (userType === 'חייל') {
+        availabilityData[newUser.id] = { 
+            unavailableShifts: new Set(), 
+            submitted: false 
+        };
+    }
+
+    document.getElementById('newFirstName').value = '';
+    document.getElementById('newLastName').value = '';
+    document.getElementById('newPhone').value = '';
+    document.getElementById('newPassword').value = '';
+
+    updateUsersList();
+    updateLoginUsersList();
+    saveData();
+    updateDashboardStats();
+    
+    showNotification(`${userType} ${firstName} ${lastName} נוסף בהצלחה!`, 'success');
+}
+
+// עדכון פונקציית submitAvailability
+function submitAvailability() {
+    if (!currentUser || currentUser.type !== 'חייל') return;
+    
+    if (!systemSettings.availabilityOpen) {
+        showNotification('מילוי זמינות סגור. נא לפנות למנהל.', 'warning');
+        return;
+    }
+    
+    if (!availabilityData[currentUser.id]) {
+        availabilityData[currentUser.id] = { unavailableShifts: new Set(), submitted: false };
+    }
+    
+    // בדיקה אם כבר נשלח
+    if (availabilityData[currentUser.id].submitted) {
+        showNotification('הזמינות שלך כבר נשלחה ונעולה לעריכה!', 'warning');
+        return;
+    }
+    
+    // אישור סופי לפני שליחה
+    const unavailableCount = availabilityData[currentUser.id].unavailableShifts.size;
+    const confirmMessage = `האם אתה בטוח שברצונך לשלוח את הזמינות?\n\n` +
+                         `סימנת ${unavailableCount} משמרות כלא זמין.\n` +
+                         `לאחר השליחה לא ניתן יהיה לערוך את הזמינות עד לפתיחה מחדש על ידי המנהל.`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // שליחת הזמינות
+    availabilityData[currentUser.id].submitted = true;
+    availabilityData[currentUser.id].submittedAt = new Date().toISOString();
+    
+    // שמור בשרת
+    saveAvailabilityToServer(currentUser.id, availabilityData[currentUser.id]);
+    
+    saveData();
+    
+    // עדכון התצוגה לטבלה לקריאה בלבד
+    generateAvailabilityForm();
+    
+    showNotification('✅ זמינות נשלחה בהצלחה ונעולה לעריכה!', 'success');
+    updateDashboardStats();
+}
+
+// עדכון אתחול המערכת
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 מערכת ניהול משמרות משודרגת מתחילה...');
+    
+    // טען נתונים מהשרת
+    showNotification('🔄 טוען נתונים מהשרת...', 'info');
+    const dataLoaded = await loadDataFromServer();
+    
+    if (dataLoaded) {
+        showNotification('✅ נתונים נטענו מהשרת בהצלחה!', 'success');
+    }
+    
+    // Initialize login users list
+    setTimeout(() => {
+        updateLoginUsersList();
+        console.log('📝 Login users list initialized');
+    }, 100);
+    
+    console.log('✅ מערכת ניהול משמרות משודרגת מוכנה!');
+    showNotification('ברוכים הבאים למערכת המשודרגת עם ניהול משימות דינמי! 🎉', 'success');
+});
 <div class="container">
 <div class="header">
 <h1>🚀 מערכת ניהול משמרות מתקדמת</h1>
