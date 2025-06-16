@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>מערכת ניהול משמרות</title>
+<title>מערכת ניהול משמרות משופרת</title>
 <style>
         * {
             margin: 0;
@@ -41,6 +41,28 @@
             font-size: 2.8em;
             font-weight: 900;
             margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upgrade-badge {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-top: 10px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .connection-status {
@@ -89,12 +111,26 @@
             box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
         }
 
+        .btn-small {
+            padding: 12px 24px;
+            font-size: 14px;
+            margin: 5px;
+        }
+
         .btn-test {
             background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
         }
 
         .btn-success {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         }
 
         .login-form {
@@ -193,6 +229,39 @@
             display: block;
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 700;
+        }
+
         .notification {
             position: fixed;
             top: 20px;
@@ -257,6 +326,29 @@
             transform: scale(1.02);
         }
 
+        .shift-cell.assigned {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: #1a1a1a;
+            font-weight: 800;
+        }
+
+        .shift-cell.my-shift {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%) !important;
+            color: #1a1a1a;
+            font-weight: 800;
+            border: 3px solid #fbc02d !important;
+        }
+
+        .shift-cell.available {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .shift-cell.unavailable {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+
         .log-section {
             background: #f8f9fa;
             border-radius: 12px;
@@ -302,8 +394,179 @@
             font-weight: 700;
         }
 
+        .user-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .user-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .task-management-panel {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .task-list {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .task-item {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .task-item.fixed-task {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        }
+
+        .task-item.flexible-task {
+            border-color: #17a2b8;
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-name {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+
+        .task-type {
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .task-type.fixed {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .task-type.flexible {
+            background: #17a2b8;
+        }
+
+        .user-stats-detailed {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .user-stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-right: 5px solid #667eea;
+        }
+
+        .user-stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-name {
+            font-size: 1.2em;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+
+        .user-total-shifts {
+            font-size: 2em;
+            font-weight: 900;
+            color: #667eea;
+        }
+
+        .shift-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .shift-type-count {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .shift-type-number {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: #495057;
+        }
+
+        .shift-type-label {
+            font-size: 0.8em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .nav-tab { font-size: 14px; padding: 12px 18px; }
+            .user-form { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+            .user-stats-detailed { grid-template-columns: 1fr; }
+            .shift-breakdown { grid-template-columns: repeat(2, 1fr); }
         }
 </style>
 </head>
@@ -311,7 +574,8 @@
 
 <div class="container">
     <div class="header">
-        <h1>🚀 מערכת ניהול משמרות</h1>
+        <h1>🚀 מערכת ניהול משמרות משופרת</h1>
+        <div class="upgrade-badge">🦁 עם כלביא - עד הניצחון המוחלט 🦁</div>
         <p style="color: #34495e; font-weight: 700; margin-top: 10px;">שבצק הגמ"ר אלון מורה</p>
     </div>
 
@@ -323,8 +587,17 @@
             <select id="quickLogin" onchange="handleLoginTypeChange()">
                 <option value="">בחר משתמש...</option>
                 <option value="admin">מנהל כללי</option>
+                <option value="userList">בחר מרשימת משתמשים</option>
                 <option value="manual">כניסה ידנית</option>
             </select>
+        </div>
+        <div id="userListSelect" style="display: none;">
+            <div class="form-group">
+                <label>בחר משתמש קיים:</label>
+                <select id="existingUsers">
+                    <option value="">בחר משתמש...</option>
+                </select>
+            </div>
         </div>
         <div id="manualLogin" style="display: none;">
             <div class="form-group">
@@ -356,93 +629,27 @@
         <button class="logout-btn" onclick="logout()">יציאה</button>
         <div class="user-info" id="userInfo"></div>
         
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('welcome')">🏠 ברוכים הבאים</button>
-            <button class="nav-tab" id="dashboardTab" onclick="showTab('dashboard')" style="display: none;">📊 לוח בקרה</button>
+        <div class="nav-tabs" id="navigationTabs">
+            <button class="nav-tab active" id="welcomeNavTab" onclick="showTab('welcome')">🏠 ברוכים הבאים</button>
+            <button class="nav-tab" id="dashboardNavTab" onclick="showTab('dashboard')" style="display: none;">📊 לוח בקרה</button>
             <button class="nav-tab" id="scheduleNavTab" onclick="showTab('schedule')" style="display: none;">📅 לוח משמרות</button>
             <button class="nav-tab" id="availabilityNavTab" onclick="showTab('availability')" style="display: none;">⏰ זמינות</button>
+            <button class="nav-tab" id="reportsNavTab" onclick="showTab('reports')" style="display: none;">📈 דוחות</button>
             <button class="nav-tab" id="managementNavTab" onclick="showTab('management')" style="display: none;">⚙️ ניהול</button>
-            <button class="nav-tab" id="tasksNavTab" onclick="showTab('tasks')" style="display: none;">🔧 משימות</button>
+            <button class="nav-tab" id="taskManagementNavTab" onclick="showTab('taskManagement')" style="display: none;">🔧 ניהול משימות</button>
+            <button class="nav-tab" id="availabilityMgmtNavTab" onclick="showTab('availabilityMgmt')" style="display: none;">👥 ניהול זמינות</button>
+            <button class="nav-tab" id="settingsNavTab" onclick="showTab('settings')" style="display: none;">🔧 הגדרות</button>
         </div>
 
         <!-- Welcome Tab -->
         <div class="tab-content active" id="welcomeTab">
-            <h2>🎉 ברוכים הבאים למערכת ניהול המשמרות!</h2>
+            <h2>🎉 ברוכים הבאים למערכת ניהול המשמרות המשופרת!</h2>
             <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin: 20px 0;">
                 <p style="font-size: 1.2em; margin-bottom: 15px;">המערכת הושקה בהצלחה! 🚀</p>
                 <p>• מצב משתמש: <span id="userStatusText">-</span></p>
-                <p>• גרסה: v1.0 מתקדמת</p>
+                <p>• גרסה: v2.0 מתקדמת עם חיבור לגוגל שיטס</p>
+                <p>• חיבור לשרת: <span id="connectionDisplay">בודק...</span></p>
             </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
-                <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; text-align: center;">
-                    <h3>📊 לוח בקרה</h3>
-                    <p>צפה בסטטיסטיקות ודוחות</p>
-                </div>
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 12px; text-align: center;">
-                    <h3>📅 לוח משמרות</h3>
-                    <p>ניהול וצפייה במשמרות</p>
-                </div>
-                <div style="background: #fff3e0; padding: 20px; border-radius: 12px; text-align: center;">
-                    <h3>⏰ זמינות</h3>
-                    <p>מילוי זמינות למשמרות</p>
-                </div>
-                <div style="background: #fce4ec; padding: 20px; border-radius: 12px; text-align: center;">
-                    <h3>⚙️ ניהול</h3>
-                    <p>הוספת משתמשים ומשימות</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div class="tab-content" id="dashboardTab">
-            <h2>📊 לוח בקרה - סטטיסטיקות מתקדמות</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px;">
-                <div style="background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-                    <div style="font-size: 2.5em; font-weight: 900; color: #667eea; margin-bottom: 10px;" id="totalSoldiers">0</div>
-                    <div style="font-size: 0.9em; color: #666; font-weight: 700;">סה״כ חיילים</div>
-                </div>
-                <div style="background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-                    <div style="font-size: 2.5em; font-weight: 900; color: #667eea; margin-bottom: 10px;" id="totalShifts">0</div>
-                    <div style="font-size: 0.9em; color: #666; font-weight: 700;">משמרות מאויישות</div>
-                </div>
-                <div style="background: white; border-radius: 15px; padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-                    <div style="font-size: 2.5em; font-weight: 900; color: #667eea; margin-bottom: 10px;" id="totalTasks">3</div>
-                    <div style="font-size: 0.9em; color: #666; font-weight: 700;">סה״כ משימות</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Schedule Tab -->
-        <div class="tab-content" id="scheduleTab">
-            <h2>📅 לוח משמרות שבועי</h2>
-            <div id="managerButtons" style="margin-bottom: 15px; display: none;">
-                <button class="btn btn-success" onclick="autoSchedule()">🎯 שיבוץ אוטומטי</button>
-                <button class="btn" onclick="clearSchedule()">🗑️ נקה לוח</button>
-            </div>
-            <div id="scheduleContainer">
-                <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
-                    <p>לוח המשמרות יטען כאן...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Availability Tab -->
-        <div class="tab-content" id="availabilityTab">
-            <h2>⏰ זמינות למשמרות</h2>
-            <div style="background: #d4edda; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                <strong>✅ מילוי זמינות פתוח!</strong> סמן את המשמרות שאתה לא יכול לבצע.
-            </div>
-            <div id="availabilityForm">
-                <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
-                    <p>טופס זמינות יטען כאן...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Management Tab -->
-        <div class="tab-content" id="managementTab">
-            <h2>⚙️ ניהול המערכת</h2>
             
             <!-- Connection Management Section -->
             <div style="background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
@@ -464,48 +671,219 @@
                 <div id="systemLog" class="log-section">
                     מערכת מתחילה...
                 </div>
-                <button class="btn" onclick="clearLog()" style="margin-top: 10px;">🗑️ נקה יומן</button>
+                <button class="btn btn-small" onclick="clearLog()" style="margin-top: 10px;">🗑️ נקה יומן</button>
             </div>
             
-            <div style="background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 12px; text-align: center;">
+                    <h3>📊 לוח בקרה</h3>
+                    <p>צפה בסטטיסטיקות ודוחות מתקדמים</p>
+                </div>
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 12px; text-align: center;">
+                    <h3>📅 לוח משמרות</h3>
+                    <p>ניהול וצפייה במשמרות דינמיות</p>
+                </div>
+                <div style="background: #fff3e0; padding: 20px; border-radius: 12px; text-align: center;">
+                    <h3>⏰ זמינות</h3>
+                    <p>מילוי זמינות חכם למשמרות</p>
+                </div>
+                <div style="background: #fce4ec; padding: 20px; border-radius: 12px; text-align: center;">
+                    <h3>🔧 ניהול משימות</h3>
+                    <p>הוספה ועריכה של משימות באופן דינמי</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content" id="dashboardTab">
+            <h2>📊 לוח בקרה - סטטיסטיקות מתקדמות</h2>
+            <div class="stats-grid" id="mainStats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSoldiers">0</div>
+                    <div class="stat-label">סה״כ חיילים</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalShifts">0</div>
+                    <div class="stat-label">משמרות מאויישות</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="availabilitySubmitted">0</div>
+                    <div class="stat-label">שלחו זמינות</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="coveragePercentage">0%</div>
+                    <div class="stat-label">כיסוי משמרות</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">3</div>
+                    <div class="stat-label">סה״כ משימות</div>
+                </div>
+            </div>
+            <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h3>📈 התפלגות משמרות מפורטת לפי חייל</h3>
+                <div class="user-stats-detailed" id="detailedUserStats">טוען נתונים...</div>
+            </div>
+            <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h3>🎯 המלצות לשיפור</h3>
+                <div id="recommendations">טוען המלצות...</div>
+            </div>
+        </div>
+
+        <!-- Schedule Tab -->
+        <div class="tab-content" id="scheduleTab">
+            <h2>📅 לוח משמרות שבועי</h2>
+            <div id="managerButtons" style="margin-bottom: 15px; display: none;">
+                <button class="btn btn-small btn-success" onclick="autoSchedule()">🎯 שיבוץ אוטומטי</button>
+                <button class="btn btn-small btn-warning" onclick="optimizeSchedule()">🔧 אופטימיזציה</button>
+                <button class="btn btn-small btn-danger" onclick="clearSchedule()">🗑️ נקה לוח</button>
+            </div>
+            <div id="soldierButtons" style="margin-bottom: 15px; display: none;">
+                <button class="btn btn-small" onclick="showMyShifts()">👤 המשמרות שלי</button>
+            </div>
+            <div id="viewerButtons" style="margin-bottom: 15px; display: none;">
+                <div class="alert alert-info">
+                    <strong>מצב צפייה בלבד</strong> - ניתן לצפות בלוח המשמרות ללא אפשרות עריכה
+                </div>
+            </div>
+            <div id="scheduleContainer">
+                <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+                    <p>לוח המשמרות יטען כאן...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Tab -->
+        <div class="tab-content" id="availabilityTab">
+            <h2>⏰ זמינות למשמרות</h2>
+            <div id="availabilitySection">
+                <div class="alert alert-success" id="availabilityStatus">טוען מצב זמינות...</div>
+                <div class="alert alert-info" id="availabilityInstructions" style="margin-bottom: 20px;">
+                    <strong>הוראות מילוי זמינות:</strong>
+                    <br/>• ברירת מחדל: כל המשמרות מסומנות כ"זמין" (ירוק) ✅
+                    <br/>• לחץ על משמרת כדי לסמן אותה כ"לא זמין" (אדום) ❌
+                    <br/>• ניתן לסמן עד 7 משמרות כלא זמין
+                    <br/>• לחץ שוב כדי לשנות חזרה לזמין
+                    <br/><span id="selectedCount" style="font-weight: bold; color: #2196f3;">נבחרו: 0 מתוך 7 משמרות כלא זמין</span>
+                </div>
+                <div id="availabilityForm">
+                    <div style="background: white; padding: 20px; border-radius: 12px; text-align: center;">
+                        <p>טופס זמינות יטען כאן...</p>
+                    </div>
+                </div>
+                <div id="submitButtonContainer" style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div class="tab-content" id="reportsTab">
+            <h2>📈 דוחות מתקדמים</h2>
+            <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h3>📊 דוח כללי</h3>
+                <div id="reportsDisplay">טוען דוחות...</div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-small" onclick="generateFullReport()">📄 צור דוח מלא</button>
+                <button class="btn btn-small" onclick="exportReports()">📤 יצא דוחות</button>
+            </div>
+        </div>
+
+        <!-- Task Management Tab -->
+        <div class="tab-content" id="taskManagementTab">
+            <h2>🔧 ניהול משימות דינמי</h2>
+            <div class="task-management-panel">
+                <h3>📋 הוספת משימה חדשה</h3>
+                <div class="user-form">
+                    <input id="newTaskName" placeholder="שם המשימה (למשל: סייר נוסף)" type="text"/>
+                    <select id="newTaskType">
+                        <option value="flexible">משימה גמישה</option>
+                        <option value="fixed">משימה קבועה</option>
+                    </select>
+                    <input id="newTaskSoldiers" max="5" min="1" placeholder="מספר חיילים נדרש" type="number" value="1"/>
+                    <button class="btn btn-small btn-success" onclick="addTask()">➕ הוסף משימה</button>
+                </div>
+                <div class="alert alert-info">
+                    <strong>הסבר:</strong><br/>
+                    • <strong>משימה קבועה:</strong> לא ניתן למחוק (כמו ש.ג)<br/>
+                    • <strong>משימה גמישה:</strong> ניתן למחוק ולערוך (כמו סייר, סייר 4 שעות)<br/>
+                    • מספר החיילים קובע כמה עמודות יתווספו ללוח המשמרות
+                </div>
+            </div>
+            <div class="task-management-panel">
+                <h3>📝 רשימת משימות קיימות</h3>
+                <div class="task-list" id="tasksList">
+                    <p>טוען רשימת משימות...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Tab -->
+        <div class="tab-content" id="managementTab">
+            <h2>⚙️ ניהול המערכת</h2>
+            <div class="settings-panel">
                 <h3>👥 הוספת משתמשים</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
-                    <input id="newFirstName" placeholder="שם פרטי" type="text" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;"/>
-                    <input id="newLastName" placeholder="שם משפחה" type="text" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;"/>
-                    <input id="newPhone" placeholder="מספר טלפון" type="tel" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;"/>
-                    <select id="newUserType" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                <div class="user-form">
+                    <input id="newFirstName" placeholder="שם פרטי" type="text"/>
+                    <input id="newLastName" placeholder="שם משפחה" type="text"/>
+                    <input id="newPhone" placeholder="מספר טלפון" type="tel"/>
+                    <input id="newPassword" placeholder="סיסמה (אופציונלי)" type="password"/>
+                    <select id="newUserType">
                         <option value="חייל">חייל</option>
                         <option value="צופה">צופה</option>
                         <option value="מנהל">מנהל</option>
                     </select>
-                    <button class="btn" onclick="addUser()" style="width: 100%;">הוסף משתמש</button>
+                    <button class="btn btn-small" onclick="addUser()">הוסף משתמש</button>
                 </div>
             </div>
             <div>
                 <h3>📋 רשימת משתמשים</h3>
-                <div id="usersList" style="background: #f8f9fa; border-radius: 12px; padding: 15px;">
+                <div class="user-list" id="usersList">
                     <p>טוען רשימת משתמשים...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Tasks Tab -->
-        <div class="tab-content" id="tasksTab">
-            <h2>🔧 ניהול משימות</h2>
-            <div style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%); border: 2px solid #28a745; border-radius: 15px; padding: 25px; margin-bottom: 25px;">
-                <h3>📋 הוספת משימה חדשה</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
-                    <input id="newTaskName" placeholder="שם המשימה" type="text" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;"/>
-                    <select id="newTaskType" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;">
-                        <option value="flexible">משימה גמישה</option>
-                        <option value="fixed">משימה קבועה</option>
-                    </select>
-                    <input id="newTaskSoldiers" type="number" value="1" min="1" max="5" style="padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px;"/>
-                    <button class="btn btn-success" onclick="addTask()" style="width: 100%;">➕ הוסף משימה</button>
+        <!-- Availability Management Tab -->
+        <div class="tab-content" id="availabilityMgmtTab">
+            <h2>👥 ניהול זמינות חיילים</h2>
+            <div class="settings-panel">
+                <h3>🔧 הגדרות זמינות נוכחיות</h3>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input id="availabilityOpenToggle" onchange="toggleAvailabilityStatus()" type="checkbox"/>
+                        פתח/סגור זמינות לכל החיילים
+                    </label>
+                </div>
+                <div style="margin: 15px 0;">
+                    <button class="btn btn-small btn-success" onclick="openAvailabilityForAll()">🟢 פתח זמינות לכולם</button>
+                    <button class="btn btn-small btn-danger" onclick="closeAvailabilityForAll()">🔴 סגור זמינות</button>
+                    <button class="btn btn-small btn-warning" onclick="remindAvailability()">📢 שלח תזכורות</button>
+                </div>
+                <div class="alert alert-info" id="availabilitySystemStatus">
+                    <strong>מצב מערכת הזמינות:</strong> <span id="systemAvailabilityStatus">טוען...</span>
                 </div>
             </div>
-            <div id="tasksList">
-                <p>טוען רשימת משימות...</p>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settingsTab">
+            <h2>🔧 הגדרות מערכת</h2>
+            <div class="settings-panel">
+                <h3>🎯 כללי שיבוץ אוטומטי</h3>
+                <div class="form-group">
+                    <label>מספר משמרות מקסימלי לחייל בשבוע:</label>
+                    <input id="maxShiftsPerWeek" max="28" min="1" type="number" value="6"/>
+                </div>
+                <button class="btn btn-small" onclick="saveSettings()">💾 שמור הגדרות</button>
+            </div>
+            <div class="settings-panel">
+                <h3>🔧 כלים מתקדמים</h3>
+                <div style="margin: 15px 0;">
+                    <button class="btn btn-small" onclick="generateTestData()">🧪 צור נתוני בדיקה</button>
+                    <button class="btn btn-small btn-warning" onclick="backupData()">💾 גבה נתונים</button>
+                    <button class="btn btn-small btn-danger" onclick="clearAllData()">🗑️ נקה נתונים</button>
+                </div>
             </div>
         </div>
     </div>
@@ -580,20 +958,442 @@ function clearLog() {
     }
 }
 
+// ========== LOGIN FUNCTIONS ==========
+function handleLoginTypeChange() {
+    const quickLogin = document.getElementById('quickLogin').value;
+    const manualLogin = document.getElementById('manualLogin');
+    const userListSelect = document.getElementById('userListSelect');
+    
+    if (quickLogin === 'manual') {
+        manualLogin.style.display = 'block';
+        userListSelect.style.display = 'none';
+    } else if (quickLogin === 'userList') {
+        manualLogin.style.display = 'none';
+        userListSelect.style.display = 'block';
+        updateLoginUsersList();
+    } else {
+        manualLogin.style.display = 'none';
+        userListSelect.style.display = 'none';
+    }
+}
+
+function updateLoginUsersList() {
+    const select = document.getElementById('existingUsers');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">בחר משתמש...</option>';
+    users.forEach(user => {
+        if (user.type !== 'admin') {
+            const hasPassword = user.password ? ' 🔒' : '';
+            select.innerHTML += `<option value="${user.id}">${user.firstName} ${user.lastName} (${user.type})${hasPassword}</option>`;
+        }
+    });
+    addToLog(`📝 רשימת משתמשים לכניסה עודכנה: ${users.length - 1} משתמשים`);
+}
+
+function login() {
+    addToLog('🔐 ניסיון כניסה למערכת');
+    const quickLogin = document.getElementById('quickLogin').value;
+    
+    if (quickLogin === 'admin') {
+        const password = prompt('הכנס סיסמה עבור המנהל הכללי:');
+        if (password === '322770') {
+            currentUser = users[0];
+            showDashboard();
+            addToLog(`✅ מנהל כללי התחבר בהצלחה`, 'success');
+            showNotification('התחברת בהצלחה!', 'success');
+        } else {
+            addToLog(`❌ ניסיון כניסה נכשל - סיסמה שגויה למנהל`, 'error');
+            showNotification('סיסמה שגויה', 'error');
+        }
+    } else if (quickLogin === 'userList') {
+        const selectedUserId = document.getElementById('existingUsers').value;
+        if (!selectedUserId) {
+            showNotification('יש לבחור משתמש מהרשימה', 'warning');
+            return;
+        }
+        
+        const selectedUser = users.find(u => u.id == selectedUserId);
+        if (!selectedUser) {
+            showNotification('משתמש לא נמצא', 'error');
+            return;
+        }
+        
+        if (selectedUser.password) {
+            const password = prompt(`הכנס סיסמה עבור ${selectedUser.firstName} ${selectedUser.lastName}:`);
+            if (password !== selectedUser.password) {
+                showNotification('סיסמה שגויה', 'error');
+                return;
+            }
+        }
+        
+        currentUser = selectedUser;
+        showDashboard();
+        addToLog(`✅ ${selectedUser.firstName} ${selectedUser.lastName} התחבר בהצלחה`, 'success');
+        showNotification(`ברוך הבא ${selectedUser.firstName}!`, 'success');
+    } else if (quickLogin === 'manual') {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const userType = document.getElementById('userType').value;
+
+        if (!firstName || !lastName || !phone) {
+            showNotification('יש למלא את כל השדות החובה', 'warning');
+            return;
+        }
+
+        let existingUser = users.find(u => u.phone === phone);
+        if (existingUser) {
+            if (existingUser.password) {
+                const password = prompt(`הכנס סיסמה עבור ${existingUser.firstName} ${existingUser.lastName}:`);
+                if (password !== existingUser.password) {
+                    showNotification('סיסמה שגויה', 'error');
+                    return;
+                }
+            }
+            currentUser = existingUser;
+        } else {
+            currentUser = {
+                id: Date.now(),
+                firstName,
+                lastName,
+                phone,
+                type: userType,
+                password: null,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(currentUser);
+            
+            // אתחול נתוני זמינות עבור חייל חדש
+            if (userType === 'חייל') {
+                availabilityData[currentUser.id] = { 
+                    unavailableShifts: new Set(), 
+                    submitted: false 
+                };
+            }
+            
+            saveUserToServer(currentUser);
+            updateLoginUsersList();
+        }
+
+        showDashboard();
+        addToLog(`✅ משתמש התחבר: ${firstName} ${lastName} (${userType})`, 'success');
+        showNotification(`ברוך הבא ${firstName}!`, 'success');
+    } else {
+        showNotification('יש לבחור סוג כניסה', 'warning');
+    }
+}
+
+function logout() {
+    addToLog(`👋 ${currentUser ? currentUser.firstName : 'משתמש'} התנתק מהמערכת`);
+    currentUser = null;
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    showNotification('התנתקת מהמערכת', 'info');
+}
+
+function showDashboard() {
+    addToLog(`👤 הצגת לוח בקרה עבור: ${currentUser.firstName} ${currentUser.lastName} (${currentUser.type})`);
+    
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    
+    document.getElementById('userInfo').innerHTML = 
+        `ברוך הבא ${currentUser.firstName} ${currentUser.lastName} | ${currentUser.type}`;
+
+    const isAdmin = currentUser.type === 'admin';
+    const isManager = currentUser.type === 'מנהל' || isAdmin;
+    const isSoldier = currentUser.type === 'חייל';
+    const isViewer = currentUser.type === 'צופה';
+    
+    // Hide all tabs first
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        if (tab.id !== 'welcomeNavTab') tab.style.display = 'none';
+    });
+
+    if (isManager) {
+        document.getElementById('dashboardNavTab').style.display = 'block';
+        document.getElementById('scheduleNavTab').style.display = 'block';
+        document.getElementById('reportsNavTab').style.display = 'block';
+        document.getElementById('taskManagementNavTab').style.display = 'block';
+        document.getElementById('availabilityMgmtNavTab').style.display = 'block';
+        document.getElementById('settingsNavTab').style.display = 'block';
+        
+        if (isAdmin) {
+            document.getElementById('managementNavTab').style.display = 'block';
+        }
+        
+        // Show manager buttons for schedule editing
+        const managerButtons = document.getElementById('managerButtons');
+        if (managerButtons) managerButtons.style.display = 'block';
+        
+        showTab('dashboard');
+    } else if (isSoldier) {
+        document.getElementById('scheduleNavTab').style.display = 'block';
+        document.getElementById('availabilityNavTab').style.display = 'block';
+        
+        const soldierButtons = document.getElementById('soldierButtons');
+        if (soldierButtons) soldierButtons.style.display = 'block';
+        
+        // הסתר כפתורי ניהול עבור חיילים
+        const managerButtons = document.getElementById('managerButtons');
+        if (managerButtons) managerButtons.style.display = 'none';
+        
+        showTab('schedule');
+    } else if (isViewer) {
+        document.getElementById('scheduleNavTab').style.display = 'block';
+        
+        const viewerButtons = document.getElementById('viewerButtons');
+        if (viewerButtons) viewerButtons.style.display = 'block';
+        
+        // הסתר כפתורי ניהול עבור צופים
+        const managerButtons = document.getElementById('managerButtons');
+        if (managerButtons) managerButtons.style.display = 'none';
+        
+        showTab('schedule');
+    }
+    
+    // Load content based on user type
+    if (isManager) {
+        generateScheduleTable();
+        updateDashboardStats();
+        updateUsersList();
+        updateTasksList();
+    } else if (isSoldier) {
+        generateScheduleTable();
+        generateAvailabilityForm();
+    } else if (isViewer) {
+        generateScheduleTable();
+    }
+    
+    // Update status
+    document.getElementById('userStatusText').textContent = `${currentUser.firstName} ${currentUser.lastName} (${currentUser.type})`;
+    
+    addToLog('✅ לוח הבקרה נטען בהצלחה');
+}
+
+function showTab(tabName) {
+    addToLog(`📂 מעבר לטאב: ${tabName}`);
+    
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    
+    const tabElement = document.getElementById(tabName + 'Tab');
+    if (tabElement) {
+        tabElement.classList.add('active');
+    }
+    
+    // Find and activate the corresponding nav tab
+    const navTab = document.getElementById(tabName + 'NavTab');
+    if (navTab) {
+        navTab.classList.add('active');
+    }
+
+    // Load content based on tab
+    switch(tabName) {
+        case 'dashboard':
+            updateDashboardStats();
+            break;
+        case 'schedule':
+            generateScheduleTable();
+            break;
+        case 'availability':
+            generateAvailabilityForm();
+            updateAvailabilityStatus();
+            break;
+        case 'reports':
+            generateReports();
+            break;
+        case 'management':
+            updateUsersList();
+            break;
+        case 'taskManagement':
+            updateTasksList();
+            break;
+        case 'availabilityMgmt':
+            loadSettingsValues();
+            updateSystemAvailabilityStatus();
+            break;
+        case 'settings':
+            loadSettingsValues();
+            break;
+    }
+}
+
 // ========== STATS FUNCTIONS ==========
-function updateStats() {
+function updateDashboardStats() {
     const soldiers = users.filter(u => u.type === 'חייל');
     const totalShifts = Object.keys(scheduleData).length;
+    const totalPossibleShifts = calculateTotalPossibleShifts();
+    const coveragePercentage = Math.round((totalShifts / totalPossibleShifts) * 100);
+    
+    let availabilitySubmitted = 0;
+    soldiers.forEach(soldier => {
+        if (availabilityData[soldier.id] && availabilityData[soldier.id].submitted) {
+            availabilitySubmitted++;
+        }
+    });
 
     const totalSoldiersEl = document.getElementById('totalSoldiers');
     const totalShiftsEl = document.getElementById('totalShifts');
+    const availabilitySubmittedEl = document.getElementById('availabilitySubmitted');
+    const coveragePercentageEl = document.getElementById('coveragePercentage');
     const totalTasksEl = document.getElementById('totalTasks');
 
     if (totalSoldiersEl) totalSoldiersEl.textContent = soldiers.length;
     if (totalShiftsEl) totalShiftsEl.textContent = totalShifts;
+    if (availabilitySubmittedEl) availabilitySubmittedEl.textContent = availabilitySubmitted;
+    if (coveragePercentageEl) coveragePercentageEl.textContent = coveragePercentage + '%';
     if (totalTasksEl) totalTasksEl.textContent = taskSystem.tasks.length;
     
-    addToLog(`📊 סטטיסטיקות עודכנו: ${soldiers.length} חיילים, ${totalShifts} משמרות`);
+    updateDetailedUserStats();
+    updateRecommendations();
+    
+    addToLog(`📊 סטטיסטיקות עודכנו: ${soldiers.length} חיילים, ${totalShifts} משמרות, ${coveragePercentage}% כיסוי`);
+}
+
+function calculateTotalPossibleShifts() {
+    let total = 0;
+    taskSystem.tasks.forEach(task => {
+        total += 7 * 4 * task.soldiers; // 7 days * 4 shifts * soldiers per task
+    });
+    return total;
+}
+
+function updateDetailedUserStats() {
+    const soldiers = users.filter(u => u.type === 'חייל');
+    const container = document.getElementById('detailedUserStats');
+    
+    if (!container) return;
+    
+    if (soldiers.length === 0) {
+        container.innerHTML = '<p>אין חיילים במערכת</p>';
+        return;
+    }
+
+    const userStats = {};
+    soldiers.forEach(soldier => {
+        const fullName = `${soldier.firstName} ${soldier.lastName}`;
+        userStats[fullName] = { 
+            total: 0,
+            byTask: {}
+        };
+        
+        // Initialize task counters
+        taskSystem.tasks.forEach(task => {
+            userStats[fullName].byTask[task.name] = 0;
+        });
+    });
+
+    // Count shifts by task
+    Object.entries(scheduleData).forEach(([shiftId, assignment]) => {
+        if (userStats[assignment]) {
+            userStats[assignment].total++;
+            
+            // Extract task name from shift ID
+            const taskName = shiftId.split('_')[0];
+            if (userStats[assignment].byTask[taskName] !== undefined) {
+                userStats[assignment].byTask[taskName]++;
+            }
+        }
+    });
+
+    let html = '';
+    Object.entries(userStats).forEach(([name, stats]) => {
+        const isBalanced = stats.total >= 6 && stats.total <= 7;
+        const statusColor = isBalanced ? '#28a745' : stats.total < 6 ? '#ffc107' : '#dc3545';
+        const statusText = isBalanced ? 'מאוזן' : stats.total < 6 ? 'חסרות משמרות' : 'יותר מדי משמרות';
+
+        html += `
+            <div class="user-stat-card">
+                <div class="user-stat-header">
+                    <div class="user-name">${name}</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="user-total-shifts">${stats.total}</div>
+                        <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700;">
+                            ${statusText}
+                        </span>
+                    </div>
+                </div>
+                <div class="shift-breakdown">
+                    ${Object.entries(stats.byTask).map(([taskName, count]) => `
+                        <div class="shift-type-count">
+                            <div class="shift-type-number">${count}</div>
+                            <div class="shift-type-label">${taskName}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function updateRecommendations() {
+    const container = document.getElementById('recommendations');
+    if (!container) return;
+    
+    const recommendations = [];
+    const soldiers = users.filter(u => u.type === 'חייל');
+    
+    if (soldiers.length === 0) {
+        recommendations.push('📝 הוסף חיילים למערכת כדי להתחיל בשיבוץ');
+    } else {
+        const totalShifts = Object.keys(scheduleData).length;
+        const totalPossible = calculateTotalPossibleShifts();
+        const coverage = (totalShifts / totalPossible) * 100;
+        
+        if (coverage < 50) {
+            recommendations.push('🚀 השתמש בשיבוץ אוטומטי חכם למילוי המשמרות');
+        } else if (coverage < 80) {
+            recommendations.push('⚡ השלם את השיבוץ הידני או הפעל אופטימיזציה');
+        }
+        
+        // Check availability submissions
+        const submittedAvailability = soldiers.filter(s => availabilityData[s.id]?.submitted).length;
+        const availabilityRate = (submittedAvailability / soldiers.length) * 100;
+        
+        if (availabilityRate < 80) {
+            recommendations.push('📢 שלח תזכורות לחיילים שלא שלחו זמינות');
+        }
+        
+        // Check task balance
+        const taskImbalance = checkTaskBalance();
+        if (taskImbalance.length > 0) {
+            recommendations.push(`⚖️ יש חוסר איזון במשימות: ${taskImbalance.join(', ')}`);
+        }
+        
+        if (recommendations.length === 0) {
+            recommendations.push('✨ המערכת פועלת באופן מצוין! כל המשמרות מאוזנות');
+        }
+    }
+
+    let html = '<div style="display: grid; gap: 12px;">';
+    recommendations.forEach(rec => {
+        html += `
+            <div style="padding: 15px; background: #e3f2fd; border-radius: 12px; border-right: 4px solid #2196f3; color: #0d47a1;">
+                ${rec}
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function checkTaskBalance() {
+    const imbalanced = [];
+    taskSystem.tasks.forEach(task => {
+        const taskShifts = Object.keys(scheduleData).filter(key => key.startsWith(task.name + '_')).length;
+        const maxPossible = 7 * 4 * task.soldiers;
+        const coverage = (taskShifts / maxPossible) * 100;
+        
+        if (coverage < 50) {
+            imbalanced.push(task.name);
+        }
+    });
+    return imbalanced;
 }
 
 // ========== USER MANAGEMENT FUNCTIONS ==========
@@ -609,15 +1409,19 @@ function updateUsersList() {
     let html = '';
     users.forEach(user => {
         if (user.type !== 'admin') {
+            const hasPassword = user.password ? '🔒' : '🔓';
+            const passwordInfo = user.password ? 'יש סיסמה' : 'אין סיסמה';
+            
             html += `
-                <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
+                <div class="user-item">
                     <div>
-                        <strong>${user.firstName} ${user.lastName}</strong><br>
-                        <small>${user.phone} | ${user.type}</small>
+                        <strong>${user.firstName} ${user.lastName}</strong> ${hasPassword}<br>
+                        <small>${user.phone} | ${user.type} | ${passwordInfo}</small>
                         ${user.createdAt ? `<br><small style="color: #666;">נוצר: ${new Date(user.createdAt).toLocaleDateString('he-IL')}</small>` : ''}
                     </div>
                     <div>
-                        <button class="btn" onclick="removeUser(${user.id})" style="background: #dc3545; padding: 8px 16px; font-size: 12px;">הסר</button>
+                        <button class="btn btn-small" style="background: #2196f3; margin: 2px;" onclick="changeUserPassword(${user.id})">🔑 סיסמה</button>
+                        <button class="btn btn-small btn-danger" style="margin: 2px;" onclick="removeUser(${user.id})">הסר</button>
                     </div>
                 </div>
             `;
@@ -632,10 +1436,11 @@ function addUser() {
     const firstName = document.getElementById('newFirstName').value.trim();
     const lastName = document.getElementById('newLastName').value.trim();
     const phone = document.getElementById('newPhone').value.trim();
+    const password = document.getElementById('newPassword').value.trim();
     const userType = document.getElementById('newUserType').value;
 
     if (!firstName || !lastName || !phone) {
-        showNotification('יש למלא את כל השדות', 'warning');
+        showNotification('יש למלא את שם פרטי, שם משפחה ומספר טלפון', 'warning');
         return;
     }
 
@@ -650,7 +1455,7 @@ function addUser() {
         lastName,
         phone,
         type: userType,
-        password: null,
+        password: password || null,
         createdAt: new Date().toISOString()
     };
 
@@ -668,15 +1473,61 @@ function addUser() {
     document.getElementById('newFirstName').value = '';
     document.getElementById('newLastName').value = '';
     document.getElementById('newPhone').value = '';
+    document.getElementById('newPassword').value = '';
 
     updateUsersList();
-    updateStats();
+    updateLoginUsersList();
+    updateDashboardStats();
     
     // Save to server immediately
     saveUserToServer(newUser);
     
     addToLog(`✅ משתמש חדש נוסף: ${firstName} ${lastName} (${userType})`, 'success');
     showNotification(`${userType} ${firstName} ${lastName} נוסף בהצלחה!`, 'success');
+}
+
+function changeUserPassword(userId) {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    
+    const newPassword = prompt(`הכנס סיסמה חדשה עבור ${user.firstName} ${user.lastName}:\n(השאר ריק כדי להסיר סיסמה)`);
+    if (newPassword === null) return;
+    
+    user.password = newPassword || null;
+    saveData();
+    updateUsersList();
+    updateLoginUsersList();
+    
+    if (newPassword) {
+        showNotification(`סיסמה עודכנה עבור ${user.firstName} ${user.lastName}`, 'success');
+    } else {
+        showNotification(`סיסמה הוסרה עבור ${user.firstName} ${user.lastName}`, 'info');
+    }
+}
+
+function removeUser(id) {
+    const user = users.find(u => u.id === id);
+    if (user && confirm(`האם להסיר את ${user.firstName} ${user.lastName}?`)) {
+        users = users.filter(u => u.id !== id);
+        
+        // Remove from schedule
+        const userFullName = `${user.firstName} ${user.lastName}`;
+        Object.keys(scheduleData).forEach(shiftId => {
+            if (scheduleData[shiftId] === userFullName) {
+                delete scheduleData[shiftId];
+            }
+        });
+        
+        delete availabilityData[id];
+        
+        updateUsersList();
+        updateLoginUsersList();
+        updateDashboardStats();
+        generateScheduleTable();
+        
+        addToLog(`🗑️ משתמש הוסר: ${user.firstName} ${user.lastName}`, 'success');
+        showNotification('משתמש הוסר', 'success');
+    }
 }
 
 async function saveUserToServer(user) {
@@ -744,50 +1595,24 @@ async function saveUserToServer(user) {
     }
 }
 
-function removeUser(id) {
-    const user = users.find(u => u.id === id);
-    if (user && confirm(`האם להסיר את ${user.firstName} ${user.lastName}?`)) {
-        users = users.filter(u => u.id !== id);
-        
-        // Remove from schedule
-        const userFullName = `${user.firstName} ${user.lastName}`;
-        Object.keys(scheduleData).forEach(shiftId => {
-            if (scheduleData[shiftId] === userFullName) {
-                delete scheduleData[shiftId];
-            }
-        });
-        
-        delete availabilityData[id];
-        
-        updateUsersList();
-        updateStats();
-        generateScheduleTable();
-        
-        addToLog(`🗑️ משתמש הוסר: ${user.firstName} ${user.lastName}`, 'success');
-        showNotification('משתמש הוסר', 'success');
-    }
-}
-
 // ========== TASK MANAGEMENT FUNCTIONS ==========
 function updateTasksList() {
     const container = document.getElementById('tasksList');
     if (!container) return;
 
-    let html = '<div style="display: grid; gap: 15px;">';
+    let html = '';
     taskSystem.tasks.forEach(task => {
-        const bgColor = task.type === 'fixed' ? '#fff3cd' : '#d1ecf1';
+        const taskTypeClass = task.type === 'fixed' ? 'fixed-task' : 'flexible-task';
         const deleteButton = task.type === 'fixed' ? 
             '<span style="color: #6c757d; font-size: 0.9em;">משימה קבועה</span>' :
-            `<button class="btn" onclick="removeTask('${task.id}')" style="background: #dc3545; padding: 8px 16px; font-size: 12px;">🗑️ מחק</button>`;
+            `<button class="btn btn-small btn-danger" onclick="removeTask('${task.id}')">🗑️ מחק</button>`;
 
         html += `
-            <div style="background: ${bgColor}; border: 2px solid #e1e8ed; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <div style="font-size: 1.3em; font-weight: 800; color: #2c3e50; margin-bottom: 8px;">${task.name}</div>
+            <div class="task-item ${taskTypeClass}">
+                <div class="task-info">
+                    <div class="task-name">${task.name}</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <span style="background: ${task.type === 'fixed' ? '#ffc107' : '#17a2b8'}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.9em; font-weight: 700;">
-                            ${task.type === 'fixed' ? 'קבועה' : 'גמישה'}
-                        </span>
+                        <span class="task-type ${task.type}">${task.type === 'fixed' ? 'קבועה' : 'גמישה'}</span>
                         <span style="background: #6c757d; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">
                             ${task.soldiers} חייל${task.soldiers > 1 ? 'ים' : ''}
                         </span>
@@ -799,9 +1624,15 @@ function updateTasksList() {
             </div>
         `;
     });
-    html += '</div>';
 
     container.innerHTML = html;
+    
+    // Update total tasks counter
+    const totalTasksElement = document.getElementById('totalTasks');
+    if (totalTasksElement) {
+        totalTasksElement.textContent = taskSystem.tasks.length;
+    }
+    
     addToLog(`📋 רשימת משימות עודכנה: ${taskSystem.tasks.length} משימות`);
 }
 
@@ -835,7 +1666,7 @@ function addTask() {
     document.getElementById('newTaskSoldiers').value = '1';
     
     updateTasksList();
-    updateStats();
+    updateDashboardStats();
     generateScheduleTable();
     
     addToLog(`✅ משימה חדשה נוספה: ${name} (${type}, ${soldiers} חיילים)`, 'success');
@@ -866,7 +1697,7 @@ function removeTask(taskId) {
     taskSystem.tasks = taskSystem.tasks.filter(t => t.id !== taskId);
     
     updateTasksList();
-    updateStats();
+    updateDashboardStats();
     generateScheduleTable();
     
     addToLog(`🗑️ משימה נמחקה: ${task.name}`, 'success');
@@ -875,23 +1706,44 @@ function removeTask(taskId) {
 
 // ========== SCHEDULE FUNCTIONS ==========
 function generateScheduleTable() {
+    addToLog('📅 יוצר לוח משמרות...');
     const container = document.getElementById('scheduleContainer');
-    if (!container) return;
+    if (!container) {
+        addToLog('❌ מיכל לוח המשמרות לא נמצא', 'error');
+        return;
+    }
+    
+    const today = new Date();
+    const currentWeek = [];
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+        currentWeek.push(date);
+    }
     
     let html = `
         <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <table class="schedule-table">
                 <thead>
-                    <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                        <th style="padding: 12px 6px; font-weight: 800; text-align: center;">תפקיד</th>`;
+                    <tr>
+                        <th>תפקיד</th>`;
 
     // Days header
     for (let i = 0; i < 7; i++) {
-        html += `<th colspan="4" style="padding: 12px 6px; font-weight: 800; text-align: center; ${i === 6 ? 'background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);' : ''}">
+        const date = currentWeek[i];
+        const dayClass = i === 6 ? 'style="background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);"' : '';
+        
+        html += `<th colspan="4" ${dayClass}>
             <div style="font-weight: 900; font-size: 1.1em;">${dayNames[i]}</div>
+            <div style="font-size: 10px; line-height: 1.2; margin-top: 4px; opacity: 0.9;">
+                ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+            </div>
         </th>`;
     }
-    html += '</tr><tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">';
+    html += '</tr><tr>';
     html += '<th></th>';
 
     // Shift types header
@@ -949,7 +1801,7 @@ function generateScheduleTable() {
 
     html += '</tbody></table></div>';
     container.innerHTML = html;
-    addToLog('📅 לוח משמרות נוצר');
+    addToLog('✅ לוח משמרות נוצר בהצלחה');
 }
 
 function cellClick(cellId) {
@@ -962,7 +1814,7 @@ function cellClick(cellId) {
         if (confirm(`האם להסיר את ${assigned}?`)) {
             delete scheduleData[cellId];
             generateScheduleTable();
-            updateStats();
+            updateDashboardStats();
             addToLog(`🗑️ חייל הוסר מהמשמרת: ${assigned}`, 'success');
             showNotification('חייל הוסר מהמשמרת', 'success');
         }
@@ -974,7 +1826,7 @@ function cellClick(cellId) {
             const selectedEmp = employees[choice - 1];
             scheduleData[cellId] = `${selectedEmp.firstName} ${selectedEmp.lastName}`;
             generateScheduleTable();
-            updateStats();
+            updateDashboardStats();
             addToLog(`✅ חייל שובץ: ${selectedEmp.firstName} ${selectedEmp.lastName}`, 'success');
             showNotification(`${selectedEmp.firstName} ${selectedEmp.lastName} שובץ למשמרת`, 'success');
         }
@@ -994,45 +1846,176 @@ function autoSchedule() {
 
     scheduleData = {};
     addToLog('🎯 מתחיל שיבוץ אוטומטי...');
-    showNotification('🎯 מבצע שיבוץ אוטומטי...', 'info');
+    showNotification('🎯 מבצע שיבוץ אוטומטי חכם...', 'info');
 
-    // Simple auto-scheduling logic
-    let assignmentCount = 0;
-    taskSystem.tasks.forEach(task => {
+    // Initialize soldier statistics
+    const soldierStats = {};
+    employees.forEach(emp => {
+        const fullName = `${emp.firstName} ${emp.lastName}`;
+        soldierStats[fullName] = { 
+            totalShifts: 0,
+            assignedDays: new Set(),
+            unavailableShifts: availabilityData[emp.id]?.unavailableShifts || new Set()
+        };
+    });
+
+    // Schedule all tasks in order
+    taskSystem.tasks.forEach((task) => {
+        addToLog(`📋 מתזמן משימה: ${task.name} (${task.soldiers} חיילים)`);
+        
         for (let soldierIndex = 0; soldierIndex < task.soldiers; soldierIndex++) {
             for (let day = 0; day < 7; day++) {
                 for (let shift = 0; shift < 4; shift++) {
                     const shiftId = `${task.name}_${soldierIndex}_${day}_${shift}`;
                     
-                    // Simple assignment - cycle through soldiers
-                    if (employees.length > 0) {
-                        const selectedSoldier = employees[assignmentCount % employees.length];
-                        scheduleData[shiftId] = `${selectedSoldier.firstName} ${selectedSoldier.lastName}`;
-                        assignmentCount++;
+                    // Find available soldiers for this shift
+                    const availableSoldiers = employees.filter(emp => {
+                        const fullName = `${emp.firstName} ${emp.lastName}`;
+                        const stats = soldierStats[fullName];
+                        const shiftKey = `${day}_${shift}`;
+                        
+                        // Check if soldier is available for this shift
+                        if (stats.unavailableShifts.has(shiftKey)) return false;
+                        
+                        // Check if soldier already has a shift this day
+                        if (stats.assignedDays.has(day)) return false;
+                        
+                        // Check if soldier has reached maximum shifts
+                        if (stats.totalShifts >= systemSettings.maxShiftsPerWeek) return false;
+                        
+                        return true;
+                    });
+                    
+                    if (availableSoldiers.length > 0) {
+                        // Sort by least total shifts to ensure fair distribution
+                        availableSoldiers.sort((a, b) => {
+                            const nameA = `${a.firstName} ${a.lastName}`;
+                            const nameB = `${b.firstName} ${b.lastName}`;
+                            return soldierStats[nameA].totalShifts - soldierStats[nameB].totalShifts;
+                        });
+                        
+                        const selectedSoldier = availableSoldiers[0];
+                        const fullName = `${selectedSoldier.firstName} ${selectedSoldier.lastName}`;
+                        
+                        // Assign the shift
+                        scheduleData[shiftId] = fullName;
+                        soldierStats[fullName].totalShifts++;
+                        soldierStats[fullName].assignedDays.add(day);
                     }
                 }
             }
         }
     });
 
+    // Count assigned shifts by task
+    const taskSummary = {};
+    taskSystem.tasks.forEach(task => {
+        taskSummary[task.name] = Object.keys(scheduleData).filter(key => key.startsWith(task.name + '_')).length;
+    });
+
     generateScheduleTable();
-    updateStats();
+    updateDashboardStats();
     
-    addToLog(`✅ שיבוץ אוטומטי הושלם: ${assignmentCount} שיבוצים`, 'success');
-    showNotification(`✅ שיבוץ הושלם! ${assignmentCount} שיבוצים`, 'success');
+    const totalAssigned = Object.keys(scheduleData).length;
+    const summaryText = Object.entries(taskSummary).map(([task, count]) => `${task}: ${count}`).join(', ');
+    
+    addToLog(`✅ שיבוץ אוטומטי הושלם: ${totalAssigned} שיבוצים`, 'success');
+    showNotification(`✅ שיבוץ חכם הושלם! ${summaryText}`, 'success');
+}
+
+function optimizeSchedule() { 
+    showNotification('🔧 מבצע אופטימיזציה למשימות הקיימות...', 'info');
+    
+    // Simple optimization: redistribute shifts more evenly
+    const employees = users.filter(u => u.type === 'חייל');
+    if (employees.length === 0) return;
+    
+    const soldierCounts = {};
+    employees.forEach(emp => {
+        soldierCounts[`${emp.firstName} ${emp.lastName}`] = 0;
+    });
+    
+    // Count current assignments
+    Object.values(scheduleData).forEach(assignment => {
+        if (soldierCounts[assignment] !== undefined) {
+            soldierCounts[assignment]++;
+        }
+    });
+    
+    // Find imbalances and suggest improvements
+    const maxShifts = Math.max(...Object.values(soldierCounts));
+    const minShifts = Math.min(...Object.values(soldierCounts));
+    
+    if (maxShifts - minShifts > 2) {
+        showNotification(`💡 נמצא חוסר איזון: ${maxShifts - minShifts} הפרש משמרות. השתמש בשיבוץ אוטומטי לאיזון מחדש.`, 'warning');
+    } else {
+        showNotification('✅ השיבוץ מאוזן יחסית!', 'success');
+    }
 }
 
 function clearSchedule() {
     if (confirm('האם לנקות את הלוח?')) {
         scheduleData = {};
         generateScheduleTable();
-        updateStats();
+        updateDashboardStats();
         addToLog('🗑️ לוח המשמרות נוקה', 'success');
         showNotification('לוח נוקה', 'success');
     }
 }
 
+function showMyShifts() {
+    if (currentUser.type !== 'חייל') return;
+    
+    const myName = `${currentUser.firstName} ${currentUser.lastName}`;
+    const myShifts = Object.entries(scheduleData).filter(([id, assigned]) => assigned === myName);
+    
+    if (myShifts.length === 0) {
+        showNotification('אין לך משמרות השבוע', 'info');
+        return;
+    }
+    
+    let message = 'המשמרות שלך השבוע:\n\n';
+    myShifts.forEach(([shiftId, assigned]) => {
+        const parts = shiftId.split('_');
+        const taskName = parts[0];
+        const day = parseInt(parts[parts.length - 2]);
+        const shift = parseInt(parts[parts.length - 1]);
+        
+        message += `${dayNames[day]} - ${taskName} (${shiftHours[shift]})\n`;
+    });
+    
+    alert(message);
+}
+
 // ========== AVAILABILITY FUNCTIONS ==========
+function updateAvailabilityStatus() {
+    const statusElement = document.getElementById('availabilityStatus');
+    if (statusElement && currentUser && currentUser.type === 'חייל') {
+        if (systemSettings.availabilityOpen) {
+            statusElement.innerHTML = '<strong>✅ מילוי זמינות פתוח!</strong> סמן את המשמרות שאתה לא יכול לבצע (עד 7 משמרות).';
+            statusElement.className = 'alert alert-success';
+        } else {
+            statusElement.innerHTML = '<strong>❌ מילוי זמינות סגור</strong> - נא לפנות למנהל לפתיחת הזמינות.';
+            statusElement.className = 'alert alert-warning';
+        }
+    }
+}
+
+function updateSystemAvailabilityStatus() {
+    const statusElement = document.getElementById('systemAvailabilityStatus');
+    if (statusElement) {
+        const status = systemSettings.availabilityOpen ? 'פתוח ✅' : 'סגור ❌';
+        const color = systemSettings.availabilityOpen ? '#28a745' : '#dc3545';
+        statusElement.innerHTML = `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
+    }
+    
+    // עדכון המתג
+    const toggleElement = document.getElementById('availabilityOpenToggle');
+    if (toggleElement) {
+        toggleElement.checked = systemSettings.availabilityOpen;
+    }
+}
+
 function generateAvailabilityForm() {
     addToLog(`⏰ יוצר טופס זמינות עבור: ${currentUser.firstName} ${currentUser.lastName}`);
     if (!currentUser || currentUser.type !== 'חייל') {
@@ -1071,15 +2054,18 @@ function generateAvailabilityForm() {
                 <h3>✅ זמינות נשלחה בהצלחה!</h3>
                 <p>הזמינות שלך נרשמה במערכת ונעולה לעריכה</p>
                 <p><strong>תאריך שליחה:</strong> ${new Date(availabilityData[currentUser.id].submittedAt).toLocaleString('he-IL')}</p>
+                <p style="margin-top: 15px; color: #666;">למילוי זמינות מחדש, פנה למנהל לפתיחת המערכת</p>
+            </div>
+            <div style="margin-top: 20px;">
+                ${generateReadOnlyAvailabilityTable()}
             </div>
         `;
         return;
     }
     
     let html = `
-        <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow-x: auto;">
-            <table class="schedule-table">
-                <thead><tr><th>יום</th>`;
+        <table class="schedule-table">
+        <thead><tr><th>יום</th>`;
     
     for (let shift = 0; shift < 4; shift++) {
         html += `<th>${shiftTypes[shift]}<br><small>${shiftHours[shift]}</small></th>`;
@@ -1095,29 +2081,54 @@ function generateAvailabilityForm() {
             const isUnavailable = availabilityData[currentUser.id].unavailableShifts.has(shiftKey);
             const cellClass = isUnavailable ? 'shift-cell unavailable' : 'shift-cell available';
             const cellText = isUnavailable ? '❌ לא זמין' : '✅ זמין';
-            const cellStyle = isUnavailable ? 
-                'background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); color: #721c24;' :
-                'background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); color: #155724;';
             
             html += `<td class="${cellClass}" id="${cellId}" 
                     onclick="toggleShiftAvailability(${day}, ${shift})" 
-                    style="cursor: pointer; min-height: 60px; user-select: none; font-weight: 700; text-align: center; ${cellStyle}">
+                    style="cursor: pointer; min-height: 60px; user-select: none; font-weight: 700; text-align: center;">
                 <div id="${cellId}_text" style="font-size: 14px;">${cellText}</div>
             </td>`;
         }
         html += '</tr>';
     }
     
-    html += `</tbody></table>
-        <div style="text-align: center; margin-top: 20px;">
-            <p id="selectedCount" style="font-weight: bold; color: #2196f3; margin-bottom: 15px;">נבחרו: 0 מתוך 7 משמרות כלא זמין</p>
-            <button class="btn" onclick="submitAvailability()">📤 שלח זמינות</button>
-        </div>
-    </div>`;
-    
+    html += '</tbody></table>';
     container.innerHTML = html;
     updateSelectedCount();
     addToLog('✅ טופס זמינות נוצר בהצלחה');
+}
+
+function generateReadOnlyAvailabilityTable() {
+    if (!currentUser || !availabilityData[currentUser.id]) return '';
+    
+    let html = `
+        <h4 style="text-align: center; margin-bottom: 15px; color: #333;">📋 הזמינות שלך (לצפייה בלבד)</h4>
+        <table class="schedule-table">
+        <thead><tr><th>יום</th>`;
+    
+    for (let shift = 0; shift < 4; shift++) {
+        html += `<th>${shiftTypes[shift]}<br><small>${shiftHours[shift]}</small></th>`;
+    }
+    html += '</tr></thead><tbody>';
+    
+    for (let day = 0; day < 7; day++) {
+        html += `<tr><td style="font-weight: 700;">${dayNames[day]}</td>`;
+        
+        for (let shift = 0; shift < 4; shift++) {
+            const shiftKey = `${day}_${shift}`;
+            const isUnavailable = availabilityData[currentUser.id].unavailableShifts.has(shiftKey);
+            const cellClass = isUnavailable ? 'shift-cell unavailable' : 'shift-cell available';
+            const cellText = isUnavailable ? '❌ לא זמין' : '✅ זמין';
+            
+            html += `<td class="${cellClass}" 
+                    style="min-height: 60px; font-weight: 700; text-align: center; cursor: default;">
+                <div style="font-size: 14px;">${cellText}</div>
+            </td>`;
+        }
+        html += '</tr>';
+    }
+    
+    html += '</tbody></table>';
+    return html;
 }
 
 function toggleShiftAvailability(day, shift) {
@@ -1159,8 +2170,8 @@ function toggleShiftAvailability(day, shift) {
     if (isCurrentlyUnavailable) {
         // Making available
         userData.unavailableShifts.delete(shiftKey);
-        cell.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
-        cell.style.color = '#155724';
+        cell.classList.remove('unavailable');
+        cell.classList.add('available');
         textElement.textContent = '✅ זמין';
         addToLog('✅ משמרת הוגדרה כזמינה');
     } else {
@@ -1170,8 +2181,8 @@ function toggleShiftAvailability(day, shift) {
             return;
         }
         userData.unavailableShifts.add(shiftKey);
-        cell.style.background = 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)';
-        cell.style.color = '#721c24';
+        cell.classList.remove('available');
+        cell.classList.add('unavailable');
         textElement.textContent = '❌ לא זמין';
         addToLog('✅ משמרת הוגדרה כלא זמינה');
     }
@@ -1232,167 +2243,317 @@ function submitAvailability() {
     
     addToLog(`✅ ${currentUser.firstName} שלח זמינות: ${unavailableCount} משמרות לא זמין`, 'success');
     showNotification('✅ זמינות נשלחה בהצלחה ונעולה לעריכה!', 'success');
-    updateStats();
+    updateDashboardStats();
 }
 
-// ========== LOGIN FUNCTIONS ==========
-function handleLoginTypeChange() {
-    const quickLogin = document.getElementById('quickLogin').value;
-    const manualLogin = document.getElementById('manualLogin');
-    
-    if (quickLogin === 'manual') {
-        manualLogin.style.display = 'block';
-    } else {
-        manualLogin.style.display = 'none';
+// ========== AVAILABILITY MANAGEMENT FUNCTIONS ==========
+function toggleAvailabilityStatus() {
+    const toggleElement = document.getElementById('availabilityOpenToggle');
+    if (toggleElement) {
+        systemSettings.availabilityOpen = toggleElement.checked;
+        saveData();
+        updateSystemAvailabilityStatus();
+        
+        const status = systemSettings.availabilityOpen ? 'נפתחה' : 'נסגרה';
+        showNotification(`זמינות ${status} בהצלחה`, 'success');
     }
 }
 
-function login() {
-    addToLog('🔐 ניסיון כניסה למערכת');
-    const quickLogin = document.getElementById('quickLogin').value;
+function openAvailabilityForAll() {
+    systemSettings.availabilityOpen = true;
     
-    if (quickLogin === 'admin') {
-        const password = prompt('הכנס סיסמה עבור המנהל הכללי:');
-        if (password === '322770') {
-            currentUser = users[0];
-            showDashboard();
-            addToLog(`✅ מנהל כללי התחבר בהצלחה`, 'success');
-            showNotification('התחברת בהצלחה!', 'success');
-        } else {
-            addToLog(`❌ ניסיון כניסה נכשל - סיסמה שגויה למנהל`, 'error');
-            showNotification('סיסמה שגויה', 'error');
+    // איפוס סטטוס השליחה של כל החיילים
+    Object.keys(availabilityData).forEach(userId => {
+        if (availabilityData[userId]) {
+            availabilityData[userId].submitted = false;
+            availabilityData[userId].submittedAt = null;
         }
-    } else if (quickLogin === 'manual') {
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const userType = document.getElementById('userType').value;
+    });
+    
+    saveData();
+    updateSystemAvailabilityStatus();
+    showNotification('זמינות נפתחה לכל החיילים! כל החיילים יכולים למלא זמינות מחדש.', 'success');
+}
 
-        if (!firstName || !lastName || !phone) {
-            showNotification('יש למלא את כל השדות החובה', 'warning');
-            return;
+function closeAvailabilityForAll() {
+    systemSettings.availabilityOpen = false;
+    saveData();
+    updateSystemAvailabilityStatus();
+    showNotification('זמינות נסגרה', 'info');
+}
+
+function remindAvailability() { 
+    const soldiers = users.filter(u => u.type === 'חייל');
+    const notSubmitted = soldiers.filter(s => !availabilityData[s.id]?.submitted);
+    
+    if (notSubmitted.length === 0) {
+        showNotification('כל החיילים כבר שלחו זמינות', 'info');
+    } else {
+        const names = notSubmitted.map(s => `${s.firstName} ${s.lastName}`).join(', ');
+        showNotification(`תזכורת נשלחה ל: ${names} (${notSubmitted.length} חיילים)`, 'info');
+    }
+}
+
+// ========== REPORTS FUNCTIONS ==========
+function generateReports() {
+    const container = document.getElementById('reportsDisplay');
+    const soldiers = users.filter(u => u.type === 'חייל');
+    const totalShifts = Object.keys(scheduleData).length;
+    const totalPossible = calculateTotalPossibleShifts();
+    const coverage = Math.round((totalShifts / totalPossible) * 100);
+    
+    let submittedAvailability = 0;
+    soldiers.forEach(soldier => {
+        if (availabilityData[soldier.id] && availabilityData[soldier.id].submitted) {
+            submittedAvailability++;
         }
+    });
+    
+    let html = `
+        <div style="display: grid; gap: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="padding: 15px; background: #e3f2fd; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #1976d2;">${soldiers.length}</div>
+                    <div style="font-weight: 700;">חיילים במערכת</div>
+                </div>
+                <div style="padding: 15px; background: #e8f5e8; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #388e3c;">${totalShifts}</div>
+                    <div style="font-weight: 700;">משמרות מאויישות</div>
+                </div>
+                <div style="padding: 15px; background: #fff3e0; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #f57c00;">${coverage}%</div>
+                    <div style="font-weight: 700;">אחוז כיסוי</div>
+                </div>
+                <div style="padding: 15px; background: #fce4ec; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #c2185b;">${submittedAvailability}</div>
+                    <div style="font-weight: 700;">שלחו זמינות</div>
+                </div>
+                <div style="padding: 15px; background: #f3e5f5; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #7b1fa2;">${taskSystem.tasks.length}</div>
+                    <div style="font-weight: 700;">סה״כ משימות</div>
+                </div>
+            </div>
+            
+            <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h4>📊 סיכום מהיר</h4>
+                <p><strong>משמרות ריקות:</strong> ${totalPossible - totalShifts} מתוך ${totalPossible}</p>
+                <p><strong>ממוצע משמרות לחייל:</strong> ${soldiers.length > 0 ? Math.round(totalShifts / soldiers.length) : 0}</p>
+                <p><strong>זמינות חסרה:</strong> ${soldiers.length - submittedAvailability} חיילים</p>
+            </div>
+            
+            <div style="padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                <h4>🔧 פילוח לפי משימות</h4>
+                ${generateTaskBreakdown()}
+            </div>
+        </div>
+    `;
+    container.innerHTML = html;
+}
 
-        currentUser = {
-            id: Date.now(),
-            firstName,
-            lastName,
-            phone,
-            type: userType,
-            password: null,
+function generateTaskBreakdown() {
+    let html = '<div style="display: grid; gap: 10px; margin-top: 10px;">';
+    
+    taskSystem.tasks.forEach(task => {
+        const taskShifts = Object.keys(scheduleData).filter(key => key.startsWith(task.name + '_')).length;
+        const maxPossible = 7 * 4 * task.soldiers; // 7 days * 4 shifts * soldiers per task
+        const taskCoverage = Math.round((taskShifts / maxPossible) * 100);
+        
+        html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 6px;">
+                <span style="font-weight: 700;">${task.name}</span>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span>${taskShifts}/${maxPossible}</span>
+                    <span style="background: ${taskCoverage >= 80 ? '#28a745' : taskCoverage >= 50 ? '#ffc107' : '#dc3545'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
+                        ${taskCoverage}%
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+function generateFullReport() { 
+    const reportWindow = window.open('', '_blank');
+    const soldiers = users.filter(u => u.type === 'חייל');
+    const totalShifts = Object.keys(scheduleData).length;
+    const totalPossible = calculateTotalPossibleShifts();
+    
+    let reportContent = `
+        <html dir="rtl">
+        <head><title>דוח מלא - מערכת ניהול משמרות</title></head>
+        <body style="font-family: Arial; padding: 20px;">
+            <h1>📊 דוח מלא - מערכת ניהול משמרות</h1>
+            <h2>📈 נתונים כלליים</h2>
+            <p>חיילים במערכת: ${soldiers.length}</p>
+            <p>משמרות מאויישות: ${totalShifts}</p>
+            <p>סה״כ משמרות אפשריות: ${totalPossible}</p>
+            <p>אחוז כיסוי: ${Math.round((totalShifts / totalPossible) * 100)}%</p>
+            
+            <h2>🔧 משימות במערכת</h2>
+            <ul>
+    `;
+    
+    taskSystem.tasks.forEach(task => {
+        const taskShifts = Object.keys(scheduleData).filter(key => key.startsWith(task.name + '_')).length;
+        reportContent += `<li>${task.name} - ${taskShifts} משמרות מאויישות (${task.soldiers} חיילים לכל משמרת)</li>`;
+    });
+    
+    reportContent += `
+            </ul>
+            <p style="margin-top: 20px;">נוצר ב: ${new Date().toLocaleString('he-IL')}</p>
+        </body></html>
+    `;
+    
+    reportWindow.document.write(reportContent);
+    showNotification('דוח מלא נוצר בחלון חדש', 'success');
+}
+
+function exportReports() { 
+    const data = {
+        users: users.filter(u => u.type !== 'admin'),
+        schedule: scheduleData,
+        tasks: taskSystem.tasks,
+        stats: {
+            totalSoldiers: users.filter(u => u.type === 'חייל').length,
+            totalShifts: Object.keys(scheduleData).length,
+            totalTasks: taskSystem.tasks.length,
+            exportDate: new Date().toISOString()
+        }
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shift_management_export_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showNotification('דוחות יוצאו בהצלחה', 'success');
+}
+
+// ========== SETTINGS FUNCTIONS ==========
+function loadSettingsValues() {
+    const maxShiftsInput = document.getElementById('maxShiftsPerWeek');
+    if (maxShiftsInput) {
+        maxShiftsInput.value = systemSettings.maxShiftsPerWeek || 6;
+    }
+    
+    const toggleElement = document.getElementById('availabilityOpenToggle');
+    if (toggleElement) {
+        toggleElement.checked = systemSettings.availabilityOpen || false;
+    }
+}
+
+function saveSettings() {
+    const maxShiftsInput = document.getElementById('maxShiftsPerWeek');
+    if (maxShiftsInput) {
+        systemSettings.maxShiftsPerWeek = parseInt(maxShiftsInput.value);
+    }
+    saveData();
+    showNotification('הגדרות נשמרו', 'success');
+}
+
+function generateTestData() {
+    const testSoldiers = [
+        { firstName: 'דוד', lastName: 'כהן' },
+        { firstName: 'משה', lastName: 'לוי' },
+        { firstName: 'יוסף', lastName: 'אברהם' },
+        { firstName: 'אליהו', lastName: 'ישראל' },
+        { firstName: 'שמואל', lastName: 'רוזן' }
+    ];
+    
+    testSoldiers.forEach((soldier, index) => {
+        const newUser = {
+            id: Date.now() + index,
+            firstName: soldier.firstName,
+            lastName: soldier.lastName,
+            phone: `050${1000000 + index}`,
+            type: 'חייל',
             createdAt: new Date().toISOString()
         };
         
-        users.push(currentUser);
-        showDashboard();
-        addToLog(`✅ משתמש חדש נרשם: ${firstName} ${lastName} (${userType})`, 'success');
-        showNotification(`ברוך הבא ${firstName}!`, 'success');
-    } else {
-        showNotification('יש לבחור סוג כניסה', 'warning');
-    }
-}
-
-function logout() {
-    addToLog(`👋 ${currentUser ? currentUser.firstName : 'משתמש'} התנתק מהמערכת`);
-    currentUser = null;
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('dashboard').style.display = 'none';
-    showNotification('התנתקת מהמערכת', 'info');
-}
-
-function showDashboard() {
-    addToLog(`👤 הצגת לוח בקרה עבור: ${currentUser.firstName} ${currentUser.lastName} (${currentUser.type})`);
-    
-    document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    
-    document.getElementById('userInfo').innerHTML = 
-        `ברוך הבא ${currentUser.firstName} ${currentUser.lastName} | ${currentUser.type}`;
-
-    const isAdmin = currentUser.type === 'admin';
-    const isManager = currentUser.type === 'מנהל' || isAdmin;
-    const isSoldier = currentUser.type === 'חייל';
-    const isViewer = currentUser.type === 'צופה';
-    
-    // Hide all tabs first
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        if (tab.id !== '') tab.style.display = 'none';
-    });
-
-    if (isManager) {
-        document.getElementById('dashboardTab').style.display = 'block';
-        document.getElementById('scheduleNavTab').style.display = 'block';
-        document.getElementById('managementNavTab').style.display = 'block';
-        document.getElementById('tasksNavTab').style.display = 'block';
-        
-        // Show manager buttons for schedule editing
-        const managerButtons = document.getElementById('managerButtons');
-        if (managerButtons) managerButtons.style.display = 'block';
-        
-        showTab('dashboard');
-    } else if (isSoldier) {
-        document.getElementById('scheduleNavTab').style.display = 'block';
-        document.getElementById('availabilityNavTab').style.display = 'block';
-        showTab('schedule');
-    } else if (isViewer) {
-        document.getElementById('scheduleNavTab').style.display = 'block';
-        showTab('schedule');
-    }
-    
-    // Load content based on user type
-    if (isManager) {
-        generateScheduleTable();
-        updateStats();
-        updateUsersList();
-        updateTasksList();
-    } else if (isSoldier) {
-        generateScheduleTable();
-        generateAvailabilityForm();
-    } else if (isViewer) {
-        generateScheduleTable();
-    }
-    
-    // Update status
-    document.getElementById('userStatusText').textContent = `${currentUser.firstName} ${currentUser.lastName} (${currentUser.type})`;
-    
-    addToLog('✅ לוח הבקרה נטען בהצלחה');
-}
-
-function showTab(tabName) {
-    addToLog(`📂 מעבר לטאב: ${tabName}`);
-    
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-    
-    const tabElement = document.getElementById(tabName + 'Tab');
-    if (tabElement) {
-        tabElement.classList.add('active');
-    }
-    
-    // Find and activate the corresponding nav tab
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        if (tab.onclick && tab.onclick.toString().includes(tabName)) {
-            tab.classList.add('active');
+        if (!users.find(u => u.phone === newUser.phone)) {
+            users.push(newUser);
+            // אתחול נתוני זמינות עבור חיילי בדיקה
+            availabilityData[newUser.id] = { 
+                unavailableShifts: new Set(), 
+                submitted: false 
+            };
         }
     });
+    
+    // Add some test tasks
+    const testTasks = [
+        { name: 'סייר מיוחד', type: 'flexible', soldiers: 2 },
+        { name: 'משמר לילה', type: 'flexible', soldiers: 1 }
+    ];
+    
+    testTasks.forEach(task => {
+        if (!taskSystem.tasks.find(t => t.name === task.name)) {
+            taskSystem.tasks.push({
+                id: `task_${taskSystem.nextId++}`,
+                name: task.name,
+                type: task.type,
+                soldiers: task.soldiers,
+                order: taskSystem.tasks.length + 1
+            });
+        }
+    });
+    
+    updateUsersList();
+    updateLoginUsersList();
+    updateTasksList();
+    generateScheduleTable();
+    updateDashboardStats();
+    showNotification('נתוני בדיקה נוצרו בהצלחה! כולל חיילים ומשימות חדשות', 'success');
+}
 
-    // Load content based on tab
-    switch(tabName) {
-        case 'dashboard':
-            updateStats();
-            break;
-        case 'schedule':
-            generateScheduleTable();
-            break;
-        case 'availability':
-            generateAvailabilityForm();
-            break;
-        case 'management':
+function backupData() { 
+    const backupData = {
+        users,
+        scheduleData,
+        availabilityData,
+        taskSystem,
+        systemSettings,
+        backupDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shift_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showNotification('גיבוי הנתונים הושלם', 'success');
+}
+
+function clearAllData() {
+    if (confirm('האם לנקות את כל הנתונים? פעולה זו תמחק הכל למעט המנהל הכללי!')) {
+        if (confirm('האם אתה בטוח? הפעולה בלתי הפיכה!')) {
+            users = [users[0]]; // Keep only admin
+            scheduleData = {};
+            availabilityData = {};
+            // Reset task system to defaults
+            taskSystem.tasks = [
+                { id: 'sg', name: 'ש.ג', type: 'fixed', soldiers: 1, order: 1 },
+                { id: 'sayer', name: 'סייר', type: 'flexible', soldiers: 1, order: 2 },
+                { id: 'sayer4h', name: 'סייר 4 שעות', type: 'flexible', soldiers: 1, order: 3 }
+            ];
+            taskSystem.nextId = 4;
+            
             updateUsersList();
-            break;
-        case 'tasks':
+            updateLoginUsersList();
             updateTasksList();
-            break;
+            generateScheduleTable();
+            updateDashboardStats();
+            showNotification('כל הנתונים נוקו ומערכת המשימות אופסה', 'success');
+        }
     }
 }
 
@@ -1424,6 +2585,7 @@ async function testConnection() {
             }
             
             connectionStatus = 'connected';
+            document.getElementById('connectionDisplay').textContent = 'מחובר ✅';
             addToLog('✅ חיבור אמיתי הצליח', 'success');
             showNotification('חיבור תקין לגוגל שיטס!', 'success');
             return true;
@@ -1441,6 +2603,7 @@ async function testConnection() {
             }
             
             connectionStatus = 'connected';
+            document.getElementById('connectionDisplay').textContent = 'מחובר ✅';
             addToLog('✅ חיבור דרך iframe הצליח', 'success');
             showNotification('חיבור תקין לגוגל שיטס!', 'success');
             return true;
@@ -1451,6 +2614,7 @@ async function testConnection() {
             }
             
             connectionStatus = 'disconnected';
+            document.getElementById('connectionDisplay').textContent = 'לא מחובר ❌';
             addToLog(`❌ חיבור נכשל: ${iframeError.message}`, 'error');
             showNotification('שגיאה בחיבור - עובד במצב מקומי', 'warning');
             return false;
@@ -1655,9 +2819,10 @@ async function processLoadedData(result) {
         
         // Update UI
         updateUsersList();
-        updateStats();
+        updateDashboardStats();
         updateTasksList();
         generateScheduleTable();
+        updateLoginUsersList();
         
         if (currentUser && currentUser.type === 'חייל') {
             generateAvailabilityForm();
@@ -1679,7 +2844,7 @@ async function saveData() {
     
     try {
         const saveUrl = APP_SCRIPT_URL;
-        const saveData = {
+        const saveDataObj = {
             action: 'saveAllData',
             users: users.filter(u => u.type !== 'admin').map(u => [
                 u.id, u.firstName, u.lastName, u.phone, u.type, u.password || '', u.createdAt || new Date().toISOString()
@@ -1706,7 +2871,7 @@ async function saveData() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(saveData),
+                body: JSON.stringify(saveDataObj),
                 mode: 'no-cors'
             });
             
@@ -1725,7 +2890,7 @@ async function saveData() {
             
             const input = document.createElement('input');
             input.name = 'data';
-            input.value = JSON.stringify(saveData);
+            input.value = JSON.stringify(saveDataObj);
             form.appendChild(input);
             
             const iframe = document.createElement('iframe');
@@ -1754,8 +2919,14 @@ async function saveData() {
 
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', async function() {
-    addToLog('🚀 מערכת ניהול משמרות מתחילה...');
-    console.log('🚀 מערכת ניהול משמרות מתחילה...');
+    addToLog('🚀 מערכת ניהול משמרות משופרת מתחילה...');
+    console.log('🚀 מערכת ניהול משמרות משופרת מתחילה...');
+    
+    // Initialize login users list
+    setTimeout(() => {
+        updateLoginUsersList();
+        addToLog('📝 רשימת משתמשים לכניסה אותחלה');
+    }, 100);
     
     // Auto test connection and load data on startup
     setTimeout(async () => {
@@ -1771,8 +2942,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }, 1000);
     
-    addToLog('✅ מערכת מוכנה לשימוש!', 'success');
-    showNotification('מערכת ניהול משמרות מוכנה! 🎉', 'success');
+    addToLog('✅ מערכת משופרת מוכנה לשימוש!', 'success');
+    showNotification('מערכת ניהול משמרות משופרת עם חיבור לגוגל שיטס מוכנה! 🎉', 'success');
 });
 
 // Auto-save when adding users or making changes
