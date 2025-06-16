@@ -2523,6 +2523,20 @@ async function loadDataFromServer() {
 }
 </script>
 
+
+<script>
+function handleLoginTypeChange() {
+    const select = document.getElementById('loginUserSelect');
+    const selectedType = select.options[select.selectedIndex].getAttribute('data-type');
+
+    if (selectedType === 'admin' || selectedType === 'manager') {
+        document.getElementById('passwordSection').style.display = 'block';
+    } else {
+        document.getElementById('passwordSection').style.display = 'none';
+    }
+}
+</script>
+
 </body></html>
     `;
     
@@ -2773,6 +2787,20 @@ async function saveTasksToServer() {
 async function loadDataFromServer() {
     const result = await makeRequest('loadAllData');
     console.log('📦 טעינת נתונים:', result);
+}
+</script>
+
+
+<script>
+function handleLoginTypeChange() {
+    const select = document.getElementById('loginUserSelect');
+    const selectedType = select.options[select.selectedIndex].getAttribute('data-type');
+
+    if (selectedType === 'admin' || selectedType === 'manager') {
+        document.getElementById('passwordSection').style.display = 'block';
+    } else {
+        document.getElementById('passwordSection').style.display = 'none';
+    }
 }
 </script>
 
