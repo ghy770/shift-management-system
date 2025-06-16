@@ -2308,7 +2308,6 @@ let connectionStatus = 'testing';
 // 📝 הוספה ליומן
 function addToLog(message, type = 'info') {
     const logSection = document.getElementById('logSection');
-    if (!logSection) return;
     const timestamp = new Date().toLocaleTimeString('he-IL');
     const logEntry = `[${timestamp}] ${message}\n`;
     logSection.textContent += logEntry;
@@ -2707,7 +2706,6 @@ let connectionStatus = 'testing';
 // 📝 הוספה ליומן
 function addToLog(message, type = 'info') {
     const logSection = document.getElementById('logSection');
-    if (!logSection) return;
     const timestamp = new Date().toLocaleTimeString('he-IL');
     const logEntry = `[${timestamp}] ${message}\n`;
     logSection.textContent += logEntry;
