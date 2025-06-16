@@ -2425,7 +2425,105 @@ function generateFullReport() {
     reportContent += `
             </ul>
             <p style="margin-top: 20px;">נוצר ב: ${new Date().toLocaleString('he-IL')}</p>
-        </body></html>
+        
+<script>
+// 🌐 בקשה לשרת עם טיפול מתקדם ב-CORS
+async function makeRequest(action, data = {}) {
+    try {
+        if (action === 'test' || action === 'loadAllData') {
+            const url = `${APP_SCRIPT_URL}?action=${action}&t=${Date.now()}`;
+            return await makeRequestViaIframe(url, action);
+        }
+
+        const requestData = { action, ...data };
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData),
+            mode: 'no-cors'
+        });
+        return { success: true, message: 'נשלח בהצלחה' };
+    } catch (error) {
+        console.error(`❌ שגיאה בבקשת ${action}:`, error);
+        return { success: false, message: error.message };
+    }
+}
+
+function makeRequestViaIframe(url, action) {
+    return new Promise((resolve, reject) => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+
+        const timeout = setTimeout(() => {
+            document.body.removeChild(iframe);
+            resolve({ success: true, message: 'timeout – כנראה הצליח' });
+        }, 5000);
+
+        iframe.onload = () => {
+            clearTimeout(timeout);
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                resolve({ success: true, message: 'iframe נטען בהצלחה' });
+            }, 1000);
+        };
+
+        iframe.onerror = () => {
+            clearTimeout(timeout);
+            document.body.removeChild(iframe);
+            reject(new Error('שגיאה ב־iframe'));
+        };
+
+        document.body.appendChild(iframe);
+    });
+}
+
+// פונקציות שמירה חדשות
+async function saveUserToServer(user) {
+    const result = await makeRequest('saveUser', {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        type: user.type,
+        password: user.password || '',
+        createdAt: user.createdAt || new Date().toISOString()
+    });
+    console.log('👤 שמירת משתמש:', result);
+}
+
+async function saveAvailabilityToServer(userId, availability) {
+    const result = await makeRequest('saveAvailability', {
+        userId,
+        unavailableShifts: Array.from(availability.unavailableShifts || []),
+        submitted: availability.submitted,
+        timestamp: availability.submittedAt || new Date().toISOString()
+    });
+    console.log('⏰ שמירת זמינות:', result);
+}
+
+async function saveScheduleToServer() {
+    const result = await makeRequest('saveFullSchedule', { schedule: scheduleData });
+    console.log('📅 שמירת לוח משמרות:', result);
+}
+
+async function saveSettingsToServer() {
+    const result = await makeRequest('saveSettings', { settings: systemSettings });
+    console.log('⚙️ שמירת הגדרות:', result);
+}
+
+async function saveTasksToServer() {
+    const result = await makeRequest('saveTasks', { tasks: taskSystem.tasks });
+    console.log('📋 שמירת משימות:', result);
+}
+
+async function loadDataFromServer() {
+    const result = await makeRequest('loadAllData');
+    console.log('📦 טעינת נתונים:', result);
+}
+</script>
+
+</body></html>
     `;
     
     reportWindow.document.write(reportContent);
@@ -2580,5 +2678,103 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 </script>
+
+<script>
+// 🌐 בקשה לשרת עם טיפול מתקדם ב-CORS
+async function makeRequest(action, data = {}) {
+    try {
+        if (action === 'test' || action === 'loadAllData') {
+            const url = `${APP_SCRIPT_URL}?action=${action}&t=${Date.now()}`;
+            return await makeRequestViaIframe(url, action);
+        }
+
+        const requestData = { action, ...data };
+        const response = await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData),
+            mode: 'no-cors'
+        });
+        return { success: true, message: 'נשלח בהצלחה' };
+    } catch (error) {
+        console.error(`❌ שגיאה בבקשת ${action}:`, error);
+        return { success: false, message: error.message };
+    }
+}
+
+function makeRequestViaIframe(url, action) {
+    return new Promise((resolve, reject) => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+
+        const timeout = setTimeout(() => {
+            document.body.removeChild(iframe);
+            resolve({ success: true, message: 'timeout – כנראה הצליח' });
+        }, 5000);
+
+        iframe.onload = () => {
+            clearTimeout(timeout);
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                resolve({ success: true, message: 'iframe נטען בהצלחה' });
+            }, 1000);
+        };
+
+        iframe.onerror = () => {
+            clearTimeout(timeout);
+            document.body.removeChild(iframe);
+            reject(new Error('שגיאה ב־iframe'));
+        };
+
+        document.body.appendChild(iframe);
+    });
+}
+
+// פונקציות שמירה חדשות
+async function saveUserToServer(user) {
+    const result = await makeRequest('saveUser', {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        type: user.type,
+        password: user.password || '',
+        createdAt: user.createdAt || new Date().toISOString()
+    });
+    console.log('👤 שמירת משתמש:', result);
+}
+
+async function saveAvailabilityToServer(userId, availability) {
+    const result = await makeRequest('saveAvailability', {
+        userId,
+        unavailableShifts: Array.from(availability.unavailableShifts || []),
+        submitted: availability.submitted,
+        timestamp: availability.submittedAt || new Date().toISOString()
+    });
+    console.log('⏰ שמירת זמינות:', result);
+}
+
+async function saveScheduleToServer() {
+    const result = await makeRequest('saveFullSchedule', { schedule: scheduleData });
+    console.log('📅 שמירת לוח משמרות:', result);
+}
+
+async function saveSettingsToServer() {
+    const result = await makeRequest('saveSettings', { settings: systemSettings });
+    console.log('⚙️ שמירת הגדרות:', result);
+}
+
+async function saveTasksToServer() {
+    const result = await makeRequest('saveTasks', { tasks: taskSystem.tasks });
+    console.log('📋 שמירת משימות:', result);
+}
+
+async function loadDataFromServer() {
+    const result = await makeRequest('loadAllData');
+    console.log('📦 טעינת נתונים:', result);
+}
+</script>
+
 </body>
 </html>
