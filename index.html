@@ -797,6 +797,8 @@
 </div>
 
 <script>
+window.onload = function() {
+
 // 🚀 חיבור לגוגל שיטס - כתובת ה-Apps Script שלך
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlRJz66hajjKWM_tPUYs5FM9krohHGflaCm6Rmz5zafrYYSH5xL-a2fBO4D02HrDS3ig/exec";
 
@@ -2525,18 +2527,57 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        (async () => { await testConnection(); })();
+        await testConnection();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            (async () => { await loadData(); })();
+            await loadData();
         }, 1000);
     }, 500);
     
     addToLog('✅ מערכת מוכנה לשימוש!');
     showNotification('מערכת ניהול משמרות מוכנה! 🎉', 'success');
 });
+
+};
 </script>
+
+<script>
+function handleLoginTypeChange() {
+  const select = document.getElementById('loginUserSelect');
+  if (!select) return;
+  const selectedType = select.options[select.selectedIndex]?.getAttribute('data-type');
+  const passwordSection = document.getElementById('passwordSection');
+  if (passwordSection) {
+    passwordSection.style.display = (selectedType === 'admin' || selectedType === 'manager') ? 'block' : 'none';
+  }
+}
+
+function login() {
+  const select = document.getElementById("loginUserSelect");
+  const selectedUserId = select?.value;
+  const selectedUser = users.find(u => u.id == selectedUserId);
+  if (!selectedUser) return alert("משתמש לא נמצא");
+
+  if (selectedUser.type === "admin" || selectedUser.type === "manager") {
+    const passwordInput = document.getElementById("loginPasswordInput").value;
+    if (passwordInput !== selectedUser.password) {
+      alert("סיסמה שגויה");
+      return;
+    }
+  }
+
+  currentUser = selectedUser;
+  showDashboardForUser(currentUser);
+}
+
+function addToLog(msg) {
+  const el = document.getElementById("logSection");
+  if (!el) return;
+  el.textContent += msg + "\n";
+}
+</script>
+
 </body></html>
     `;
     
@@ -2695,6 +2736,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 <script>
+window.onload = function() {
+
 // פונקציות חיבור מהקובץ הפשוט:
 // כתובת ה-Apps Script שלך
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlRJz66hajjKWM_tPUYs5FM9krohHGflaCm6Rmz5zafrYYSH5xL-a2fBO4D02HrDS3ig/exec";
@@ -2923,17 +2966,56 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        (async () => { await testConnection(); })();
+        await testConnection();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            (async () => { await loadData(); })();
+            await loadData();
         }, 1000);
     }, 500);
     
     addToLog('✅ מערכת מוכנה לשימוש!');
     showNotification('מערכת ניהול משמרות מוכנה! 🎉', 'success');
 });
+
+};
 </script>
+
+<script>
+function handleLoginTypeChange() {
+  const select = document.getElementById('loginUserSelect');
+  if (!select) return;
+  const selectedType = select.options[select.selectedIndex]?.getAttribute('data-type');
+  const passwordSection = document.getElementById('passwordSection');
+  if (passwordSection) {
+    passwordSection.style.display = (selectedType === 'admin' || selectedType === 'manager') ? 'block' : 'none';
+  }
+}
+
+function login() {
+  const select = document.getElementById("loginUserSelect");
+  const selectedUserId = select?.value;
+  const selectedUser = users.find(u => u.id == selectedUserId);
+  if (!selectedUser) return alert("משתמש לא נמצא");
+
+  if (selectedUser.type === "admin" || selectedUser.type === "manager") {
+    const passwordInput = document.getElementById("loginPasswordInput").value;
+    if (passwordInput !== selectedUser.password) {
+      alert("סיסמה שגויה");
+      return;
+    }
+  }
+
+  currentUser = selectedUser;
+  showDashboardForUser(currentUser);
+}
+
+function addToLog(msg) {
+  const el = document.getElementById("logSection");
+  if (!el) return;
+  el.textContent += msg + "\n";
+}
+</script>
+
 </body>
 </html>
