@@ -815,7 +815,7 @@ async function loadDataFromServer() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
@@ -930,13 +930,13 @@ async function saveUserToServer(user) {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
         if (result.success) {
             console.log('✅ משתמש נשמר בגיליון:', result);
-            showNotification(`משתמש ${user.firstName} נשמר בהצלחה!`, 'success');
+            showNotification(`משתמש {user.firstName} נשמר בהצלחה!`, 'success');
         } else {
             console.error('❌ שגיאה בשמירת משתמש:', result.error);
             showNotification('שגיאה בשמירת משתמש בשרת', 'warning');
@@ -968,7 +968,7 @@ async function saveAvailabilityToServer(userId, availabilityData) {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
@@ -1001,7 +1001,7 @@ async function saveScheduleToServer() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
@@ -1034,7 +1034,7 @@ async function saveTasksToServer() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
@@ -1067,7 +1067,7 @@ async function saveSettingsToServer() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: {response.status}`);
         }
         
         const result = await response.json();
@@ -1126,10 +1126,10 @@ function showNotification(message, type = 'info') {
     if (existing) existing.remove();
     
     const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
+    notification.className = `notification {type}`;
     notification.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>${message}</span>
+            <span>{message}</span>
             <span style="cursor: pointer; font-weight: bold; margin-right: 10px;" onclick="this.parentElement.parentElement.remove()">×</span>
         </div>
     `;
@@ -1165,7 +1165,7 @@ function updateLoginUsersList() {
     users.forEach(user => {
         if (user.type !== 'admin') {
             const hasPassword = user.password ? ' 🔒' : '';
-            select.innerHTML += `<option value="${user.id}">${user.firstName} ${user.lastName} (${user.type})${hasPassword}</option>`;
+            select.innerHTML += `<option value="{user.id}">{user.firstName} {user.lastName} ({user.type}){hasPassword}</option>`;
         }
     });
     console.log('📝 Updated login users list with', users.length - 1, 'users');
@@ -1199,7 +1199,7 @@ function login() {
         }
         
         if (selectedUser.password) {
-            const password = prompt(`הכנס סיסמה עבור ${selectedUser.firstName} ${selectedUser.lastName}:`);
+            const password = prompt(`הכנס סיסמה עבור {selectedUser.firstName} {selectedUser.lastName}:`);
             if (password !== selectedUser.password) {
                 showNotification('סיסמה שגויה', 'error');
                 return;
@@ -1208,7 +1208,7 @@ function login() {
         
         currentUser = selectedUser;
         showDashboard();
-        showNotification(`ברוך הבא ${selectedUser.firstName}!`, 'success');
+        showNotification(`ברוך הבא {selectedUser.firstName}!`, 'success');
     } else if (quickLogin === 'manual') {
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
@@ -1223,7 +1223,7 @@ function login() {
         let existingUser = users.find(u => u.phone === phone);
         if (existingUser) {
             if (existingUser.password) {
-                const password = prompt(`הכנס סיסמה עבור ${existingUser.firstName} ${existingUser.lastName}:`);
+                const password = prompt(`הכנס סיסמה עבור {existingUser.firstName} {existingUser.lastName}:`);
                 if (password !== existingUser.password) {
                     showNotification('סיסמה שגויה', 'error');
                     return;
@@ -1254,7 +1254,7 @@ function login() {
         }
 
         showDashboard();
-        showNotification(`ברוך הבא ${firstName}!`, 'success');
+        showNotification(`ברוך הבא {firstName}!`, 'success');
     } else {
         showNotification('יש לבחור סוג כניסה', 'warning');
     }
@@ -1274,7 +1274,7 @@ function showDashboard() {
     document.getElementById('dashboard').style.display = 'block';
     
     document.getElementById('userInfo').innerHTML = 
-        `ברוך הבא ${currentUser.firstName} ${currentUser.lastName} | ${currentUser.type}`;
+        `ברוך הבא {currentUser.firstName} {currentUser.lastName} | {currentUser.type}`;
 
     const isAdmin = currentUser.type === 'admin';
     const isManager = currentUser.type === 'מנהל' || isAdmin;
@@ -1381,7 +1381,7 @@ function addTask() {
     }
 
     const newTask = {
-        id: `task_${taskSystem.nextId++}`,
+        id: `task_{taskSystem.nextId++}`,
         name,
         type,
         soldiers,
@@ -1398,7 +1398,7 @@ function addTask() {
     generateScheduleTable();
     updateDashboardStats();
     saveData();
-    showNotification(`משימה "${name}" נוספה בהצלחה!`, 'success');
+    showNotification(`משימה "{name}" נוספה בהצלחה!`, 'success');
 }
 
 function removeTask(taskId) {
@@ -1410,7 +1410,7 @@ function removeTask(taskId) {
         return;
     }
 
-    if (!confirm(`האם למחוק את המשימה "${task.name}"? כל השיבוצים הקשורים אליה יימחקו.`)) {
+    if (!confirm(`האם למחוק את המשימה "{task.name}"? כל השיבוצים הקשורים אליה יימחקו.`)) {
         return;
     }
 
@@ -1428,7 +1428,7 @@ function removeTask(taskId) {
     generateScheduleTable();
     updateDashboardStats();
     saveData();
-    showNotification(`משימה "${task.name}" נמחקה`, 'success');
+    showNotification(`משימה "{task.name}" נמחקה`, 'success');
 }
 
 function updateTasksList() {
@@ -1440,21 +1440,21 @@ function updateTasksList() {
         const taskTypeClass = task.type === 'fixed' ? 'fixed-task' : 'flexible-task';
         const deleteButton = task.type === 'fixed' ? 
             '<span style="color: #6c757d; font-size: 0.9em;">משימה קבועה</span>' :
-            `<button class="btn btn-small btn-danger" onclick="removeTask('${task.id}')">🗑️ מחק</button>`;
+            `<button class="btn btn-small btn-danger" onclick="removeTask('{task.id}')">🗑️ מחק</button>`;
 
         html += `
-            <div class="task-item ${taskTypeClass}">
+            <div class="task-item {taskTypeClass}">
                 <div class="task-info">
-                    <div class="task-name">${task.name}</div>
+                    <div class="task-name">{task.name}</div>
                     <div style="display: flex; gap: 10px; align-items: center;">
-                        <span class="task-type ${task.type}">${task.type === 'fixed' ? 'קבועה' : 'גמישה'}</span>
+                        <span class="task-type {task.type}">{task.type === 'fixed' ? 'קבועה' : 'גמישה'}</span>
                         <span style="background: #6c757d; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">
-                            ${task.soldiers} חייל${task.soldiers > 1 ? 'ים' : ''}
+                            {task.soldiers} חייל{task.soldiers > 1 ? 'ים' : ''}
                         </span>
                     </div>
                 </div>
                 <div>
-                    ${deleteButton}
+                    {deleteButton}
                 </div>
             </div>
         `;
@@ -1494,10 +1494,10 @@ function generateScheduleTable() {
         const date = currentWeek[i];
         const dayClass = i === 6 ? 'sabbath-day' : '';
         
-        html += `<th colspan="4" class="day-header ${dayClass}">
-            <div style="font-weight: 900; font-size: 1.1em;">${dayNames[i]}</div>
+        html += `<th colspan="4" class="day-header {dayClass}">
+            <div style="font-weight: 900; font-size: 1.1em;">{dayNames[i]}</div>
             <div style="font-size: 10px; line-height: 1.2; margin-top: 4px; opacity: 0.9;">
-                ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+                {date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}
             </div>
         </th>`;
     }
@@ -1506,8 +1506,8 @@ function generateScheduleTable() {
     for (let day = 0; day < 7; day++) {
         for (let shift = 0; shift < 4; shift++) {
             html += `<th style="font-size: 10px; text-align: center;">
-                <div>${shiftTypes[shift]}</div>
-                <div style="font-size: 8px; font-style: italic; margin-top: 2px;">${shiftHours[shift]}</div>
+                <div>{shiftTypes[shift]}</div>
+                <div style="font-size: 8px; font-style: italic; margin-top: 2px;">{shiftHours[shift]}</div>
             </th>`;
         }
     }
@@ -1518,25 +1518,25 @@ function generateScheduleTable() {
         // Create a row for each soldier position in the task
         for (let soldierIndex = 0; soldierIndex < task.soldiers; soldierIndex++) {
             const taskDisplayName = task.soldiers > 1 ? 
-                `${task.name} (${soldierIndex + 1})` : task.name;
+                `{task.name} ({soldierIndex + 1})` : task.name;
             
-            html += `<tr><td style="font-weight: 700;">${taskDisplayName}</td>`;
+            html += `<tr><td style="font-weight: 700;">{taskDisplayName}</td>`;
             
             for (let day = 0; day < 7; day++) {
                 const dayClass = day === 6 ? 'sabbath-day' : '';
                 
                 for (let shift = 0; shift < 4; shift++) {
-                    const cellId = `${task.name}_${soldierIndex}_${day}_${shift}`;
+                    const cellId = `{task.name}_{soldierIndex}_{day}_{shift}`;
                     const assigned = scheduleData[cellId];
                     const isMyShift = assigned && currentUser && currentUser.type === 'חייל' && 
-                                     assigned === `${currentUser.firstName} ${currentUser.lastName}`;
+                                     assigned === `{currentUser.firstName} {currentUser.lastName}`;
                     const canEdit = currentUser && (currentUser.type === 'admin' || currentUser.type === 'מנהל');
-                    const cellClass = `shift-cell ${assigned ? 'assigned' : ''} ${isMyShift ? 'my-shift' : ''} ${dayClass}`;
-                    const onClick = canEdit ? `onclick="cellClick('${cellId}')"` : '';
+                    const cellClass = `shift-cell {assigned ? 'assigned' : ''} {isMyShift ? 'my-shift' : ''} {dayClass}`;
+                    const onClick = canEdit ? `onclick="cellClick('{cellId}')"` : '';
                     const cursor = canEdit ? 'cursor: pointer;' : 'cursor: default;';
                     
-                    html += `<td class="${cellClass}" id="${cellId}" ${onClick} 
-                            style="${cursor}">${assigned || ''}</td>`;
+                    html += `<td class="{cellClass}" id="{cellId}" {onClick} 
+                            style="{cursor}">{assigned || ''}</td>`;
                 }
             }
             html += '</tr>';
@@ -1556,7 +1556,7 @@ function cellClick(cellId) {
     const employees = users.filter(u => u.type === 'חייל');
 
     if (assigned) {
-        if (confirm(`האם להסיר את ${assigned}?`)) {
+        if (confirm(`האם להסיר את {assigned}?`)) {
             delete scheduleData[cellId];
             generateScheduleTable();
             saveData();
@@ -1564,15 +1564,15 @@ function cellClick(cellId) {
             updateDashboardStats();
         }
     } else if (employees.length > 0) {
-        const options = employees.map((emp, i) => `${i+1}. ${emp.firstName} ${emp.lastName}`).join('\n');
-        const choice = prompt(`בחר חייל:\n${options}\n\nהכנס מספר:`);
+        const options = employees.map((emp, i) => `{i+1}. {emp.firstName} {emp.lastName}`).join('\n');
+        const choice = prompt(`בחר חייל:\n{options}\n\nהכנס מספר:`);
         
         if (choice && !isNaN(choice) && choice > 0 && choice <= employees.length) {
             const selectedEmp = employees[choice - 1];
-            scheduleData[cellId] = `${selectedEmp.firstName} ${selectedEmp.lastName}`;
+            scheduleData[cellId] = `{selectedEmp.firstName} {selectedEmp.lastName}`;
             generateScheduleTable();
             saveData();
-            showNotification(`${selectedEmp.firstName} ${selectedEmp.lastName} שובץ למשמרת`, 'success');
+            showNotification(`{selectedEmp.firstName} {selectedEmp.lastName} שובץ למשמרת`, 'success');
             updateDashboardStats();
         }
     } else {
@@ -1595,7 +1595,7 @@ function autoSchedule() {
     // Initialize soldier statistics
     const soldierStats = {};
     employees.forEach(emp => {
-        const fullName = `${emp.firstName} ${emp.lastName}`;
+        const fullName = `{emp.firstName} {emp.lastName}`;
         soldierStats[fullName] = { 
             totalShifts: 0,
             assignedDays: new Set(),
@@ -1605,18 +1605,18 @@ function autoSchedule() {
 
     // Schedule all tasks in order
     taskSystem.tasks.forEach((task, taskIndex) => {
-        console.log(`📋 Scheduling task: ${task.name} (${task.soldiers} soldiers)`);
+        console.log(`📋 Scheduling task: {task.name} ({task.soldiers} soldiers)`);
         
         for (let soldierIndex = 0; soldierIndex < task.soldiers; soldierIndex++) {
             for (let day = 0; day < 7; day++) {
                 for (let shift = 0; shift < 4; shift++) {
-                    const shiftId = `${task.name}_${soldierIndex}_${day}_${shift}`;
+                    const shiftId = `{task.name}_{soldierIndex}_{day}_{shift}`;
                     
                     // Find available soldiers for this shift
                     const availableSoldiers = employees.filter(emp => {
-                        const fullName = `${emp.firstName} ${emp.lastName}`;
+                        const fullName = `{emp.firstName} {emp.lastName}`;
                         const stats = soldierStats[fullName];
-                        const shiftKey = `${day}_${shift}`;
+                        const shiftKey = `{day}_{shift}`;
                         
                         // Check if soldier is available for this shift
                         if (stats.unavailableShifts.has(shiftKey)) return false;
@@ -1633,22 +1633,22 @@ function autoSchedule() {
                     if (availableSoldiers.length > 0) {
                         // Sort by least total shifts to ensure fair distribution
                         availableSoldiers.sort((a, b) => {
-                            const nameA = `${a.firstName} ${a.lastName}`;
-                            const nameB = `${b.firstName} ${b.lastName}`;
+                            const nameA = `{a.firstName} {a.lastName}`;
+                            const nameB = `{b.firstName} {b.lastName}`;
                             return soldierStats[nameA].totalShifts - soldierStats[nameB].totalShifts;
                         });
                         
                         const selectedSoldier = availableSoldiers[0];
-                        const fullName = `${selectedSoldier.firstName} ${selectedSoldier.lastName}`;
+                        const fullName = `{selectedSoldier.firstName} {selectedSoldier.lastName}`;
                         
                         // Assign the shift
                         scheduleData[shiftId] = fullName;
                         soldierStats[fullName].totalShifts++;
                         soldierStats[fullName].assignedDays.add(day);
                         
-                        console.log(`✅ Assigned ${fullName} to ${task.name} on ${dayNames[day]} ${shiftTypes[shift]}`);
+                        console.log(`✅ Assigned {fullName} to {task.name} on {dayNames[day]} {shiftTypes[shift]}`);
                     } else {
-                        console.log(`⚠️ No available soldiers for ${task.name} on ${dayNames[day]} ${shiftTypes[shift]}`);
+                        console.log(`⚠️ No available soldiers for {task.name} on {dayNames[day]} {shiftTypes[shift]}`);
                     }
                 }
             }
@@ -1665,8 +1665,8 @@ function autoSchedule() {
     saveData();
     updateDashboardStats();
     
-    const summaryText = Object.entries(taskSummary).map(([task, count]) => `${task}: ${count}`).join(', ');
-    showNotification(`✅ שיבוץ חכם הושלם! ${summaryText}`, 'success');
+    const summaryText = Object.entries(taskSummary).map(([task, count]) => `{task}: {count}`).join(', ');
+    showNotification(`✅ שיבוץ חכם הושלם! {summaryText}`, 'success');
 }
 
 // Availability functions
@@ -1707,11 +1707,11 @@ function generateAvailabilityForm() {
             <div class="alert alert-success" style="text-align: center; padding: 30px;">
                 <h3>✅ זמינות נשלחה בהצלחה!</h3>
                 <p>הזמינות שלך נרשמה במערכת ונעולה לעריכה</p>
-                <p><strong>תאריך שליחה:</strong> ${new Date(availabilityData[currentUser.id].submittedAt).toLocaleString('he-IL')}</p>
+                <p><strong>תאריך שליחה:</strong> {new Date(availabilityData[currentUser.id].submittedAt).toLocaleString('he-IL')}</p>
                 <p style="margin-top: 15px; color: #666;">למילוי זמינות מחדש, פנה למנהל לפתיחת המערכת</p>
             </div>
             <div style="margin-top: 20px;">
-                ${generateReadOnlyAvailabilityTable()}
+                {generateReadOnlyAvailabilityTable()}
             </div>
         `;
         return;
@@ -1722,24 +1722,24 @@ function generateAvailabilityForm() {
         <thead><tr><th>יום</th>`;
     
     for (let shift = 0; shift < 4; shift++) {
-        html += `<th>${shiftTypes[shift]}<br><small>${shiftHours[shift]}</small></th>`;
+        html += `<th>{shiftTypes[shift]}<br><small>{shiftHours[shift]}</small></th>`;
     }
     html += '</tr></thead><tbody>';
     
     for (let day = 0; day < 7; day++) {
-        html += `<tr><td style="font-weight: 700;">${dayNames[day]}</td>`;
+        html += `<tr><td style="font-weight: 700;">{dayNames[day]}</td>`;
         
         for (let shift = 0; shift < 4; shift++) {
-            const cellId = `avail_${day}_${shift}`;
-            const shiftKey = `${day}_${shift}`;
+            const cellId = `avail_{day}_{shift}`;
+            const shiftKey = `{day}_{shift}`;
             const isUnavailable = availabilityData[currentUser.id].unavailableShifts.has(shiftKey);
             const cellClass = isUnavailable ? 'shift-cell unavailable' : 'shift-cell available';
             const cellText = isUnavailable ? '❌ לא זמין' : '✅ זמין';
             
-            html += `<td class="${cellClass}" id="${cellId}" 
-                    onclick="toggleShiftAvailability(${day}, ${shift})" 
+            html += `<td class="{cellClass}" id="{cellId}" 
+                    onclick="toggleShiftAvailability({day}, {shift})" 
                     style="cursor: pointer; min-height: 60px; user-select: none; font-weight: 700; text-align: center;">
-                <div id="${cellId}_text" style="font-size: 14px;">${cellText}</div>
+                <div id="{cellId}_text" style="font-size: 14px;">{cellText}</div>
             </td>`;
         }
         html += '</tr>';
@@ -1760,22 +1760,22 @@ function generateReadOnlyAvailabilityTable() {
         <thead><tr><th>יום</th>`;
     
     for (let shift = 0; shift < 4; shift++) {
-        html += `<th>${shiftTypes[shift]}<br><small>${shiftHours[shift]}</small></th>`;
+        html += `<th>{shiftTypes[shift]}<br><small>{shiftHours[shift]}</small></th>`;
     }
     html += '</tr></thead><tbody>';
     
     for (let day = 0; day < 7; day++) {
-        html += `<tr><td style="font-weight: 700;">${dayNames[day]}</td>`;
+        html += `<tr><td style="font-weight: 700;">{dayNames[day]}</td>`;
         
         for (let shift = 0; shift < 4; shift++) {
-            const shiftKey = `${day}_${shift}`;
+            const shiftKey = `{day}_{shift}`;
             const isUnavailable = availabilityData[currentUser.id].unavailableShifts.has(shiftKey);
             const cellClass = isUnavailable ? 'shift-cell unavailable' : 'shift-cell available';
             const cellText = isUnavailable ? '❌ לא זמין' : '✅ זמין';
             
-            html += `<td class="${cellClass}" 
+            html += `<td class="{cellClass}" 
                     style="min-height: 60px; font-weight: 700; text-align: center; cursor: default;">
-                <div style="font-size: 14px;">${cellText}</div>
+                <div style="font-size: 14px;">{cellText}</div>
             </td>`;
         }
         html += '</tr>';
@@ -1786,7 +1786,7 @@ function generateReadOnlyAvailabilityTable() {
 }
 
 function toggleShiftAvailability(day, shift) {
-    console.log(`🔄 Toggle availability for day ${day}, shift ${shift}`);
+    console.log(`🔄 Toggle availability for day {day}, shift {shift}`);
     if (!currentUser || currentUser.type !== 'חייל') {
         console.log('❌ Not authorized to change availability');
         return;
@@ -1804,7 +1804,7 @@ function toggleShiftAvailability(day, shift) {
         return;
     }
     
-    const cellId = `avail_${day}_${shift}`;
+    const cellId = `avail_{day}_{shift}`;
     const cell = document.getElementById(cellId);
     const textElement = document.getElementById(cellId + '_text');
     
@@ -1817,11 +1817,11 @@ function toggleShiftAvailability(day, shift) {
         availabilityData[currentUser.id] = { unavailableShifts: new Set(), submitted: false };
     }
     
-    const shiftKey = `${day}_${shift}`;
+    const shiftKey = `{day}_{shift}`;
     const userData = availabilityData[currentUser.id];
     const isCurrentlyUnavailable = userData.unavailableShifts.has(shiftKey);
     
-    console.log(`Current status: ${isCurrentlyUnavailable ? 'unavailable' : 'available'}`);
+    console.log(`Current status: {isCurrentlyUnavailable ? 'unavailable' : 'available'}`);
     
     if (isCurrentlyUnavailable) {
         // Making available
@@ -1851,11 +1851,11 @@ function updateSelectedCount() {
     const countElement = document.getElementById('selectedCount');
     if (countElement && currentUser && availabilityData[currentUser.id]) {
         const count = availabilityData[currentUser.id].unavailableShifts.size;
-        countElement.textContent = `נבחרו: ${count} מתוך 7 משמרות כלא זמין`;
+        countElement.textContent = `נבחרו: {count} מתוך 7 משמרות כלא זמין`;
         
         if (count >= 7) {
             countElement.style.color = '#dc3545';
-            countElement.innerHTML = `נבחרו: ${count} מתוך 7 משמרות כלא זמין <strong>(מקסימום הושג)</strong>`;
+            countElement.innerHTML = `נבחרו: {count} מתוך 7 משמרות כלא זמין <strong>(מקסימום הושג)</strong>`;
         } else {
             countElement.style.color = '#2196f3';
             countElement.style.fontWeight = 'bold';
@@ -1884,7 +1884,7 @@ function submitAvailability() {
     // אישור סופי לפני שליחה
     const unavailableCount = availabilityData[currentUser.id].unavailableShifts.size;
     const confirmMessage = `האם אתה בטוח שברצונך לשלוח את הזמינות?\n\n` +
-                         `סימנת ${unavailableCount} משמרות כלא זמין.\n` +
+                         `סימנת {unavailableCount} משמרות כלא זמין.\n` +
                          `לאחר השליחה לא ניתן יהיה לערוך את הזמינות עד לפתיחה מחדש על ידי המנהל.`;
     
     if (!confirm(confirmMessage)) {
@@ -1958,7 +1958,7 @@ function addUser() {
     saveData();
     updateDashboardStats();
     
-    showNotification(`${userType} ${firstName} ${lastName} נוסף בהצלחה!`, 'success');
+    showNotification(`{userType} {firstName} {lastName} נוסף בהצלחה!`, 'success');
 }
 
 function updateUsersList() {
@@ -1978,13 +1978,13 @@ function updateUsersList() {
             html += `
                 <div class="user-item">
                     <div>
-                        <strong>${user.firstName} ${user.lastName}</strong> ${hasPassword}<br>
-                        <small>${user.phone} | ${user.type} | ${passwordInfo}</small>
-                        ${user.createdAt ? `<br><small style="color: #666;">נוצר: ${new Date(user.createdAt).toLocaleDateString('he-IL')}</small>` : ''}
+                        <strong>{user.firstName} {user.lastName}</strong> {hasPassword}<br>
+                        <small>{user.phone} | {user.type} | {passwordInfo}</small>
+                        {user.createdAt ? `<br><small style="color: #666;">נוצר: {new Date(user.createdAt).toLocaleDateString('he-IL')}</small>` : ''}
                     </div>
                     <div>
-                        <button class="btn btn-small" style="background: #2196f3; margin: 2px;" onclick="changeUserPassword(${user.id})">🔑 סיסמה</button>
-                        <button class="btn btn-small btn-danger" style="margin: 2px;" onclick="removeUser(${user.id})">הסר</button>
+                        <button class="btn btn-small" style="background: #2196f3; margin: 2px;" onclick="changeUserPassword({user.id})">🔑 סיסמה</button>
+                        <button class="btn btn-small btn-danger" style="margin: 2px;" onclick="removeUser({user.id})">הסר</button>
                     </div>
                 </div>
             `;
@@ -1998,7 +1998,7 @@ function changeUserPassword(userId) {
     const user = users.find(u => u.id === userId);
     if (!user) return;
     
-    const newPassword = prompt(`הכנס סיסמה חדשה עבור ${user.firstName} ${user.lastName}:\n(השאר ריק כדי להסיר סיסמה)`);
+    const newPassword = prompt(`הכנס סיסמה חדשה עבור {user.firstName} {user.lastName}:\n(השאר ריק כדי להסיר סיסמה)`);
     if (newPassword === null) return;
     
     user.password = newPassword || null;
@@ -2007,18 +2007,18 @@ function changeUserPassword(userId) {
     updateLoginUsersList();
     
     if (newPassword) {
-        showNotification(`סיסמה עודכנה עבור ${user.firstName} ${user.lastName}`, 'success');
+        showNotification(`סיסמה עודכנה עבור {user.firstName} {user.lastName}`, 'success');
     } else {
-        showNotification(`סיסמה הוסרה עבור ${user.firstName} ${user.lastName}`, 'info');
+        showNotification(`סיסמה הוסרה עבור {user.firstName} {user.lastName}`, 'info');
     }
 }
 
 function removeUser(id) {
     const user = users.find(u => u.id === id);
-    if (user && confirm(`האם להסיר את ${user.firstName} ${user.lastName}?`)) {
+    if (user && confirm(`האם להסיר את {user.firstName} {user.lastName}?`)) {
         users = users.filter(u => u.id !== id);
         
-        const userFullName = `${user.firstName} ${user.lastName}`;
+        const userFullName = `{user.firstName} {user.lastName}`;
         Object.keys(scheduleData).forEach(shiftId => {
             if (scheduleData[shiftId] === userFullName) {
                 delete scheduleData[shiftId];
@@ -2081,7 +2081,7 @@ function updateDetailedUserStats() {
 
     const userStats = {};
     soldiers.forEach(soldier => {
-        const fullName = `${soldier.firstName} ${soldier.lastName}`;
+        const fullName = `{soldier.firstName} {soldier.lastName}`;
         userStats[fullName] = { 
             total: 0,
             byTask: {}
@@ -2116,19 +2116,19 @@ function updateDetailedUserStats() {
         html += `
             <div class="user-stat-card">
                 <div class="user-stat-header">
-                    <div class="user-name">${name}</div>
+                    <div class="user-name">{name}</div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div class="user-total-shifts">${stats.total}</div>
-                        <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700;">
-                            ${statusText}
+                        <div class="user-total-shifts">{stats.total}</div>
+                        <span style="background: {statusColor}; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700;">
+                            {statusText}
                         </span>
                     </div>
                 </div>
                 <div class="shift-breakdown">
-                    ${Object.entries(stats.byTask).map(([taskName, count]) => `
+                    {Object.entries(stats.byTask).map(([taskName, count]) => `
                         <div class="shift-type-count">
-                            <div class="shift-type-number">${count}</div>
-                            <div class="shift-type-label">${taskName}</div>
+                            <div class="shift-type-number">{count}</div>
+                            <div class="shift-type-label">{taskName}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -2174,7 +2174,7 @@ function updateRecommendations() {
     recommendations.forEach(rec => {
         html += `
             <div style="padding: 15px; background: #e3f2fd; border-radius: 12px; border-right: 4px solid #2196f3; color: #0d47a1;">
-                ${rec}
+                {rec}
             </div>
         `;
     });
@@ -2201,7 +2201,7 @@ function updateSystemAvailabilityStatus() {
     if (statusElement) {
         const status = systemSettings.availabilityOpen ? 'פתוח ✅' : 'סגור ❌';
         const color = systemSettings.availabilityOpen ? '#28a745' : '#dc3545';
-        statusElement.innerHTML = `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
+        statusElement.innerHTML = `<span style="color: {color}; font-weight: bold;">{status}</span>`;
     }
     
     // עדכון המתג
@@ -2241,7 +2241,7 @@ function toggleAvailabilityStatus() {
         updateSystemAvailabilityStatus();
         
         const status = systemSettings.availabilityOpen ? 'נפתחה' : 'נסגרה';
-        showNotification(`זמינות ${status} בהצלחה`, 'success');
+        showNotification(`זמינות {status} בהצלחה`, 'success');
     }
 }
 
@@ -2275,8 +2275,8 @@ function remindAvailability() {
     if (notSubmitted.length === 0) {
         showNotification('כל החיילים כבר שלחו זמינות', 'info');
     } else {
-        const names = notSubmitted.map(s => `${s.firstName} ${s.lastName}`).join(', ');
-        showNotification(`תזכורת נשלחה ל: ${names} (${notSubmitted.length} חיילים)`, 'info');
+        const names = notSubmitted.map(s => `{s.firstName} {s.lastName}`).join(', ');
+        showNotification(`תזכורת נשלחה ל: {names} ({notSubmitted.length} חיילים)`, 'info');
     }
 }
 
@@ -2299,32 +2299,32 @@ function generateReports() {
         <div style="display: grid; gap: 15px;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <div style="padding: 15px; background: #e3f2fd; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 2em; font-weight: 900; color: #1976d2;">${soldiers.length}</div>
+                    <div style="font-size: 2em; font-weight: 900; color: #1976d2;">{soldiers.length}</div>
                     <div style="font-weight: 700;">חיילים במערכת</div>
                 </div>
                 <div style="padding: 15px; background: #e8f5e8; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 2em; font-weight: 900; color: #388e3c;">${totalShifts}</div>
+                    <div style="font-size: 2em; font-weight: 900; color: #388e3c;">{totalShifts}</div>
                     <div style="font-weight: 700;">משמרות מאויישות</div>
                 </div>
                 <div style="padding: 15px; background: #fff3e0; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 2em; font-weight: 900; color: #f57c00;">${coverage}%</div>
+                    <div style="font-size: 2em; font-weight: 900; color: #f57c00;">{coverage}%</div>
                     <div style="font-weight: 700;">אחוז כיסוי</div>
                 </div>
                 <div style="padding: 15px; background: #fce4ec; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 2em; font-weight: 900; color: #c2185b;">${submittedAvailability}</div>
+                    <div style="font-size: 2em; font-weight: 900; color: #c2185b;">{submittedAvailability}</div>
                     <div style="font-weight: 700;">שלחו זמינות</div>
                 </div>
                 <div style="padding: 15px; background: #f3e5f5; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 2em; font-weight: 900; color: #7b1fa2;">${taskSystem.tasks.length}</div>
+                    <div style="font-size: 2em; font-weight: 900; color: #7b1fa2;">{taskSystem.tasks.length}</div>
                     <div style="font-weight: 700;">סה״כ משימות</div>
                 </div>
             </div>
             
             <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
                 <h4>📊 סיכום מהיר</h4>
-                <p><strong>משמרות ריקות:</strong> ${totalPossible - totalShifts} מתוך ${totalPossible}</p>
-                <p><strong>ממוצע משמרות לחייל:</strong> ${soldiers.length > 0 ? Math.round(totalShifts / soldiers.length) : 0}</p>
-                <p><strong>זמינות חסרה:</strong> ${soldiers.length - submittedAvailability} חיילים</p>
+                <p><strong>משמרות ריקות:</strong> {totalPossible - totalShifts} מתוך {totalPossible}</p>
+                <p><strong>ממוצע משמרות לחייל:</strong> {soldiers.length > 0 ? Math.round(totalShifts / soldiers.length) : 0}</p>
+                <p><strong>זמינות חסרה:</strong> {soldiers.length - submittedAvailability} חיילים</p>
             </div>
         </div>
     `;
@@ -2335,7 +2335,7 @@ function generateReports() {
 function showMyShifts() {
     if (currentUser.type !== 'חייל') return;
     
-    const myName = `${currentUser.firstName} ${currentUser.lastName}`;
+    const myName = `{currentUser.firstName} {currentUser.lastName}`;
     const myShifts = Object.entries(scheduleData).filter(([id, assigned]) => assigned === myName);
     
     if (myShifts.length === 0) {
@@ -2350,7 +2350,7 @@ function showMyShifts() {
         const day = parseInt(parts[parts.length - 2]);
         const shift = parseInt(parts[parts.length - 1]);
         
-        message += `${dayNames[day]} - ${taskName} (${shiftHours[shift]})\n`;
+        message += `{dayNames[day]} - {taskName} ({shiftHours[shift]})\n`;
     });
     
     alert(message);
@@ -2365,7 +2365,7 @@ function optimizeSchedule() {
     
     const soldierCounts = {};
     employees.forEach(emp => {
-        soldierCounts[`${emp.firstName} ${emp.lastName}`] = 0;
+        soldierCounts[`{emp.firstName} {emp.lastName}`] = 0;
     });
     
     // Count current assignments
@@ -2380,7 +2380,7 @@ function optimizeSchedule() {
     const minShifts = Math.min(...Object.values(soldierCounts));
     
     if (maxShifts - minShifts > 2) {
-        showNotification(`💡 נמצא חוסר איזון: ${maxShifts - minShifts} הפרש משמרות. השתמש בשיבוץ אוטומטי לאיזון מחדש.`, 'warning');
+        showNotification(`💡 נמצא חוסר איזון: {maxShifts - minShifts} הפרש משמרות. השתמש בשיבוץ אוטומטי לאיזון מחדש.`, 'warning');
     } else {
         showNotification('✅ השיבוץ מאוזן יחסית!', 'success');
     }
@@ -2408,10 +2408,10 @@ function generateFullReport() {
         <body style="font-family: Arial; padding: 20px;">
             <h1>📊 דוח מלא - מערכת ניהול משמרות</h1>
             <h2>📈 נתונים כלליים</h2>
-            <p>חיילים במערכת: ${soldiers.length}</p>
-            <p>משמרות מאויישות: ${totalShifts}</p>
-            <p>סה״כ משמרות אפשריות: ${totalPossible}</p>
-            <p>אחוז כיסוי: ${Math.round((totalShifts / totalPossible) * 100)}%</p>
+            <p>חיילים במערכת: {soldiers.length}</p>
+            <p>משמרות מאויישות: {totalShifts}</p>
+            <p>סה״כ משמרות אפשריות: {totalPossible}</p>
+            <p>אחוז כיסוי: {Math.round((totalShifts / totalPossible) * 100)}%</p>
             
             <h2>🔧 משימות במערכת</h2>
             <ul>
@@ -2419,19 +2419,19 @@ function generateFullReport() {
     
     taskSystem.tasks.forEach(task => {
         const taskShifts = Object.keys(scheduleData).filter(key => key.startsWith(task.name + '_')).length;
-        reportContent += `<li>${task.name} - ${taskShifts} משמרות מאויישות (${task.soldiers} חיילים לכל משמרת)</li>`;
+        reportContent += `<li>{task.name} - {taskShifts} משמרות מאויישות ({task.soldiers} חיילים לכל משמרת)</li>`;
     });
     
     reportContent += `
             </ul>
-            <p style="margin-top: 20px;">נוצר ב: ${new Date().toLocaleString('he-IL')}</p>
+            <p style="margin-top: 20px;">נוצר ב: {new Date().toLocaleString('he-IL')}</p>
         
 <script>
 // 🌐 בקשה לשרת עם טיפול מתקדם ב-CORS
 async function makeRequest(action, data = {}) {
     try {
         if (action === 'test' || action === 'loadAllData') {
-            const url = `${APP_SCRIPT_URL}?action=${action}&t=${Date.now()}`;
+            const url = `{APP_SCRIPT_URL}?action={action}&t={Date.now()}`;
             return await makeRequestViaIframe(url, action);
         }
 
@@ -2444,7 +2444,7 @@ async function makeRequest(action, data = {}) {
         });
         return { success: true, message: 'נשלח בהצלחה' };
     } catch (error) {
-        console.error(`❌ שגיאה בבקשת ${action}:`, error);
+        console.error(`❌ שגיאה בבקשת {action}:`, error);
         return { success: false, message: error.message };
     }
 }
@@ -2537,6 +2537,44 @@ function handleLoginTypeChange() {
 }
 </script>
 
+
+<script>
+// ✅ פונקציית בחירה לפי סוג משתמש
+function handleLoginTypeChange() {
+    const select = document.getElementById('loginUserSelect');
+    const selectedType = select.options[select.selectedIndex].getAttribute('data-type');
+    const passwordSection = document.getElementById('passwordSection');
+
+    if (selectedType === 'admin' || selectedType === 'manager') {
+        passwordSection.style.display = 'block';
+    } else {
+        passwordSection.style.display = 'none';
+    }
+}
+
+// ✅ פונקציית כניסה למערכת
+function login() {
+    const selectedUserId = document.getElementById("loginUserSelect").value;
+    const selectedUser = users.find(u => u.id == selectedUserId);
+
+    if (!selectedUser) {
+        alert("יש לבחור משתמש");
+        return;
+    }
+
+    if (selectedUser.type === "admin" || selectedUser.type === "manager") {
+        const passwordInput = document.getElementById("loginPasswordInput").value;
+        if (passwordInput !== selectedUser.password) {
+            alert("סיסמה שגויה");
+            return;
+        }
+    }
+
+    currentUser = selectedUser;
+    showDashboardForUser(currentUser);
+}
+</script>
+
 </body></html>
     `;
     
@@ -2561,7 +2599,7 @@ function exportReports() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `shift_management_export_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `shift_management_export_{new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -2582,7 +2620,7 @@ function generateTestData() {
             id: Date.now() + index,
             firstName: soldier.firstName,
             lastName: soldier.lastName,
-            phone: `050${1000000 + index}`,
+            phone: `050{1000000 + index}`,
             type: 'חייל'
         };
         
@@ -2605,7 +2643,7 @@ function generateTestData() {
     testTasks.forEach(task => {
         if (!taskSystem.tasks.find(t => t.name === task.name)) {
             taskSystem.tasks.push({
-                id: `task_${taskSystem.nextId++}`,
+                id: `task_{taskSystem.nextId++}`,
                 name: task.name,
                 type: task.type,
                 soldiers: task.soldiers,
@@ -2637,7 +2675,7 @@ function backupData() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `shift_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `shift_backup_{new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -2698,7 +2736,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function makeRequest(action, data = {}) {
     try {
         if (action === 'test' || action === 'loadAllData') {
-            const url = `${APP_SCRIPT_URL}?action=${action}&t=${Date.now()}`;
+            const url = `{APP_SCRIPT_URL}?action={action}&t={Date.now()}`;
             return await makeRequestViaIframe(url, action);
         }
 
@@ -2711,7 +2749,7 @@ async function makeRequest(action, data = {}) {
         });
         return { success: true, message: 'נשלח בהצלחה' };
     } catch (error) {
-        console.error(`❌ שגיאה בבקשת ${action}:`, error);
+        console.error(`❌ שגיאה בבקשת {action}:`, error);
         return { success: false, message: error.message };
     }
 }
@@ -2801,6 +2839,44 @@ function handleLoginTypeChange() {
     } else {
         document.getElementById('passwordSection').style.display = 'none';
     }
+}
+</script>
+
+
+<script>
+// ✅ פונקציית בחירה לפי סוג משתמש
+function handleLoginTypeChange() {
+    const select = document.getElementById('loginUserSelect');
+    const selectedType = select.options[select.selectedIndex].getAttribute('data-type');
+    const passwordSection = document.getElementById('passwordSection');
+
+    if (selectedType === 'admin' || selectedType === 'manager') {
+        passwordSection.style.display = 'block';
+    } else {
+        passwordSection.style.display = 'none';
+    }
+}
+
+// ✅ פונקציית כניסה למערכת
+function login() {
+    const selectedUserId = document.getElementById("loginUserSelect").value;
+    const selectedUser = users.find(u => u.id == selectedUserId);
+
+    if (!selectedUser) {
+        alert("יש לבחור משתמש");
+        return;
+    }
+
+    if (selectedUser.type === "admin" || selectedUser.type === "manager") {
+        const passwordInput = document.getElementById("loginPasswordInput").value;
+        if (passwordInput !== selectedUser.password) {
+            alert("סיסמה שגויה");
+            return;
+        }
+    }
+
+    currentUser = selectedUser;
+    showDashboardForUser(currentUser);
 }
 </script>
 
