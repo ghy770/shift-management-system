@@ -2308,6 +2308,7 @@ let connectionStatus = 'testing';
 // 📝 הוספה ליומן
 function addToLog(message, type = 'info') {
     const logSection = document.getElementById('logSection');
+    if (!logSection) return;
     const timestamp = new Date().toLocaleTimeString('he-IL');
     const logEntry = `[${timestamp}] ${message}\n`;
     logSection.textContent += logEntry;
@@ -2525,11 +2526,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        await testConnection();
+        (async () => { await testConnection(); })();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            await loadData();
+            (async () => { await loadData(); })();
         }, 1000);
     }, 500);
     
@@ -2706,6 +2707,7 @@ let connectionStatus = 'testing';
 // 📝 הוספה ליומן
 function addToLog(message, type = 'info') {
     const logSection = document.getElementById('logSection');
+    if (!logSection) return;
     const timestamp = new Date().toLocaleTimeString('he-IL');
     const logEntry = `[${timestamp}] ${message}\n`;
     logSection.textContent += logEntry;
@@ -2923,11 +2925,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // בדיקת חיבור אוטומטית
     setTimeout(async () => {
-        await testConnection();
+        (async () => { await testConnection(); })();
         
         // ניסיון לטעון נתונים קיימים
         setTimeout(async () => {
-            await loadData();
+            (async () => { await loadData(); })();
         }, 1000);
     }, 500);
     
