@@ -61,34 +61,6 @@
             100% { transform: scale(1); }
         }
 
-        .connection-status {
-            padding: 12px;
-            border-radius: 12px;
-            margin: 10px 0;
-            font-weight: 900;
-            text-align: center;
-            transition: all 0.3s ease;
-            color: #000000;
-        }
-
-        .connection-status.connected {
-            background: #d4edda;
-            color: #000000;
-            border: 2px solid #c3e6cb;
-        }
-
-        .connection-status.disconnected {
-            background: #f8d7da;
-            color: #000000;
-            border: 2px solid #f5c6cb;
-        }
-
-        .connection-status.testing {
-            background: #fff3cd;
-            color: #000000;
-            border: 2px solid #ffeaa7;
-        }
-
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #000000;
@@ -112,11 +84,6 @@
             padding: 10px 20px;
             font-size: 12px;
             margin: 4px;
-        }
-
-        .btn-test {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: #000000;
         }
 
         .btn-success {
@@ -184,14 +151,71 @@
             backdrop-filter: blur(10px);
         }
 
-        .user-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-left: 5px solid #667eea;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
             color: #000000;
+            font-weight: 800;
+        }
+
+        .notification.success { border-left-color: #28a745; }
+        .notification.warning { border-left-color: #ffc107; }
+        .notification.error { border-left-color: #dc3545; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .connection-status {
             padding: 12px;
             border-radius: 12px;
-            margin-bottom: 15px;
+            margin: 10px 0;
             font-weight: 900;
             text-align: center;
+            transition: all 0.3s ease;
+            color: #000000;
+        }
+
+        .connection-status.connected {
+            background: #d4edda;
+            color: #000000;
+            border: 2px solid #c3e6cb;
+        }
+
+        .connection-status.disconnected {
+            background: #f8d7da;
+            color: #000000;
+            border: 2px solid #f5c6cb;
+        }
+
+        .connection-status.testing {
+            background: #fff3cd;
+            color: #000000;
+            border: 2px solid #ffeaa7;
+        }
+
+        .log-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 10px;
+            border: 2px solid #dee2e6;
+            color: #000000;
+            font-weight: 700;
         }
 
         .nav-tabs {
@@ -266,31 +290,6 @@
             font-weight: 800;
         }
 
-        .notification {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: white;
-            border-radius: 12px;
-            padding: 12px 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-left: 5px solid #667eea;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            max-width: 300px;
-            color: #000000;
-            font-weight: 800;
-        }
-
-        .notification.success { border-left-color: #28a745; }
-        .notification.warning { border-left-color: #ffc107; }
-        .notification.error { border-left-color: #dc3545; }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
@@ -357,20 +356,6 @@
             font-weight: 900;
         }
 
-        .log-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 10px;
-            border: 2px solid #dee2e6;
-            color: #000000;
-            font-weight: 700;
-        }
-
         .alert {
             padding: 15px;
             border-radius: 12px;
@@ -391,33 +376,11 @@
             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
         }
 
-        .logout-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: #000000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 900;
-        }
-
         .user-form {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
-        }
-
-        .user-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 12px;
-            background: #f8f9fa;
         }
 
         .user-item {
@@ -650,13 +613,6 @@
                 padding: 15px;
             }
             
-            .logout-btn {
-                top: 10px;
-                left: 10px;
-                padding: 8px 15px;
-                font-size: 12px;
-            }
-            
             .notification {
                 top: 10px;
                 right: 10px;
@@ -717,291 +673,6 @@
                 width: auto;
                 display: inline-block;
             }
-        }: translateX(0); opacity: 1; }
-        }
-
-        .schedule-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            font-size: 12px;
-        }
-
-        .schedule-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 6px;
-            font-weight: 800;
-            text-align: center;
-        }
-
-        .schedule-table td {
-            padding: 8px 4px;
-            border: 2px solid #e1e8ed;
-            text-align: center;
-            font-weight: 700;
-            min-height: 50px;
-            vertical-align: middle;
-            color: #1a1a1a;
-        }
-
-        .shift-cell {
-            background: #f8f9fa;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-height: 45px;
-        }
-
-        .shift-cell:hover {
-            background: #e3f2fd;
-            transform: scale(1.02);
-        }
-
-        .shift-cell.assigned {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            color: #1a1a1a;
-            font-weight: 800;
-        }
-
-        .shift-cell.my-shift {
-            background: linear-gradient(135deg, #fff9c4 0%, #fff176 100%) !important;
-            color: #1a1a1a;
-            font-weight: 800;
-            border: 3px solid #fbc02d !important;
-        }
-
-        .shift-cell.available {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
-        }
-
-        .shift-cell.unavailable {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            color: #721c24;
-        }
-
-        .log-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
-            border: 2px solid #dee2e6;
-        }
-
-        .alert {
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            font-weight: 800;
-            color: #1a1a1a;
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        }
-
-        .alert-warning {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        }
-
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-        }
-
-        .user-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .user-list {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 15px;
-            background: #f8f9fa;
-        }
-
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #e1e8ed;
-            background: white;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .settings-panel {
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .task-management-panel {
-            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
-            border: 2px solid #28a745;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .task-list {
-            display: grid;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .task-item {
-            background: white;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .task-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        .task-item.fixed-task {
-            border-color: #ffc107;
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        }
-
-        .task-item.flexible-task {
-            border-color: #17a2b8;
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        }
-
-        .task-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .task-name {
-            font-size: 1.3em;
-            font-weight: 800;
-            color: #2c3e50;
-        }
-
-        .task-type {
-            font-size: 0.9em;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .task-type.fixed {
-            background: #ffc107;
-            color: #212529;
-        }
-
-        .task-type.flexible {
-            background: #17a2b8;
-        }
-
-        .user-stats-detailed {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .user-stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border-right: 5px solid #667eea;
-        }
-
-        .user-stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .user-name {
-            font-size: 1.2em;
-            font-weight: 800;
-            color: #2c3e50;
-        }
-
-        .user-total-shifts {
-            font-size: 2em;
-            font-weight: 900;
-            color: #667eea;
-        }
-
-        .shift-breakdown {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .shift-type-count {
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-
-        .shift-type-number {
-            font-size: 1.5em;
-            font-weight: 800;
-            color: #495057;
-        }
-
-        .shift-type-label {
-            font-size: 0.8em;
-            color: #6c757d;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .nav-tab { font-size: 14px; padding: 12px 18px; }
-            .user-form { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-            .user-stats-detailed { grid-template-columns: 1fr; }
-            .shift-breakdown { grid-template-columns: repeat(2, 1fr); }
         }
 </style>
 </head>
@@ -1061,8 +732,8 @@
 
     <!-- Dashboard -->
     <div class="dashboard" id="dashboard">
-        <button class="logout-btn" onclick="logout()">יציאה</button>
-        <div class="user-info" id="userInfo"></div>
+        <button class="btn btn-danger" onclick="logout()" style="float: left;">יציאה</button>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #000000; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-weight: 900; text-align: center;" id="userInfo"></div>
         
         <div class="nav-tabs" id="navigationTabs">
             <button class="nav-tab active" id="welcomeNavTab" onclick="showTab('welcome')">🏠 ברוכים הבאים</button>
@@ -1093,20 +764,23 @@
                     🔄 מצב חיבור: לא נבדק
                 </div>
                 <div style="margin: 12px 0;">
-                    <button class="btn btn-test" onclick="testConnection()">
+                    <button class="btn btn-small" onclick="testConnection()">
                         🧪 בדיקת חיבור
                     </button>
-                    <button class="btn" onclick="loadData()">
+                    <button class="btn btn-small" onclick="loadData()">
                         📥 טען נתונים
                     </button>
-                    <button class="btn btn-success" onclick="saveData()">
+                    <button class="btn btn-small btn-success" onclick="saveData()">
                         💾 שמור הכל
                     </button>
-                    <button class="btn btn-warning" onclick="saveAllUsers()">
-                        👥 שמור משתמשים
+                    <button class="btn btn-small btn-success" onclick="fullSync()">
+                        🔄 סנכרון מלא
                     </button>
-                    <button class="btn" onclick="exportToCSV()">
-                        📤 יצא CSV
+                    <button class="btn btn-small btn-warning" onclick="addTestUser()">
+                        👤 הוסף משתמש בדיקה
+                    </button>
+                    <button class="btn btn-small btn-danger" onclick="clearAllData()">
+                        🗑️ נקה נתונים
                     </button>
                 </div>
                 <div id="systemLog" class="log-section">
@@ -1277,11 +951,9 @@
                     <button class="btn btn-small" onclick="addUser()">הוסף משתמש</button>
                 </div>
             </div>
-            <div>
-                <h3>📋 רשימת משתמשים</h3>
-                <div class="user-list" id="usersList">
-                    <p>טוען רשימת משתמשים...</p>
-                </div>
+            <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #000000; font-weight: 900;">👥 משתמשים במערכת</h3>
+                <div id="usersList">טוען רשימת משתמשים...</div>
             </div>
         </div>
 
@@ -1326,7 +998,6 @@
                     <button class="btn btn-small" onclick="testWebhook()">🔍 בדוק webhook</button>
                     <button class="btn btn-small" onclick="createGoogleSheetsUrl()">📊 פתח גיליון</button>
                     <button class="btn btn-small" onclick="reportError()">📋 דוח שגיאות</button>
-                    <button class="btn btn-small btn-danger" onclick="clearAllData()">🗑️ נקה נתונים</button>
                 </div>
             </div>
         </div>
@@ -1428,7 +1099,7 @@ function updateLoginUsersList() {
     select.innerHTML = '<option value="">בחר משתמש...</option>';
     users.forEach(user => {
         if (user.type !== 'admin') {
-            const hasPassword = user.password ? ' 🔒' : '';
+            const hasPassword = user.password && user.password !== '' && user.password !== 'null' ? ' 🔒' : '';
             select.innerHTML += `<option value="${user.id}">${user.firstName} ${user.lastName} (${user.type})${hasPassword}</option>`;
         }
     });
@@ -1463,18 +1134,32 @@ function login() {
             return;
         }
         
-        if (selectedUser.password) {
+        addToLog(`🔍 ניסיון כניסה למשתמש: ${selectedUser.firstName} ${selectedUser.lastName}`);
+        addToLog(`🔑 סיסמה במערכת: "${selectedUser.password}" (סוג: ${typeof selectedUser.password})`);
+        
+        if (selectedUser.password && selectedUser.password !== '' && selectedUser.password !== 'null') {
             const password = prompt(`הכנס סיסמה עבור ${selectedUser.firstName} ${selectedUser.lastName}:`);
-            if (password !== selectedUser.password) {
+            addToLog(`🔑 סיסמה שהוזנה: "${password}"`);
+            
+            if (password === null) {
+                return; // המשתמש ביטל
+            }
+            
+            // השוואה מדויקת של סיסמאות
+            if (String(password).trim() !== String(selectedUser.password).trim()) {
+                addToLog(`❌ סיסמה שגויה: "${password}" !== "${selectedUser.password}"`, 'error');
                 showNotification('סיסמה שגויה', 'error');
                 return;
             }
+            
+            addToLog(`✅ סיסמה נכונה!`, 'success');
         }
         
         currentUser = selectedUser;
         showDashboard();
         addToLog(`✅ ${selectedUser.firstName} ${selectedUser.lastName} התחבר בהצלחה`, 'success');
         showNotification(`ברוך הבא ${selectedUser.firstName}!`, 'success');
+        
     } else if (quickLogin === 'manual') {
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
@@ -1488,9 +1173,11 @@ function login() {
 
         let existingUser = users.find(u => u.phone === phone);
         if (existingUser) {
-            if (existingUser.password) {
+            if (existingUser.password && existingUser.password !== '' && existingUser.password !== 'null') {
                 const password = prompt(`הכנס סיסמה עבור ${existingUser.firstName} ${existingUser.lastName}:`);
-                if (password !== existingUser.password) {
+                if (password === null) return;
+                
+                if (String(password).trim() !== String(existingUser.password).trim()) {
                     showNotification('סיסמה שגויה', 'error');
                     return;
                 }
@@ -1852,31 +1539,32 @@ function updateUsersList() {
     if (!container) return;
     
     if (users.length <= 1) {
-        container.innerHTML = '<div style="text-align: center; color: #666;">רק המנהל הכללי קיים במערכת</div>';
+        container.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">רק המנהל הכללי קיים במערכת</div>';
         return;
     }
 
-    let html = '';
+    let html = '<div style="display: grid; gap: 10px; margin-top: 15px;">';
     users.forEach(user => {
         if (user.type !== 'admin') {
             const hasPassword = user.password ? '🔒' : '🔓';
             const passwordInfo = user.password ? 'יש סיסמה' : 'אין סיסמה';
             
             html += `
-                <div class="user-item">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 2px solid #e1e8ed; background: white; border-radius: 12px;">
                     <div>
                         <strong>${user.firstName} ${user.lastName}</strong> ${hasPassword}<br>
-                        <small>${user.phone} | ${user.type} | ${passwordInfo}</small>
-                        ${user.createdAt ? `<br><small style="color: #666;">נוצר: ${new Date(user.createdAt).toLocaleDateString('he-IL')}</small>` : ''}
+                        <small style="color: #666;">${user.phone} | ${user.type} | ${passwordInfo}</small>
+                        ${user.createdAt ? `<br><small style="color: #999;">נוצר: ${new Date(user.createdAt).toLocaleDateString('he-IL')}</small>` : ''}
                     </div>
                     <div>
                         <button class="btn btn-small" style="background: #2196f3; margin: 2px;" onclick="changeUserPassword(${user.id})">🔑 סיסמה</button>
-                        <button class="btn btn-small btn-danger" style="margin: 2px;" onclick="removeUser(${user.id})">הסר</button>
+                        <button class="btn btn-small btn-danger" style="margin: 2px;" onclick="removeUser(${user.id})">🗑️ הסר</button>
                     </div>
                 </div>
             `;
         }
     });
+    html += '</div>';
 
     container.innerHTML = html;
     addToLog(`📋 רשימת משתמשים עודכנה: ${users.length - 1} משתמשים`);
@@ -1929,7 +1617,7 @@ function addUser() {
     updateLoginUsersList();
     updateDashboardStats();
     
-    // Save user immediately using the correct format
+    // Save user immediately
     saveUserToServer(newUser);
     
     addToLog(`✅ משתמש חדש נוסף: ${firstName} ${lastName} (${userType})`, 'success');
@@ -1943,7 +1631,14 @@ function changeUserPassword(userId) {
     const newPassword = prompt(`הכנס סיסמה חדשה עבור ${user.firstName} ${user.lastName}:\n(השאר ריק כדי להסיר סיסמה)`);
     if (newPassword === null) return;
     
-    user.password = newPassword || null;
+    // עדכון סיסמה - טיפול נכון בערכים ריקים
+    if (newPassword.trim() === '') {
+        user.password = null;
+    } else {
+        user.password = newPassword.trim();
+    }
+    
+    addToLog(`🔑 עדכון סיסמה למשתמש ${user.firstName}: "${user.password}"`);
     
     updateUsersList();
     updateLoginUsersList();
@@ -1951,7 +1646,7 @@ function changeUserPassword(userId) {
     // Save user immediately
     saveUserToServer(user);
     
-    if (newPassword) {
+    if (user.password) {
         showNotification(`סיסמה עודכנה עבור ${user.firstName} ${user.lastName}`, 'success');
         addToLog(`✅ סיסמה עודכנה למשתמש: ${user.firstName} ${user.lastName}`, 'success');
     } else {
@@ -1960,15 +1655,42 @@ function changeUserPassword(userId) {
     }
 }
 
-function removeUser(id) {
+// פונקציה משופרת למחיקת משתמש
+async function removeUser(id) {
     const user = users.find(u => u.id === id);
-    if (user && confirm(`האם להסיר את ${user.firstName} ${user.lastName}?`)) {
-        addToLog(`🗑️ מתחיל הסרת משתמש: ${user.firstName} ${user.lastName}`, 'info');
+    if (!user) return;
+    
+    if (!confirm(`האם להסיר את ${user.firstName} ${user.lastName}? פעולה זו תמחק את המשתמש מכל המערכת!`)) {
+        return;
+    }
+    
+    addToLog(`🗑️ מתחיל הסרת משתמש: ${user.firstName} ${user.lastName}`, 'info');
+    
+    const userFullName = `${user.firstName} ${user.lastName}`;
+    
+    try {
+        // שלח בקשת מחיקה לשרת
+        const deleteData = {
+            action: 'deleteUser',
+            userId: user.id,
+            userName: userFullName
+        };
         
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(deleteData),
+            mode: 'no-cors'
+        });
+        
+        addToLog(`✅ בקשת מחיקה נשלחה לשרת עבור: ${userFullName}`, 'success');
+        
+        // מחק גם מהמערכת המקומית
         users = users.filter(u => u.id !== id);
         
         // Remove from schedule
-        const userFullName = `${user.firstName} ${user.lastName}`;
         Object.keys(scheduleData).forEach(shiftId => {
             if (scheduleData[shiftId] === userFullName) {
                 delete scheduleData[shiftId];
@@ -1977,18 +1699,23 @@ function removeUser(id) {
         
         delete availabilityData[id];
         
+        // עדכן ממשק משתמש
         updateUsersList();
         updateLoginUsersList();
         updateDashboardStats();
         generateScheduleTable();
         
-        // Save all data after removal
+        addToLog(`✅ משתמש הוסר בהצלחה: ${user.firstName} ${user.lastName}`, 'success');
+        showNotification(`${user.firstName} ${user.lastName} הוסר מהמערכת`, 'success');
+        
+        // שמור שינויים
         setTimeout(() => {
             saveData();
         }, 1000);
         
-        addToLog(`✅ משתמש הוסר בהצלחה: ${user.firstName} ${user.lastName}`, 'success');
-        showNotification('משתמש הוסר ויישמר אוטומטית', 'success');
+    } catch (error) {
+        addToLog(`❌ שגיאה בהסרת משתמש: ${error.message}`, 'error');
+        showNotification('שגיאה בהסרת משתמש', 'error');
     }
 }
 
@@ -1996,7 +1723,6 @@ async function saveUserToServer(user) {
     addToLog(`💾 שומר משתמש בשרת: ${user.firstName} ${user.lastName}`);
     
     try {
-        const saveUrl = APP_SCRIPT_URL;
         const userData = {
             action: 'saveUser',
             id: user.id,
@@ -2008,53 +1734,16 @@ async function saveUserToServer(user) {
             createdAt: user.createdAt
         };
         
-        // Try POST first
-        try {
-            const response = await fetch(saveUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userData),
-                mode: 'no-cors'
-            });
-            
-            addToLog(`✅ משתמש ${user.firstName} נשמר בשרת (POST)`, 'success');
-            
-        } catch (postError) {
-            // Fallback to iframe
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = saveUrl;
-            form.target = 'user_save_iframe';
-            form.style.display = 'none';
-            
-            const input = document.createElement('input');
-            input.name = 'data';
-            input.value = JSON.stringify(userData);
-            form.appendChild(input);
-            
-            const iframe = document.createElement('iframe');
-            iframe.name = 'user_save_iframe';
-            iframe.style.display = 'none';
-            
-            document.body.appendChild(form);
-            document.body.appendChild(iframe);
-            
-            form.submit();
-            
-            setTimeout(() => {
-                document.body.removeChild(form);
-                document.body.removeChild(iframe);
-            }, 3000);
-            
-            addToLog(`✅ משתמש ${user.firstName} נשמר בשרת (iframe)`, 'success');
-        }
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+            mode: 'no-cors'
+        });
         
-        // Always call saveData after individual user save to ensure full sync
-        setTimeout(() => {
-            saveData();
-        }, 1000);
+        addToLog(`✅ משתמש ${user.firstName} נשמר בשרת`, 'success');
         
     } catch (error) {
         addToLog(`❌ שגיאה בשמירת משתמש ${user.firstName}: ${error.message}`, 'error');
@@ -3024,82 +2713,25 @@ function clearAllData() {
     }
 }
 
-// ========== CONNECTION FUNCTIONS ==========
-// Enhanced test connection with better debugging
+// ========== CONNECTION FUNCTIONS (FROM WORKING FILE) ==========
 async function testConnection() {
     const statusElement = document.getElementById('connectionStatus');
     
     if (statusElement) {
         statusElement.className = 'connection-status testing';
-        statusElement.innerHTML = '🔄 בודק חיבור מפורט לגוגל שיטס...';
+        statusElement.innerHTML = '🔄 בודק חיבור לגוגל שיטס...';
     }
     
-    addToLog('🧪 מתחיל בדיקת חיבור מפורטת');
+    addToLog('🧪 מתחיל בדיקת חיבור');
     addToLog(`🌐 URL: ${APP_SCRIPT_URL}`);
     
     try {
-        // Test 1: Simple GET request
-        addToLog('🔍 בדיקה 1: GET פשוט');
-        const testUrl1 = `${APP_SCRIPT_URL}?test=1&timestamp=${Date.now()}`;
-        
-        try {
-            const response1 = await fetch(testUrl1, {
-                method: 'GET',
-                mode: 'cors'
-            });
-            
-            addToLog(`📊 GET Response Status: ${response1.status}`);
-            
-            if (response1.ok) {
-                const result1 = await response1.text();
-                addToLog(`📥 GET Response: ${result1.substring(0, 200)}...`);
-            }
-        } catch (e) {
-            addToLog(`⚠️ GET CORS failed: ${e.message}`);
-        }
-        
-        // Test 2: POST with simple data
-        addToLog('🔍 בדיקה 2: POST פשוט');
         const testData = {
             action: 'test',
             message: 'hello from system',
             timestamp: new Date().toISOString()
         };
         
-        try {
-            const response2 = await fetch(APP_SCRIPT_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(testData),
-                mode: 'cors'
-            });
-            
-            addToLog(`📊 POST Response Status: ${response2.status}`);
-            
-            if (response2.ok) {
-                const result2 = await response2.text();
-                addToLog(`📥 POST Response: ${result2.substring(0, 200)}...`);
-                
-                if (statusElement) {
-                    statusElement.className = 'connection-status connected';
-                    statusElement.innerHTML = '✅ חיבור תקין - POST עובד!';
-                }
-                
-                connectionStatus = 'connected';
-                document.getElementById('connectionDisplay').textContent = 'מחובר ✅';
-                addToLog('✅ חיבור POST הצליח בהצלחה!', 'success');
-                showNotification('חיבור POST תקין לגוגל שיטס!', 'success');
-                return true;
-            }
-            
-        } catch (e) {
-            addToLog(`⚠️ POST CORS failed: ${e.message}`);
-        }
-        
-        // Test 3: POST with no-cors
-        addToLog('🔍 בדיקה 3: POST עם no-cors');
         try {
             await fetch(APP_SCRIPT_URL, {
                 method: 'POST',
@@ -3110,280 +2742,123 @@ async function testConnection() {
                 mode: 'no-cors'
             });
             
-            addToLog('📤 POST no-cors נשלח (לא יכול לקרוא תגובה)');
+            addToLog('✅ POST no-cors נשלח בהצלחה');
             
             if (statusElement) {
                 statusElement.className = 'connection-status connected';
-                statusElement.innerHTML = '✅ חיבור תקין (no-cors)';
+                statusElement.innerHTML = '✅ חיבור תקין לגוגל שיטס!';
             }
             
             connectionStatus = 'connected';
-            document.getElementById('connectionDisplay').textContent = 'מחובר (no-cors) ✅';
-            addToLog('✅ חיבור no-cors נשלח', 'success');
-            showNotification('חיבור no-cors נשלח לגוגל שיטס!', 'success');
+            document.getElementById('connectionDisplay').textContent = 'מחובר ✅';
+            addToLog('✅ חיבור הצליח בהצלחה!', 'success');
+            showNotification('חיבור תקין לגוגל שיטס!', 'success');
             return true;
             
         } catch (e) {
-            addToLog(`❌ POST no-cors failed: ${e.message}`);
+            addToLog(`❌ חיבור נכשל: ${e.message}`, 'error');
+            
+            if (statusElement) {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '❌ חיבור נכשל - בדוק את הסקריפט';
+            }
+            
+            connectionStatus = 'disconnected';
+            document.getElementById('connectionDisplay').textContent = 'לא מחובר ❌';
+            showNotification('שגיאה בחיבור - בדוק את Google Apps Script', 'error');
+            return false;
         }
-        
-        // Test 4: iframe method
-        addToLog('🔍 בדיקה 4: iframe');
-        await makeRequestViaIframe(`${APP_SCRIPT_URL}?action=test&iframe=1&t=${Date.now()}`);
-        
-        if (statusElement) {
-            statusElement.className = 'connection-status connected';
-            statusElement.innerHTML = '✅ חיבור דרך iframe';
-        }
-        
-        connectionStatus = 'connected';
-        document.getElementById('connectionDisplay').textContent = 'מחובר (iframe) ✅';
-        addToLog('✅ חיבור דרך iframe', 'success');
-        showNotification('חיבור דרך iframe!', 'success');
-        return true;
         
     } catch (error) {
-        if (statusElement) {
-            statusElement.className = 'connection-status disconnected';
-            statusElement.innerHTML = '❌ כל השיטות נכשלו - בדוק את הסקריפט';
-        }
-        
-        connectionStatus = 'disconnected';
-        document.getElementById('connectionDisplay').textContent = 'לא מחובר ❌';
-        addToLog(`❌ כל בדיקות החיבור נכשלו: ${error.message}`, 'error');
-        showNotification('שגיאה בכל שיטות החיבור - בדוק את Google Apps Script', 'error');
+        addToLog(`❌ שגיאה כללית בחיבור: ${error.message}`, 'error');
+        showNotification('שגיאה בחיבור', 'error');
         return false;
     }
 }
 
-async function makeRequestViaIframe(url) {
-    return new Promise((resolve, reject) => {
-        addToLog(`🖼️ שולח בקשה דרך iframe: ${url}`);
-        
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = url;
-        
-        const timeout = setTimeout(() => {
-            if (document.body.contains(iframe)) {
-                document.body.removeChild(iframe);
-            }
-            addToLog(`✅ iframe timeout - כנראה הצליח`);
-            resolve({ success: true });
-        }, 5000);
-        
-        iframe.onload = () => {
-            clearTimeout(timeout);
-            addToLog(`✅ iframe נטען בהצלחה`);
-            setTimeout(() => {
-                if (document.body.contains(iframe)) {
-                    document.body.removeChild(iframe);
-                }
-                resolve({ success: true });
-            }, 1000);
-        };
-        
-        iframe.onerror = () => {
-            clearTimeout(timeout);
-            if (document.body.contains(iframe)) {
-                document.body.removeChild(iframe);
-            }
-            addToLog(`❌ שגיאה ב-iframe`);
-            reject(new Error('שגיאה ב-iframe'));
-        };
-        
-        document.body.appendChild(iframe);
-    });
-}
-
 async function loadData() {
-    addToLog('📥 טוען נתונים אמיתיים מהשרת...');
+    addToLog('📥 טוען נתונים מהשרת...');
     showNotification('🔄 טוען נתונים מגוגל שיטס...', 'info');
     
     try {
-        const loadUrl = `${APP_SCRIPT_URL}?action=loadAllData&t=${Date.now()}`;
+        const response = await fetch(`${APP_SCRIPT_URL}?action=loadAllData&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
         
-        // Try direct fetch first
-        try {
-            const response = await fetch(loadUrl, {
-                method: 'GET',
-                mode: 'cors'
-            });
+        if (response.ok) {
+            const result = await response.json();
             
-            if (response.ok) {
-                const result = await response.json();
-                await processLoadedData(result);
-                return;
+            if (result.success && result.data) {
+                await processLoadedData(result.data);
+                addToLog('✅ נתונים נטענו בהצלחה מהשרת!', 'success');
+                showNotification('✅ נתונים נטענו מגוגל שיטס!', 'success');
             } else {
-                addToLog(`⚠️ Response not OK: ${response.status}`, 'warning');
+                addToLog('⚠️ השרת החזיר נתונים ריקים', 'warning');
+                showNotification('לא נמצאו נתונים בשרת', 'warning');
             }
-        } catch (corsError) {
-            addToLog(`⚠️ CORS נכשל בטעינה: ${corsError.message}`, 'warning');
+        } else {
+            throw new Error(`Server responded with status: ${response.status}`);
         }
-        
-        // Fallback to iframe method
-        addToLog('🔄 מנסה לטעון דרך iframe...');
-        await makeRequestViaIframe(loadUrl);
-        
-        // For iframe method, we need to wait and then manually trigger data load
-        setTimeout(() => {
-            addToLog('✅ בקשת טעינה נשלחה דרך iframe', 'success');
-            showNotification('בקשת טעינה נשלחה - אם יש נתונים בגיליון הם יטענו בקרוב', 'info');
-        }, 2000);
         
     } catch (error) {
         addToLog(`❌ שגיאה בטעינת נתונים: ${error.message}`, 'error');
-        showNotification('שגיאה בטעינת נתונים - עובד במצב מקומי', 'warning');
+        showNotification('עובד במצב מקומי - לא ניתן לטעון מהשרת', 'warning');
     }
 }
 
-async function processLoadedData(result) {
-    addToLog('🔍 מעבד נתונים שנטענו מהשרת...');
+async function processLoadedData(data) {
+    addToLog('🔍 מעבד נתונים שנטענו...');
     
-    if (result && result.success && result.data) {
-        let loadedCount = 0;
-        
+    try {
         // Load users
-        if (result.data.users && Array.isArray(result.data.users) && result.data.users.length > 0) {
+        if (data.users && Array.isArray(data.users)) {
             const adminUser = users[0]; // Keep admin
             users = [adminUser];
             
-            result.data.users.forEach(row => {
-                if (row && row.length >= 4 && row[0] && row[0] != '1') { // Skip admin ID and ensure data exists
+            data.users.forEach(row => {
+                if (row && row.length >= 4) {
                     const newUser = {
                         id: parseInt(row[0]) || Date.now(),
-                        firstName: row[1] || '',
-                        lastName: row[2] || '',
-                        phone: row[3] || '',
-                        type: row[4] || 'חייל',
-                        password: row[5] || null,
+                        firstName: String(row[1] || '').trim(),
+                        lastName: String(row[2] || '').trim(),
+                        phone: String(row[3] || '').trim(),
+                        type: String(row[4] || 'חייל').trim(),
+                        password: row[5] ? String(row[5]).trim() : null,
                         createdAt: row[6] || new Date().toISOString()
                     };
                     
-                    // Only add if we have minimum required data
+                    // ניקוי סיסמה ריקה
+                    if (newUser.password === '' || newUser.password === 'null' || newUser.password === 'undefined') {
+                        newUser.password = null;
+                    }
+                    
                     if (newUser.firstName && newUser.lastName && newUser.phone) {
                         users.push(newUser);
-                        loadedCount++;
-                        
-                        // Initialize availability data for soldiers
-                        if (newUser.type === 'חייל' && !availabilityData[newUser.id]) {
-                            availabilityData[newUser.id] = { 
-                                unavailableShifts: new Set(), 
-                                submitted: false 
-                            };
-                        }
+                        addToLog(`👤 נטען משתמש: ${newUser.firstName} ${newUser.lastName} (${newUser.type})${newUser.password ? ' 🔒' : ''}`);
                     }
                 }
             });
-            addToLog(`✅ נטענו ${loadedCount} משתמשים מהשרת`, 'success');
-        }
-        
-        // Load schedule data
-        if (result.data.schedule && Array.isArray(result.data.schedule)) {
-            scheduleData = {};
-            result.data.schedule.forEach(item => {
-                if (Array.isArray(item) && item.length >= 2) {
-                    scheduleData[item[0]] = item[1];
-                }
-            });
-            addToLog(`✅ נטענו ${Object.keys(scheduleData).length} שיבוצים מהשרת`, 'success');
-        }
-        
-        // Load availability data
-        if (result.data.availability && Array.isArray(result.data.availability)) {
-            result.data.availability.forEach(item => {
-                if (Array.isArray(item) && item.length >= 2) {
-                    const userId = item[0];
-                    try {
-                        const unavailableArray = JSON.parse(item[1] || '[]');
-                        const submitted = item[2] === 'true' || item[2] === true;
-                        const submittedAt = item[3] || null;
-                        
-                        availabilityData[userId] = {
-                            unavailableShifts: new Set(unavailableArray),
-                            submitted: submitted,
-                            submittedAt: submittedAt
-                        };
-                    } catch (e) {
-                        addToLog(`⚠️ שגיאה בטעינת זמינות למשתמש ${userId}: ${e.message}`, 'warning');
-                    }
-                }
-            });
-            addToLog(`✅ נטענו נתוני זמינות מהשרת`, 'success');
-        }
-        
-        // Load tasks (custom tasks only, keep fixed ones)
-        if (result.data.tasks && Array.isArray(result.data.tasks)) {
-            // Remove existing custom tasks
-            taskSystem.tasks = taskSystem.tasks.filter(t => t.type === 'fixed');
-            
-            result.data.tasks.forEach(item => {
-                if (Array.isArray(item) && item.length >= 4) {
-                    const task = {
-                        id: item[0],
-                        name: item[1],
-                        type: item[2] || 'flexible',
-                        soldiers: parseInt(item[3]) || 1,
-                        order: taskSystem.tasks.length + 1
-                    };
-                    
-                    if (task.name && task.type !== 'fixed') {
-                        taskSystem.tasks.push(task);
-                    }
-                }
-            });
-            addToLog(`✅ נטענו משימות מהשרת`, 'success');
-        }
-        
-        // Load settings
-        if (result.data.settings && Array.isArray(result.data.settings)) {
-            result.data.settings.forEach(item => {
-                if (Array.isArray(item) && item.length >= 2) {
-                    try {
-                        const key = item[0];
-                        const value = JSON.parse(item[1]);
-                        systemSettings[key] = value;
-                    } catch (e) {
-                        addToLog(`⚠️ שגיאה בטעינת הגדרה: ${item[0]}`, 'warning');
-                    }
-                }
-            });
-            addToLog(`✅ נטענו הגדרות מערכת מהשרת`, 'success');
+            addToLog(`✅ נטענו ${users.length - 1} משתמשים`, 'success');
         }
         
         // Update UI
         updateUsersList();
-        updateDashboardStats();
-        updateTasksList();
-        generateScheduleTable();
         updateLoginUsersList();
         
-        if (currentUser && currentUser.type === 'חייל') {
-            generateAvailabilityForm();
-        }
-        
-        addToLog(`✅ כל הנתונים נטענו בהצלחה מהשרת! (${loadedCount} משתמשים)`, 'success');
-        showNotification(`✅ נתונים נטענו מגוגל שיטס! (${loadedCount} משתמשים)`, 'success');
-        
-    } else {
-        addToLog('⚠️ לא נמצאו נתונים בשרת או פורמט לא תקין', 'warning');
-        addToLog(`📊 תגובת שרת: ${JSON.stringify(result)}`, 'info');
-        showNotification('לא נמצאו נתונים בשרת - עובד במצב מקומי', 'warning');
+    } catch (error) {
+        addToLog(`❌ שגיאה בעיבוד הנתונים: ${error.message}`, 'error');
     }
 }
 
 async function saveData() {
-    addToLog('💾 שומר נתונים אמיתיים בשרת...');
+    addToLog('💾 שומר נתונים בשרת...');
     showNotification('🔄 שומר נתונים לגוגל שיטס...', 'info');
     
     try {
-        const saveUrl = APP_SCRIPT_URL;
-        
-        // Prepare users data more explicitly
         const usersToSave = users.filter(u => u.type !== 'admin');
         addToLog(`📊 מכין לשמירה ${usersToSave.length} משתמשים`);
         
-        // Create a simpler data structure
         const saveDataObj = {
             action: 'saveAllData',
             timestamp: new Date().toISOString(),
@@ -3396,128 +2871,114 @@ async function saveData() {
                 password: u.password || '',
                 createdAt: u.createdAt || new Date().toISOString()
             })),
-            schedule: Object.entries(scheduleData),
-            availability: Object.entries(availabilityData).map(([userId, data]) => ({
-                userId: userId,
-                unavailableShifts: Array.from(data.unavailableShifts || []),
-                submitted: data.submitted || false,
-                submittedAt: data.submittedAt || null
-            })),
-            tasks: taskSystem.tasks.filter(t => t.type !== 'fixed').map(t => ({
-                id: t.id,
-                name: t.name,
-                type: t.type,
-                soldiers: t.soldiers
-            })),
-            settings: systemSettings
+            schedule: [],
+            availability: [],
+            tasks: [],
+            settings: {}
         };
         
-        addToLog(`📦 נתונים מוכנים לשליחה: ${JSON.stringify(saveDataObj).length} תווים`);
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(saveDataObj),
+            mode: 'no-cors'
+        });
         
-        // Try with different approaches
-        try {
-            // Method 1: Standard POST with CORS
-            const response = await fetch(saveUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(saveDataObj),
-                mode: 'cors'
-            });
-            
-            addToLog('✅ POST עם CORS נשלח', 'success');
-            
-            if (response.ok) {
-                const result = await response.json();
-                addToLog(`📥 תגובה מהשרת: ${JSON.stringify(result)}`, 'success');
-                showNotification('✅ נתונים נשמרו בגוגל שיטס!', 'success');
-                return;
-            }
-            
-        } catch (corsError) {
-            addToLog(`⚠️ CORS נכשל: ${corsError.message}`, 'warning');
-        }
-        
-        // Method 2: POST with no-cors
-        try {
-            await fetch(saveUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(saveDataObj),
-                mode: 'no-cors'
-            });
-            
-            addToLog('✅ POST עם no-cors נשלח', 'success');
-            showNotification('✅ נתונים נשלחו לגוגל שיטס!', 'success');
-            
-        } catch (postError) {
-            addToLog(`⚠️ POST נכשל: ${postError.message}`, 'warning');
-            
-            // Method 3: Fallback to URL parameters (GET method)
-            try {
-                const urlParams = new URLSearchParams({
-                    action: 'saveAllData',
-                    data: JSON.stringify(saveDataObj)
-                });
-                
-                const getUrl = `${saveUrl}?${urlParams.toString()}`;
-                
-                if (getUrl.length < 2000) { // URL length limit
-                    await fetch(getUrl, { method: 'GET', mode: 'no-cors' });
-                    addToLog('✅ GET עם פרמטרים נשלח', 'success');
-                    showNotification('✅ נתונים נשלחו בשיטה אלטרנטיבית!', 'success');
-                } else {
-                    addToLog('❌ URL ארוך מדי לשיטת GET', 'error');
-                    throw new Error('נתונים גדולים מדי');
-                }
-                
-            } catch (getError) {
-                addToLog(`❌ גם GET נכשל: ${getError.message}`, 'error');
-                
-                // Method 4: iframe fallback
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = saveUrl;
-                form.target = 'save_iframe_' + Date.now();
-                form.style.display = 'none';
-                
-                const input = document.createElement('input');
-                input.name = 'data';
-                input.value = JSON.stringify(saveDataObj);
-                form.appendChild(input);
-                
-                const iframe = document.createElement('iframe');
-                iframe.name = form.target;
-                iframe.style.display = 'none';
-                
-                document.body.appendChild(form);
-                document.body.appendChild(iframe);
-                
-                form.submit();
-                
-                setTimeout(() => {
-                    if (document.body.contains(form)) document.body.removeChild(form);
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                }, 5000);
-                
-                addToLog('✅ iframe נשלח כחלופה אחרונה', 'success');
-                showNotification('✅ נתונים נשלחו דרך iframe!', 'success');
-            }
-        }
+        addToLog('✅ נתונים נשלחו לשרת', 'success');
+        showNotification('✅ נתונים נשמרו בגוגל שיטס!', 'success');
         
     } catch (error) {
-        addToLog(`❌ שגיאה כללית בשמירת נתונים: ${error.message}`, 'error');
+        addToLog(`❌ שגיאה בשמירת נתונים: ${error.message}`, 'error');
         showNotification('❌ שגיאה בשמירת נתונים', 'error');
     }
 }
 
+// פונקציה לסנכרון מלא עם השרת
+async function fullSync() {
+    addToLog('🔄 מתחיל סנכרון מלא עם השרת...');
+    showNotification('🔄 מסנכרן עם השרת...', 'info');
+    
+    try {
+        // קודם טוען נתונים עדכניים מהשרת
+        await loadData();
+        
+        // אחר כך שומר את הנתונים המקומיים
+        setTimeout(async () => {
+            await saveData();
+            addToLog('✅ סנכרון מלא הושלם', 'success');
+            showNotification('✅ סנכרון הושלם בהצלחה!', 'success');
+        }, 2000);
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בסנכרון: ${error.message}`, 'error');
+        showNotification('❌ שגיאה בסנכרון', 'error');
+    }
+}
+
+function addTestUser() {
+    const testUser = {
+        id: Date.now(),
+        firstName: 'בדיקה',
+        lastName: 'משתמש',
+        phone: `050${Math.floor(Math.random() * 1000000)}`,
+        type: 'חייל',
+        password: 'test123',
+        createdAt: new Date().toISOString()
+    };
+    
+    users.push(testUser);
+    updateUsersList();
+    updateLoginUsersList();
+    saveUserToServer(testUser);
+    
+    addToLog(`✅ משתמש בדיקה נוסף: ${testUser.firstName} ${testUser.lastName}`, 'success');
+    showNotification(`משתמש בדיקה נוסף! טלפון: ${testUser.phone}, סיסמה: test123`, 'success');
+}
+
+// Debug functions
+function testWebhook() {
+    addToLog('🧪 בודק webhook של Google Apps Script...');
+    showNotification('🔍 בודק את ה-webhook...', 'info');
+    
+    testConnection().then(success => {
+        if (success) {
+            addToLog('✅ Webhook עובד תקין', 'success');
+            showNotification('Webhook עובד בהצלחה!', 'success');
+        } else {
+            addToLog('❌ בעיה ב-webhook', 'error');
+            showNotification('בעיה ב-webhook - בדוק הגדרות', 'error');
+        }
+    });
+}
+
+function createGoogleSheetsUrl() {
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/1your-sheet-id/edit";
+    window.open(sheetUrl, '_blank');
+    showNotification('פותח את גיליון גוגל שיטס...', 'info');
+}
+
+function reportError() {
+    const errorReport = `
+דוח שגיאות מערכת ניהול משמרות:
+- URL: ${APP_SCRIPT_URL}
+- מצב חיבור: ${connectionStatus}
+- משתמשים: ${users.length - 1}
+- זמן: ${new Date().toLocaleString('he-IL')}
+    `;
+    
+    navigator.clipboard.writeText(errorReport).then(() => {
+        showNotification('דוח שגיאות הועתק ללוח', 'success');
+    }).catch(() => {
+        alert(errorReport);
+    });
+}
+
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', async function() {
-    addToLog('🚀 מערכת ניהול משמרות משופרת מתחילה...');
-    console.log('🚀 מערכת ניהול משמרות משופרת מתחילה...');
+    addToLog('🚀 מערכת ניהול משמרות מתחילה...');
+    console.log('🚀 מערכת ניהול משמרות מתחילה...');
     
     // Initialize login users list
     setTimeout(() => {
@@ -3539,596 +3000,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }, 1000);
     
-    addToLog('✅ מערכת משופרת מוכנה לשימוש!', 'success');
-    showNotification('מערכת ניהול משמרות משופרת עם חיבור לגוגל שיטס מוכנה! 🎉', 'success');
+    addToLog('✅ מערכת מוכנה לשימוש!', 'success');
+    showNotification('מערכת ניהול משמרות מוכנה! 🎉', 'success');
 });
-
-// Auto-save when adding users or making changes
-function autoSave() {
-    if (connectionStatus === 'connected') {
-        addToLog('💾 שמירה אוטומטית מתוזמנת...');
-        setTimeout(() => {
-            saveData();
-        }, 2000);
-    }
-}
-
-// Add manual save button function for immediate saving
-function forceSave() {
-    addToLog('🔄 כפיית שמירה ידנית...');
-    showNotification('🔄 מבצע שמירה מיידית...', 'info');
-    saveData();
-}
-
-// Debug function to check what data we're trying to save
-function debugSave() {
-    addToLog('🔍 בדיקת נתונים לשמירה...');
-    
-    const usersToSave = users.filter(u => u.type !== 'admin');
-    const scheduleEntries = Object.entries(scheduleData);
-    const availabilityEntries = Object.entries(availabilityData);
-    const tasksToSave = taskSystem.tasks.filter(t => t.type !== 'fixed');
-    
-    addToLog(`📊 נתונים נוכחיים:`);
-    addToLog(`   👥 משתמשים: ${usersToSave.length}`);
-    addToLog(`   📅 משמרות: ${scheduleEntries.length}`);
-    addToLog(`   ⏰ זמינות: ${availabilityEntries.length}`);
-    addToLog(`   🔧 משימות: ${tasksToSave.length}`);
-    
-    if (usersToSave.length > 0) {
-        addToLog(`📝 רשימת משתמשים:`);
-        usersToSave.forEach(u => {
-            addToLog(`   - ${u.firstName} ${u.lastName} (${u.type}) ${u.password ? '[יש סיסמה]' : '[אין סיסמה]'}`);
-        });
-    }
-    
-    const saveDataObj = {
-        action: 'saveAllData',
-        users: usersToSave.map(u => [
-            u.id, u.firstName, u.lastName, u.phone, u.type, u.password || '', u.createdAt || new Date().toISOString()
-        ]),
-        schedule: scheduleEntries,
-        availability: availabilityEntries.map(([userId, data]) => [
-            userId, 
-            JSON.stringify(Array.from(data.unavailableShifts || [])),
-            data.submitted,
-            data.submittedAt
-        ]),
-        tasks: tasksToSave.map(t => [t.id, t.name, t.type, t.soldiers]),
-        settings: Object.entries(systemSettings).map(([key, value]) => [key, JSON.stringify(value)])
-    };
-    
-    addToLog(`📦 גודל נתוני JSON: ${JSON.stringify(saveDataObj).length} תווים`);
-    addToLog(`🌐 URL: ${APP_SCRIPT_URL}`);
-    
-    showNotification('בדיקת נתונים הושלמה - עיין ביומן', 'info');
-}
-
-// Updated save functions to match the Google Apps Script format
-async function saveUserToServer(user) {
-    addToLog(`💾 שומר משתמש אחד בשרת: ${user.firstName} ${user.lastName}`);
-    
-    try {
-        const userData = {
-            action: 'saveUser',
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            phone: user.phone,
-            type: user.type,
-            password: user.password || '',
-            createdAt: user.createdAt || new Date().toISOString()
-        };
-        
-        const response = await fetch(APP_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-            mode: 'no-cors'
-        });
-        
-        addToLog(`✅ משתמש ${user.firstName} נשמר בשרת`, 'success');
-        return true;
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירת משתמש ${user.firstName}: ${error.message}`, 'error');
-        return false;
-    }
-}
-
-// Save all users using the correct format
-async function saveAllUsers() {
-    addToLog('💾 שומר את כל המשתמשים...');
-    
-    const usersToSave = users.filter(u => u.type !== 'admin');
-    let successCount = 0;
-    
-    for (const user of usersToSave) {
-        const success = await saveUserToServer(user);
-        if (success) successCount++;
-        
-        // Small delay between requests
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-    
-    addToLog(`✅ נשמרו ${successCount} מתוך ${usersToSave.length} משתמשים`, 'success');
-    showNotification(`נשמרו ${successCount} משתמשים!`, 'success');
-}
-
-// Save schedule data
-async function saveScheduleToServer() {
-    addToLog('📅 שומר נתוני לוח משמרות...');
-    
-    try {
-        const scheduleData_formatted = {
-            action: 'saveFullSchedule',
-            schedule: scheduleData
-        };
-        
-        await fetch(APP_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(scheduleData_formatted),
-            mode: 'no-cors'
-        });
-        
-        addToLog(`✅ לוח משמרות נשמר (${Object.keys(scheduleData).length} משמרות)`, 'success');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירת לוח משמרות: ${error.message}`, 'error');
-    }
-}
-
-// Save availability data
-async function saveAvailabilityToServer() {
-    addToLog('⏰ שומר נתוני זמינות...');
-    
-    try {
-        const soldiers = users.filter(u => u.type === 'חייל');
-        
-        for (const soldier of soldiers) {
-            if (availabilityData[soldier.id]) {
-                const availabilityPayload = {
-                    action: 'saveAvailability',
-                    userId: soldier.id,
-                    unavailableShifts: Array.from(availabilityData[soldier.id].unavailableShifts || []),
-                    submitted: availabilityData[soldier.id].submitted || false,
-                    timestamp: availabilityData[soldier.id].submittedAt || new Date().toISOString()
-                };
-                
-                await fetch(APP_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(availabilityPayload),
-                    mode: 'no-cors'
-                });
-                
-                await new Promise(resolve => setTimeout(resolve, 300));
-            }
-        }
-        
-        addToLog(`✅ נתוני זמינות נשמרו`, 'success');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירת זמינות: ${error.message}`, 'error');
-    }
-}
-
-// Save tasks data
-async function saveTasksToServer() {
-    addToLog('🔧 שומר נתוני משימות...');
-    
-    try {
-        const tasksPayload = {
-            action: 'saveTasks',
-            tasks: taskSystem.tasks.filter(t => t.type !== 'fixed') // Only custom tasks
-        };
-        
-        await fetch(APP_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(tasksPayload),
-            mode: 'no-cors'
-        });
-        
-        addToLog(`✅ משימות נשמרו (${tasksPayload.tasks.length} משימות)`, 'success');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירת משימות: ${error.message}`, 'error');
-    }
-}
-
-// Save settings data
-async function saveSettingsToServer() {
-    addToLog('⚙️ שומר הגדרות מערכת...');
-    
-    try {
-        const settingsPayload = {
-            action: 'saveSettings',
-            settings: systemSettings
-        };
-        
-        await fetch(APP_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(settingsPayload),
-            mode: 'no-cors'
-        });
-        
-        addToLog(`✅ הגדרות נשמרו`, 'success');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירת הגדרות: ${error.message}`, 'error');
-    }
-}
-
-// Main save function that uses the new format
-async function saveData() {
-    addToLog('💾 מתחיל שמירה מלאה בפורמט החדש...');
-    showNotification('🔄 שומר נתונים בפורמט תואם...', 'info');
-    
-    try {
-        // Save in sequence to avoid overwhelming the server
-        await saveAllUsers();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await saveScheduleToServer();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await saveAvailabilityToServer();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await saveTasksToServer();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await saveSettingsToServer();
-        
-        addToLog('✅ שמירה מלאה הושלמה בהצלחה!', 'success');
-        showNotification('✅ כל הנתונים נשמרו בהצלחה!', 'success');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בשמירה מלאה: ${error.message}`, 'error');
-        showNotification('❌ שגיאה בשמירה', 'error');
-    }
-}
-
-// Load data function that matches the server format
-async function loadData() {
-    addToLog('📥 טוען נתונים מהשרת...');
-    showNotification('🔄 טוען נתונים מגוגל שיטס...', 'info');
-    
-    try {
-        const response = await fetch(`${APP_SCRIPT_URL}?action=loadAllData&t=${Date.now()}`, {
-            method: 'GET',
-            mode: 'cors'
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            
-            if (result.success && result.data) {
-                await processLoadedDataNew(result.data);
-                addToLog('✅ נתונים נטענו בהצלחה מהשרת!', 'success');
-                showNotification('✅ נתונים נטענו מגוגל שיטס!', 'success');
-            } else {
-                addToLog('⚠️ השרת החזיר נתונים ריקים', 'warning');
-                showNotification('לא נמצאו נתונים בשרת', 'warning');
-            }
-        } else {
-            throw new Error(`Server responded with status: ${response.status}`);
-        }
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בטעינת נתונים: ${error.message}`, 'error');
-        showNotification('שגיאה בטעינת נתונים', 'error');
-    }
-}
-
-// Process loaded data in the new format
-async function processLoadedDataNew(data) {
-    addToLog('🔍 מעבד נתונים שנטענו...');
-    
-    try {
-        // Load users
-        if (data.users && Array.isArray(data.users)) {
-            const adminUser = users[0]; // Keep admin
-            users = [adminUser];
-            
-            data.users.forEach(row => {
-                if (row && row.length >= 4) {
-                    const newUser = {
-                        id: parseInt(row[0]) || Date.now(),
-                        firstName: row[1] || '',
-                        lastName: row[2] || '',
-                        phone: row[3] || '',
-                        type: row[4] || 'חייל',
-                        password: row[5] || null,
-                        createdAt: row[6] || new Date().toISOString()
-                    };
-                    
-                    if (newUser.firstName && newUser.lastName && newUser.phone) {
-                        users.push(newUser);
-                        
-                        // Initialize availability data for soldiers
-                        if (newUser.type === 'חייל' && !availabilityData[newUser.id]) {
-                            availabilityData[newUser.id] = { 
-                                unavailableShifts: new Set(), 
-                                submitted: false 
-                            };
-                        }
-                    }
-                }
-            });
-            addToLog(`✅ נטענו ${users.length - 1} משתמשים`, 'success');
-        }
-        
-        // Load schedule
-        if (data.schedule && Array.isArray(data.schedule)) {
-            scheduleData = {};
-            data.schedule.forEach(row => {
-                if (row && row.length >= 2) {
-                    scheduleData[row[0]] = row[1];
-                }
-            });
-            addToLog(`✅ נטענו ${Object.keys(scheduleData).length} משמרות`, 'success');
-        }
-        
-        // Load availability
-        if (data.availability && Array.isArray(data.availability)) {
-            data.availability.forEach(row => {
-                if (row && row.length >= 2) {
-                    try {
-                        const userId = row[0];
-                        const unavailableShifts = JSON.parse(row[1] || '[]');
-                        const submitted = row[2] === 'true' || row[2] === true;
-                        const timestamp = row[3] || null;
-                        
-                        availabilityData[userId] = {
-                            unavailableShifts: new Set(unavailableShifts),
-                            submitted: submitted,
-                            submittedAt: timestamp
-                        };
-                    } catch (e) {
-                        addToLog(`⚠️ שגיאה בטעינת זמינות: ${e.message}`, 'warning');
-                    }
-                }
-            });
-            addToLog(`✅ נטענה זמינות`, 'success');
-        }
-        
-        // Load tasks
-        if (data.tasks && Array.isArray(data.tasks)) {
-            // Keep fixed tasks, add custom ones
-            taskSystem.tasks = taskSystem.tasks.filter(t => t.type === 'fixed');
-            
-            data.tasks.forEach(row => {
-                if (row && row.length >= 4) {
-                    const task = {
-                        id: row[0],
-                        name: row[1],
-                        type: row[2] || 'flexible',
-                        soldiers: parseInt(row[3]) || 1,
-                        order: parseInt(row[4]) || taskSystem.tasks.length + 1
-                    };
-                    
-                    if (task.name) {
-                        taskSystem.tasks.push(task);
-                    }
-                }
-            });
-            addToLog(`✅ נטענו משימות`, 'success');
-        }
-        
-        // Load settings
-        if (data.settings && Array.isArray(data.settings)) {
-            data.settings.forEach(row => {
-                if (row && row.length >= 2) {
-                    try {
-                        const key = row[0];
-                        const value = JSON.parse(row[1]);
-                        systemSettings[key] = value;
-                    } catch (e) {
-                        addToLog(`⚠️ שגיאה בטעינת הגדרה: ${row[0]}`, 'warning');
-                    }
-                }
-            });
-            addToLog(`✅ נטענו הגדרות`, 'success');
-        }
-        
-        // Update UI
-        updateUsersList();
-        updateDashboardStats();
-        updateTasksList();
-        generateScheduleTable();
-        updateLoginUsersList();
-        
-        if (currentUser && currentUser.type === 'חייל') {
-            generateAvailabilityForm();
-        }
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה בעיבוד הנתונים: ${error.message}`, 'error');
-    }
-}
-
-// Create a webhook test to verify the Google Apps Script
-async function testWebhook() {
-    addToLog('🧪 בודק webhook של Google Apps Script...');
-    
-    // Create a simple test payload
-    const testPayload = {
-        test: true,
-        timestamp: new Date().toISOString(),
-        message: "Test from shift management system"
-    };
-    
-    try {
-        // Test 1: Simple GET request to check if script responds
-        const getUrl = `${APP_SCRIPT_URL}?test=1&timestamp=${Date.now()}`;
-        
-        addToLog(`🔗 מנסה GET: ${getUrl}`);
-        
-        try {
-            const getResponse = await fetch(getUrl, {
-                method: 'GET',
-                mode: 'no-cors'
-            });
-            addToLog('✅ GET request נשלח', 'success');
-        } catch (getError) {
-            addToLog(`❌ GET נכשל: ${getError.message}`, 'error');
-        }
-        
-        // Test 2: Check if the URL is accessible at all
-        addToLog('🔍 בודק אם ה-URL נגיש...');
-        
-        try {
-            const headResponse = await fetch(APP_SCRIPT_URL, {
-                method: 'HEAD',
-                mode: 'no-cors'
-            });
-            addToLog('✅ URL נגיש', 'success');
-        } catch (headError) {
-            addToLog(`❌ URL לא נגיש: ${headError.message}`, 'error');
-        }
-        
-        // Test 3: Try with different content types
-        const contentTypes = [
-            'application/json',
-            'application/x-www-form-urlencoded',
-            'text/plain'
-        ];
-        
-        for (const contentType of contentTypes) {
-            try {
-                await fetch(APP_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': contentType
-                    },
-                    body: contentType === 'application/json' ? 
-                          JSON.stringify(testPayload) : 
-                          contentType === 'application/x-www-form-urlencoded' ?
-                          'test=1&data=hello' :
-                          'test data',
-                    mode: 'no-cors'
-                });
-                addToLog(`✅ POST עם ${contentType} נשלח`, 'success');
-            } catch (error) {
-                addToLog(`❌ POST עם ${contentType} נכשל: ${error.message}`, 'error');
-            }
-        }
-        
-        showNotification('בדיקת webhook הושלמה - עיין ביומן', 'info');
-        
-    } catch (error) {
-        addToLog(`❌ שגיאה כללית בבדיקת webhook: ${error.message}`, 'error');
-    }
-}
-
-// Create a direct Google Sheets URL format (as backup)
-function createGoogleSheetsUrl() {
-    const usersToSave = users.filter(u => u.type !== 'admin');
-    
-    if (usersToSave.length === 0) {
-        showNotification('אין משתמשים לשמירה', 'warning');
-        return;
-    }
-    
-    // Extract sheet ID from the APP_SCRIPT_URL if possible
-    let sheetId = null;
-    const urlMatch = APP_SCRIPT_URL.match(/\/macros\/s\/([a-zA-Z0-9-_]+)/);
-    if (urlMatch) {
-        sheetId = urlMatch[1];
-    }
-    
-    if (!sheetId) {
-        addToLog('❌ לא ניתן לחלץ מזהה גיליון מה-URL', 'error');
-        showNotification('לא ניתן לחלץ מזהה גיליון', 'error');
-        return;
-    }
-    
-    // Create a CSV data string
-    let csvData = 'ID,שם פרטי,שם משפחה,טלפון,סוג,סיסמה,תאריך יצירה\n';
-    usersToSave.forEach(user => {
-        csvData += `${user.id},"${user.firstName}","${user.lastName}","${user.phone}","${user.type}","${user.password || ''}","${user.createdAt}"\n`;
-    });
-    
-    // Create Google Sheets import URL
-    const importUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=0`;
-    
-    addToLog(`📊 נתונים מוכנים ל-${usersToSave.length} משתמשים`);
-    addToLog(`🔗 גיליון: ${importUrl}`);
-    
-    // Copy data to clipboard and open sheets
-    navigator.clipboard.writeText(csvData).then(() => {
-        addToLog('✅ נתונים הועתקו ללוח', 'success');
-        showNotification('נתונים הועתקו! פותח את הגיליון...', 'success');
-        
-        // Open the Google Sheet
-        window.open(importUrl, '_blank');
-        
-        setTimeout(() => {
-            alert('הוראות:\n1. הגיליון נפתח בטאב חדש\n2. הנתונים הועתקו ללוח\n3. לחץ על תא A3 בגיליון\n4. הדבק (Ctrl+V)\n5. הנתונים יתעדכנו אוטומטית');
-        }, 1000);
-        
-    }).catch(() => {
-        addToLog('⚠️ לא ניתן להעתיק ללוח, מציג בחלון', 'warning');
-        alert(`העתק את הנתונים הבאים לגיליון:\n\n${csvData}`);
-        window.open(importUrl, '_blank');
-    });
-}
-
-// Enhanced error reporting
-function reportError() {
-    addToLog('📋 מכין דוח שגיאות מפורט...');
-    
-    const errorReport = `
-=== דוח שגיאות מערכת ניהול משמרות ===
-
-🌐 פרטי חיבור:
-- URL: ${APP_SCRIPT_URL}
-- מצב חיבור: ${connectionStatus}
-- זמן: ${new Date().toLocaleString('he-IL')}
-
-📊 נתונים במערכת:
-- משתמשים: ${users.filter(u => u.type !== 'admin').length}
-- משמרות: ${Object.keys(scheduleData).length}
-- משימות: ${taskSystem.tasks.length}
-
-❌ שגיאות נפוצות שנמצאו:
-- CORS Policy Blocked: בעיה בהגדרות Google Apps Script
-- ERR_FAILED: הסקריפט לא זמין או לא עובד נכון
-- Access-Control-Allow-Origin: בעיה בהרשאות CORS
-
-💡 פתרונות מוצעים:
-1. בדוק שה-Google Apps Script פרוס נכון
-2. ודא שההרשאות נכונות (כתיבה לגיליון)
-3. בדוק שה-URL נכון ומעודכן
-4. נסה לפרוס מחדש את הסקריפט
-
-🔧 URL שצריך לבדוק:
-${APP_SCRIPT_URL}
-
-📧 פנה לתמיכה עם הדוח הזה אם הבעיה נמשכת.
-    `;
-    
-    navigator.clipboard.writeText(errorReport).then(() => {
-        addToLog('✅ דוח שגיאות הועתק ללוח', 'success');
-        showNotification('דוח שגיאות הועתק ללוח', 'success');
-    }).catch(() => {
-        alert(errorReport);
-    });
-}
 </script>
 </body>
 </html>
