@@ -773,6 +773,9 @@
                     <button class="btn btn-small btn-success" onclick="saveData()">
                         💾 שמור הכל
                     </button>
+                    <button class="btn btn-small btn-warning" onclick="saveTasksOnly()">
+                        🔧 שמור משימות בלבד
+                    </button>
                     <button class="btn btn-small btn-success" onclick="fullSync()">
                         🔄 סנכרון מלא
                     </button>
@@ -920,15 +923,42 @@
                 </div>
                 <div class="alert alert-info">
                     <strong>הסבר:</strong><br/>
-                    • <strong>משימה קבועה:</strong> לא ניתן למחוק (כמו ש.ג)<br/>
+                    • <strong>משימה קבועה:</strong> לא ניתן למחוק אבל ניתן לערוך (כמו ש.ג)<br/>
                     • <strong>משימה גמישה:</strong> ניתן למחוק ולערוך (כמו סייר, סייר 4 שעות)<br/>
-                    • מספר החיילים קובע כמה עמודות יתווספו ללוח המשמרות
+                    • מספר החיילים קובע כמה עמודות יתווספו ללוח המשמרות<br/>
+                    • <strong>עריכה:</strong> לחץ על כפתור העריכה כדי לשנות שם או מספר חיילים
                 </div>
             </div>
             <div class="task-management-panel">
                 <h3>📝 רשימת משימות קיימות</h3>
                 <div class="task-list" id="tasksList">
                     <p>טוען רשימת משימות...</p>
+                </div>
+            </div>
+            
+            <!-- Edit Task Modal -->
+            <div id="editTaskModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+                <div style="background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                    <h3 style="color: #000000; font-weight: 900; margin-bottom: 20px; text-align: center;">✏️ עריכת משימה</h3>
+                    <div class="form-group">
+                        <label>שם המשימה:</label>
+                        <input id="editTaskName" type="text" style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-weight: 800;"/>
+                    </div>
+                    <div class="form-group">
+                        <label>סוג המשימה:</label>
+                        <select id="editTaskType" style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-weight: 800;">
+                            <option value="flexible">משימה גמישה</option>
+                            <option value="fixed">משימה קבועה</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>מספר חיילים:</label>
+                        <input id="editTaskSoldiers" type="number" min="1" max="5" style="width: 100%; padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-weight: 800;"/>
+                    </div>
+                    <div style="text-align: center; margin-top: 25px;">
+                        <button class="btn btn-success" onclick="saveTaskEdit()">💾 שמור שינויים</button>
+                        <button class="btn btn-danger" onclick="cancelTaskEdit()" style="margin-right: 10px;">❌ ביטול</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -998,6 +1028,9 @@
                     <button class="btn btn-small" onclick="testWebhook()">🔍 בדוק webhook</button>
                     <button class="btn btn-small" onclick="createGoogleSheetsUrl()">📊 פתח גיליון</button>
                     <button class="btn btn-small" onclick="reportError()">📋 דוח שגיאות</button>
+                    <button class="btn btn-small" onclick="debugTasks()">🔧 בדוק משימות</button>
+                    <button class="btn btn-small" onclick="saveTasksOnly()">💾 שמור משימות</button>
+                    <button class="btn btn-small" onclick="loadTasksOnly()">📥 טען משימות</button>
                 </div>
             </div>
         </div>
@@ -1029,6 +1062,23 @@ let taskSystem = {
     ],
     nextId: 4
 };
+
+// פונקציה לוודא שהמשימות הקבועות מוכנות לשמירה
+function ensureFixedTasksHaveIds() {
+    taskSystem.tasks.forEach(task => {
+        if (!task.id) {
+            if (task.name === 'ש.ג') {
+                task.id = 'sg';
+            } else if (task.name === 'סייר') {
+                task.id = 'sayer';
+            } else if (task.name === 'סייר 4 שעות') {
+                task.id = 'sayer4h';
+            } else {
+                task.id = `task_${taskSystem.nextId++}`;
+            }
+        }
+    });
+}
 
 const dayNames = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
 const shiftTypes = ['לילה', 'בוקר', 'צהרים', 'ערב'];
@@ -1752,6 +1802,8 @@ async function saveUserToServer(user) {
 }
 
 // ========== TASK MANAGEMENT FUNCTIONS ==========
+let currentEditingTask = null;
+
 function updateTasksList() {
     const container = document.getElementById('tasksList');
     if (!container) return;
@@ -1774,7 +1826,8 @@ function updateTasksList() {
                         </span>
                     </div>
                 </div>
-                <div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn btn-small" style="background: #17a2b8; color: white;" onclick="editTask('${task.id}')">✏️ ערוך</button>
                     ${deleteButton}
                 </div>
             </div>
@@ -1825,18 +1878,111 @@ function addTask() {
     updateDashboardStats();
     generateScheduleTable();
     
+    // שמירה אוטומטית לגיליון של כל המשימות
+    setTimeout(() => {
+        saveTasksOnly(); // שמור את כל המשימות כולל החדשה
+    }, 1000);
+    
     addToLog(`✅ משימה חדשה נוספה: ${name} (${type}, ${soldiers} חיילים)`, 'success');
-    showNotification(`משימה "${name}" נוספה בהצלחה!`, 'success');
+    showNotification(`משימה "${name}" נוספה בהצלחה ותישמר עם כל המשימות!`, 'success');
+}
+
+function editTask(taskId) {
+    const task = taskSystem.tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    currentEditingTask = task;
+    
+    // Fill the edit form
+    document.getElementById('editTaskName').value = task.name;
+    document.getElementById('editTaskType').value = task.type;
+    document.getElementById('editTaskSoldiers').value = task.soldiers;
+    
+    // Show the modal
+    const modal = document.getElementById('editTaskModal');
+    modal.style.display = 'flex';
+    
+    addToLog(`✏️ פותח עריכה למשימה: ${task.name}`, 'info');
+}
+
+function saveTaskEdit() {
+    if (!currentEditingTask) return;
+    
+    const newName = document.getElementById('editTaskName').value.trim();
+    const newType = document.getElementById('editTaskType').value;
+    const newSoldiers = parseInt(document.getElementById('editTaskSoldiers').value) || 1;
+    
+    if (!newName) {
+        showNotification('יש להכניס שם למשימה', 'warning');
+        return;
+    }
+    
+    // Check if name already exists (but not for the current task)
+    const existingTask = taskSystem.tasks.find(t => t.name === newName && t.id !== currentEditingTask.id);
+    if (existingTask) {
+        showNotification('משימה עם שם זה כבר קיימת', 'warning');
+        return;
+    }
+    
+    // Check if we're changing the number of soldiers and there are existing assignments
+    const oldName = currentEditingTask.name;
+    const oldSoldiers = currentEditingTask.soldiers;
+    const hasAssignments = Object.keys(scheduleData).some(key => key.startsWith(oldName + '_'));
+    
+    if (hasAssignments && (newSoldiers !== oldSoldiers || newName !== oldName)) {
+        const confirmMessage = `שינוי השם או מספר החיילים ימחק את כל השיבוצים הקיימים למשימה זו.\nהאם להמשיך?`;
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+        
+        // Remove all existing assignments for this task
+        Object.keys(scheduleData).forEach(shiftId => {
+            if (shiftId.startsWith(oldName + '_')) {
+                delete scheduleData[shiftId];
+            }
+        });
+        
+        addToLog(`🗑️ הוסרו שיבוצים קיימים למשימה: ${oldName}`, 'warning');
+    }
+    
+    // Update the task
+    currentEditingTask.name = newName;
+    currentEditingTask.type = newType;
+    currentEditingTask.soldiers = newSoldiers;
+    
+    // Close modal
+    cancelTaskEdit();
+    
+    // Update UI
+    updateTasksList();
+    updateDashboardStats();
+    generateScheduleTable();
+    
+    // שמירה אוטומטית לגיליון של כל המשימות
+    setTimeout(() => {
+        saveTasksOnly(); // שמור את כל המשימות כולל העדכון
+    }, 1000);
+    
+    addToLog(`✅ משימה עודכנה: ${newName} (${newType}, ${newSoldiers} חיילים)`, 'success');
+    showNotification(`משימה "${newName}" עודכנה בהצלחה ותישמר עם כל המשימות!`, 'success');
+}
+
+function cancelTaskEdit() {
+    currentEditingTask = null;
+    
+    // Hide the modal
+    const modal = document.getElementById('editTaskModal');
+    modal.style.display = 'none';
+    
+    // Clear form
+    document.getElementById('editTaskName').value = '';
+    document.getElementById('editTaskType').value = 'flexible';
+    document.getElementById('editTaskSoldiers').value = '1';
 }
 
 function removeTask(taskId) {
     const task = taskSystem.tasks.find(t => t.id === taskId);
     if (!task) return;
-
-    if (task.type === 'fixed') {
-        showNotification('לא ניתן למחוק משימה קבועה', 'warning');
-        return;
-    }
 
     if (!confirm(`האם למחוק את המשימה "${task.name}"? כל השיבוצים הקשורים אליה יימחקו.`)) {
         return;
@@ -1856,8 +2002,13 @@ function removeTask(taskId) {
     updateDashboardStats();
     generateScheduleTable();
     
+    // שמירה אוטומטית לגיליון של כל המשימות הנותרות
+    setTimeout(() => {
+        saveTasksOnly(); // שמור את כל המשימות אחרי המחיקה
+    }, 1000);
+    
     addToLog(`🗑️ משימה נמחקה: ${task.name}`, 'success');
-    showNotification(`משימה "${task.name}" נמחקה`, 'success');
+    showNotification(`משימה "${task.name}" נמחקה ורשימת המשימות עודכנה בגיליון`, 'success');
 }
 
 // ========== SCHEDULE FUNCTIONS ==========
@@ -2835,6 +2986,15 @@ async function processLoadedData(data) {
                     
                     if (newUser.firstName && newUser.lastName && newUser.phone) {
                         users.push(newUser);
+                        
+                        // Initialize availability data for soldiers
+                        if (newUser.type === 'חייל' && !availabilityData[newUser.id]) {
+                            availabilityData[newUser.id] = { 
+                                unavailableShifts: new Set(), 
+                                submitted: false 
+                            };
+                        }
+                        
                         addToLog(`👤 נטען משתמש: ${newUser.firstName} ${newUser.lastName} (${newUser.type})${newUser.password ? ' 🔒' : ''}`);
                     }
                 }
@@ -2842,9 +3002,107 @@ async function processLoadedData(data) {
             addToLog(`✅ נטענו ${users.length - 1} משתמשים`, 'success');
         }
         
+        // Load schedule
+        if (data.schedule && Array.isArray(data.schedule)) {
+            scheduleData = {};
+            data.schedule.forEach(row => {
+                if (row && row.length >= 2) {
+                    scheduleData[row[0]] = row[1];
+                }
+            });
+            addToLog(`✅ נטענו ${Object.keys(scheduleData).length} משמרות`, 'success');
+        }
+        
+        // Load availability
+        if (data.availability && Array.isArray(data.availability)) {
+            data.availability.forEach(row => {
+                if (row && row.length >= 2) {
+                    try {
+                        const userId = row[0];
+                        const unavailableShifts = JSON.parse(row[1] || '[]');
+                        const submitted = row[2] === 'true' || row[2] === true;
+                        const timestamp = row[3] || null;
+                        
+                        availabilityData[userId] = {
+                            unavailableShifts: new Set(unavailableShifts),
+                            submitted: submitted,
+                            submittedAt: timestamp
+                        };
+                    } catch (e) {
+                        addToLog(`⚠️ שגיאה בטעינת זמינות: ${e.message}`, 'warning');
+                    }
+                }
+            });
+            addToLog(`✅ נטענה זמינות`, 'success');
+        }
+        
+        // Load tasks
+        if (data.tasks && Array.isArray(data.tasks)) {
+            // אתחל מחדש את רשימת המשימות עם המשימות מהשרת
+            taskSystem.tasks = [];
+            
+            data.tasks.forEach(row => {
+                if (row && row.length >= 4) {
+                    const task = {
+                        id: row[0],
+                        name: row[1],
+                        type: row[2] || 'flexible',
+                        soldiers: parseInt(row[3]) || 1,
+                        order: parseInt(row[4]) || taskSystem.tasks.length + 1
+                    };
+                    
+                    if (task.name) {
+                        taskSystem.tasks.push(task);
+                        addToLog(`🔧 נטענה משימה: ${task.name} (${task.type}, ${task.soldiers} חיילים, ID: ${task.id})`);
+                    }
+                }
+            });
+            
+            // אם לא נטענו משימות מהשרת, השתמש במשימות ברירת המחדל
+            if (taskSystem.tasks.length === 0) {
+                taskSystem.tasks = [
+                    { id: 'sg', name: 'ש.ג', type: 'fixed', soldiers: 1, order: 1 },
+                    { id: 'sayer', name: 'סייר', type: 'flexible', soldiers: 1, order: 2 },
+                    { id: 'sayer4h', name: 'סייר 4 שעות', type: 'flexible', soldiers: 1, order: 3 }
+                ];
+                addToLog('🔧 נטענו משימות ברירת מחדל', 'info');
+                
+                // שמור משימות ברירת מחדל בגיליון
+                setTimeout(() => {
+                    addToLog('💾 שומר משימות ברירת מחדל בגיליון...');
+                    saveTasksOnly();
+                }, 2000);
+            }
+            
+            addToLog(`✅ נטענו ${taskSystem.tasks.length} משימות סה"כ`, 'success');
+        }
+        
+        // Load settings
+        if (data.settings && Array.isArray(data.settings)) {
+            data.settings.forEach(row => {
+                if (row && row.length >= 2) {
+                    try {
+                        const key = row[0];
+                        const value = JSON.parse(row[1]);
+                        systemSettings[key] = value;
+                    } catch (e) {
+                        addToLog(`⚠️ שגיאה בטעינת הגדרה: ${row[0]}`, 'warning');
+                    }
+                }
+            });
+            addToLog(`✅ נטענו הגדרות`, 'success');
+        }
+        
         // Update UI
         updateUsersList();
+        updateDashboardStats();
+        updateTasksList(); // עדכון רשימת המשימות
+        generateScheduleTable();
         updateLoginUsersList();
+        
+        if (currentUser && currentUser.type === 'חייל') {
+            generateAvailabilityForm();
+        }
         
     } catch (error) {
         addToLog(`❌ שגיאה בעיבוד הנתונים: ${error.message}`, 'error');
@@ -2856,8 +3114,26 @@ async function saveData() {
     showNotification('🔄 שומר נתונים לגוגל שיטס...', 'info');
     
     try {
+        // ודא שכל המשימות יש להן ID
+        ensureFixedTasksHaveIds();
+        
         const usersToSave = users.filter(u => u.type !== 'admin');
-        addToLog(`📊 מכין לשמירה ${usersToSave.length} משתמשים`);
+        const tasksToSave = taskSystem.tasks; // שמור את כל המשימות, לא רק הגמישות!
+        const scheduleToSave = Object.entries(scheduleData);
+        const availabilityToSave = Object.entries(availabilityData).map(([userId, data]) => [
+            userId, 
+            JSON.stringify(Array.from(data.unavailableShifts || [])),
+            data.submitted || false,
+            data.submittedAt || null
+        ]);
+        const settingsToSave = Object.entries(systemSettings).map(([key, value]) => [key, JSON.stringify(value)]);
+        
+        addToLog(`📊 מכין לשמירה: ${usersToSave.length} משתמשים, ${tasksToSave.length} משימות, ${scheduleToSave.length} משמרות`);
+        
+        // רשימת המשימות לשמירה
+        tasksToSave.forEach(task => {
+            addToLog(`🔧 משימה לשמירה: ${task.name} (${task.type}, ${task.soldiers} חיילים, ID: ${task.id})`);
+        });
         
         const saveDataObj = {
             action: 'saveAllData',
@@ -2871,11 +3147,19 @@ async function saveData() {
                 password: u.password || '',
                 createdAt: u.createdAt || new Date().toISOString()
             })),
-            schedule: [],
-            availability: [],
-            tasks: [],
-            settings: {}
+            schedule: scheduleToSave,
+            availability: availabilityToSave,
+            tasks: tasksToSave.map(t => ({
+                id: t.id,
+                name: t.name,
+                type: t.type,
+                soldiers: t.soldiers,
+                order: t.order || 1
+            })),
+            settings: settingsToSave
         };
+        
+        addToLog(`📦 JSON משימות: ${JSON.stringify(saveDataObj.tasks, null, 2)}`);
         
         await fetch(APP_SCRIPT_URL, {
             method: 'POST',
@@ -2886,8 +3170,8 @@ async function saveData() {
             mode: 'no-cors'
         });
         
-        addToLog('✅ נתונים נשלחו לשרת', 'success');
-        showNotification('✅ נתונים נשמרו בגוגל שיטס!', 'success');
+        addToLog('✅ נתונים נשלחו לשרת (כולל כל המשימות הקבועות)', 'success');
+        showNotification('✅ נתונים נשמרו בגוגל שיטס (כולל כל המשימות)!', 'success');
         
     } catch (error) {
         addToLog(`❌ שגיאה בשמירת נתונים: ${error.message}`, 'error');
@@ -2895,7 +3179,121 @@ async function saveData() {
     }
 }
 
-// פונקציה לסנכרון מלא עם השרת
+// פונקציה מיוחדת לשמירת משימות בלבד
+async function saveTasksOnly() {
+    addToLog('🔧 שומר משימות בלבד בשרת...');
+    showNotification('🔧 שומר משימות לגוגל שיטס...', 'info');
+    
+    try {
+        // ודא שכל המשימות יש להן ID
+        ensureFixedTasksHaveIds();
+        
+        const tasksToSave = taskSystem.tasks; // כל המשימות, גם קבועות וגם גמישות
+        addToLog(`📋 מכין לשמירה ${tasksToSave.length} משימות (כולל קבועות וגמישות)`);
+        
+        // רשימת המשימות עם פרטים מלאים
+        tasksToSave.forEach(task => {
+            addToLog(`🔧 משימה לשמירה: ${task.name} (${task.type}, ${task.soldiers} חיילים, ID: ${task.id})`);
+        });
+        
+        const tasksDataObj = {
+            action: 'saveTasks',
+            timestamp: new Date().toISOString(),
+            tasks: tasksToSave.map(t => ({
+                id: t.id,
+                name: t.name,
+                type: t.type,
+                soldiers: t.soldiers,
+                order: t.order || 1
+            }))
+        };
+        
+        addToLog(`📦 נתוני משימות JSON: ${JSON.stringify(tasksDataObj, null, 2)}`);
+        
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tasksDataObj),
+            mode: 'no-cors'
+        });
+        
+        addToLog('✅ כל המשימות (כולל קבועות) נשלחו לשרת בהצלחה', 'success');
+        showNotification(`✅ ${tasksToSave.length} משימות (כולל קבועות) נשמרו בגוגל שיטס!`, 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירת משימות: ${error.message}`, 'error');
+        showNotification('❌ שגיאה בשמירת משימות', 'error');
+    }
+}
+
+// פונקציה מיוחדת לטעינת משימות בלבד
+async function loadTasksOnly() {
+    addToLog('🔧 טוען משימות בלבד מהשרת...');
+    showNotification('🔧 טוען משימות מגוגל שיטס...', 'info');
+    
+    try {
+        const response = await fetch(`${APP_SCRIPT_URL}?action=loadTasks&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            addToLog(`📋 תגובת שרת למשימות: ${JSON.stringify(result)}`);
+            
+            if (result.success && result.tasks) {
+                // שמור על המשימות הקבועות
+                const fixedTasks = taskSystem.tasks.filter(t => t.type === 'fixed');
+                taskSystem.tasks = [...fixedTasks];
+                
+                // הוסף משימות מהשרת
+                result.tasks.forEach(task => {
+                    if (task.name && !taskSystem.tasks.find(t => t.name === task.name)) {
+                        taskSystem.tasks.push({
+                            id: task.id,
+                            name: task.name,
+                            type: task.type || 'flexible',
+                            soldiers: parseInt(task.soldiers) || 1,
+                            order: parseInt(task.order) || taskSystem.tasks.length + 1
+                        });
+                        addToLog(`✅ נטענה משימה: ${task.name}`);
+                    }
+                });
+                
+                updateTasksList();
+                updateDashboardStats();
+                generateScheduleTable();
+                
+                addToLog(`✅ נטענו ${result.tasks.length} משימות מהשרת`, 'success');
+                showNotification(`✅ נטענו ${result.tasks.length} משימות!`, 'success');
+            } else {
+                addToLog('⚠️ לא נמצאו משימות בשרת', 'warning');
+                showNotification('לא נמצאו משימות בשרת', 'warning');
+            }
+        } else {
+            throw new Error(`Server responded with status: ${response.status}`);
+        }
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בטעינת משימות: ${error.message}`, 'error');
+        showNotification('שגיאה בטעינת משימות', 'error');
+    }
+}
+
+// Debug function להצגת המשימות הנוכחיות
+function debugTasks() {
+    addToLog('🔍 רשימת משימות נוכחית במערכת:');
+    taskSystem.tasks.forEach(task => {
+        addToLog(`  • ${task.name} (${task.type}, ${task.soldiers} חיילים, ID: ${task.id})`);
+    });
+    
+    const flexibleTasks = taskSystem.tasks.filter(t => t.type !== 'fixed');
+    addToLog(`📊 סה"כ: ${taskSystem.tasks.length} משימות (${flexibleTasks.length} גמישות)`);
+    
+    showNotification(`יש ${taskSystem.tasks.length} משימות במערכת - בדוק יומן לפרטים`, 'info');
+}
 async function fullSync() {
     addToLog('🔄 מתחיל סנכרון מלא עם השרת...');
     showNotification('🔄 מסנכרן עם השרת...', 'info');
@@ -2980,6 +3378,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     addToLog('🚀 מערכת ניהול משמרות מתחילה...');
     console.log('🚀 מערכת ניהול משמרות מתחילה...');
     
+    // ודא שהמשימות הקבועות מוכנות
+    ensureFixedTasksHaveIds();
+    addToLog('🔧 מוודא שהמשימות הקבועות מוכנות לשמירה');
+    
     // Initialize login users list
     setTimeout(() => {
         updateLoginUsersList();
@@ -2996,6 +3398,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             setTimeout(async () => {
                 addToLog('📥 טוען נתונים קיימים מהשרת אוטומטית...');
                 await loadData();
+                
+                // אם לא נטענו משימות, שמור את המשימות הקבועות
+                if (!taskSystem.tasks.find(t => t.name === 'ש.ג')) {
+                    addToLog('🔧 לא נמצאו משימות קבועות, שומר ברירת מחדל...');
+                    setTimeout(() => {
+                        saveTasksOnly();
+                    }, 3000);
+                }
             }, 2000);
         }
     }, 1000);
