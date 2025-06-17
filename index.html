@@ -2143,6 +2143,7 @@ function cellClick(cellId) {
 }
 
 function autoSchedule() {
+    sendDataToScript('saveFullSchedule', { schedule: scheduleData });
     const employees = users.filter(u => u.type === 'חייל');
     if (employees.length === 0) {
         showNotification('אין חיילים במערכת. הוסף חיילים דרך טאב הניהול!', 'warning');
@@ -3413,6 +3414,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     addToLog('✅ מערכת מוכנה לשימוש!', 'success');
     showNotification('מערכת ניהול משמרות מוכנה! 🎉', 'success');
 });
+
+
+function sendDataToScript(action, data) {
+    fetch(APP_SCRIPT_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action, ...data })
+    })
+    .then(res => res.json())
+    .then(response => {
+        console.log('✅ נשמר:', response);
+        showNotification('✅ לוח המשמרות נשמר בהצלחה!', 'success');
+    })
+    .catch(err => {
+        console.error('❌ שגיאה בשמירה:', err);
+        showNotification('❌ שגיאה בשמירת לוח המשמרות!', 'error');
+    });
+}
+
 </script>
 </body>
 </html>
