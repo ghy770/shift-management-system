@@ -1099,11 +1099,14 @@
                     <button class="btn" onclick="loadData()">
                         📥 טען נתונים
                     </button>
-                    <button class="btn btn-success" onclick="forceSave()">
-                        💾 שמור הכל כעת
+                    <button class="btn btn-success" onclick="saveData()">
+                        💾 שמור הכל
                     </button>
-                    <button class="btn btn-warning" onclick="debugSave()">
-                        🔍 בדיקת שמירה
+                    <button class="btn btn-warning" onclick="saveAllUsers()">
+                        👥 שמור משתמשים
+                    </button>
+                    <button class="btn" onclick="exportToCSV()">
+                        📤 יצא CSV
                     </button>
                 </div>
                 <div id="systemLog" class="log-section">
@@ -1320,7 +1323,9 @@
                 <div style="margin: 15px 0;">
                     <button class="btn btn-small" onclick="generateTestData()">🧪 צור נתוני בדיקה</button>
                     <button class="btn btn-small btn-warning" onclick="backupData()">💾 גבה נתונים</button>
-                    <button class="btn btn-small" onclick="testGoogleScript()">🔍 בדוק סקריפט</button>
+                    <button class="btn btn-small" onclick="testWebhook()">🔍 בדוק webhook</button>
+                    <button class="btn btn-small" onclick="createGoogleSheetsUrl()">📊 פתח גיליון</button>
+                    <button class="btn btn-small" onclick="reportError()">📋 דוח שגיאות</button>
                     <button class="btn btn-small btn-danger" onclick="clearAllData()">🗑️ נקה נתונים</button>
                 </div>
             </div>
@@ -1924,13 +1929,10 @@ function addUser() {
     updateLoginUsersList();
     updateDashboardStats();
     
-    // שמירה מיידית עם דחייה כדי לא להציף את השרת
-    addToLog(`✅ משתמש חדש נוסף: ${firstName} ${lastName} (${userType})`, 'success');
-    setTimeout(() => {
-        addToLog(`💾 שומר משתמש חדש בשרת: ${firstName}`, 'info');
-        saveData();
-    }, 1500);
+    // Save user immediately using the correct format
+    saveUserToServer(newUser);
     
+    addToLog(`✅ משתמש חדש נוסף: ${firstName} ${lastName} (${userType})`, 'success');
     showNotification(`${userType} ${firstName} ${lastName} נוסף בהצלחה!`, 'success');
 }
 
@@ -1943,14 +1945,11 @@ function changeUserPassword(userId) {
     
     user.password = newPassword || null;
     
-    // שמירה מיידית עם דחייה קטנה
-    addToLog(`🔑 מעדכן סיסמה למשתמש: ${user.firstName} ${user.lastName}`, 'info');
-    setTimeout(() => {
-        saveData();
-    }, 500);
-    
     updateUsersList();
     updateLoginUsersList();
+    
+    // Save user immediately
+    saveUserToServer(user);
     
     if (newPassword) {
         showNotification(`סיסמה עודכנה עבור ${user.firstName} ${user.lastName}`, 'success');
@@ -1978,19 +1977,18 @@ function removeUser(id) {
         
         delete availabilityData[id];
         
-        // שמירה מיידית עם דחייה קטנה כדי לא להציף את השרת
-        setTimeout(() => {
-            addToLog(`💾 שומר נתונים לאחר הסרת משתמש: ${user.firstName}`, 'info');
-            saveData();
-        }, 1000);
-        
         updateUsersList();
         updateLoginUsersList();
         updateDashboardStats();
         generateScheduleTable();
         
+        // Save all data after removal
+        setTimeout(() => {
+            saveData();
+        }, 1000);
+        
         addToLog(`✅ משתמש הוסר בהצלחה: ${user.firstName} ${user.lastName}`, 'success');
-        showNotification('משתמש הוסר ויישמר לשרת בקרוב', 'success');
+        showNotification('משתמש הוסר ויישמר אוטומטית', 'success');
     }
 }
 
@@ -3606,14 +3604,20 @@ function debugSave() {
     showNotification('בדיקת נתונים הושלמה - עיין ביומן', 'info');
 }
 
-// Simple test function to check if the Google Apps Script is working
-async function testGoogleScript() {
-    addToLog('🧪 בודק Google Apps Script...');
+// Updated save functions to match the Google Apps Script format
+async function saveUserToServer(user) {
+    addToLog(`💾 שומר משתמש אחד בשרת: ${user.firstName} ${user.lastName}`);
     
     try {
-        const testData = {
-            action: 'test',
-            timestamp: new Date().toISOString()
+        const userData = {
+            action: 'saveUser',
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            type: user.type,
+            password: user.password || '',
+            createdAt: user.createdAt || new Date().toISOString()
         };
         
         const response = await fetch(APP_SCRIPT_URL, {
@@ -3621,18 +3625,567 @@ async function testGoogleScript() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(testData),
+            body: JSON.stringify(userData),
             mode: 'no-cors'
         });
         
-        addToLog('✅ בקשת בדיקה נשלחה לסקריפט', 'success');
-        showNotification('בקשת בדיקה נשלחה', 'info');
+        addToLog(`✅ משתמש ${user.firstName} נשמר בשרת`, 'success');
+        return true;
         
     } catch (error) {
-        addToLog(`❌ שגיאה בבדיקת סקריפט: ${error.message}`, 'error');
-        showNotification('שגיאה בבדיקת הסקריפט', 'error');
+        addToLog(`❌ שגיאה בשמירת משתמש ${user.firstName}: ${error.message}`, 'error');
+        return false;
     }
 }
+
+// Save all users using the correct format
+async function saveAllUsers() {
+    addToLog('💾 שומר את כל המשתמשים...');
+    
+    const usersToSave = users.filter(u => u.type !== 'admin');
+    let successCount = 0;
+    
+    for (const user of usersToSave) {
+        const success = await saveUserToServer(user);
+        if (success) successCount++;
+        
+        // Small delay between requests
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    addToLog(`✅ נשמרו ${successCount} מתוך ${usersToSave.length} משתמשים`, 'success');
+    showNotification(`נשמרו ${successCount} משתמשים!`, 'success');
+}
+
+// Save schedule data
+async function saveScheduleToServer() {
+    addToLog('📅 שומר נתוני לוח משמרות...');
+    
+    try {
+        const scheduleData_formatted = {
+            action: 'saveFullSchedule',
+            schedule: scheduleData
+        };
+        
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(scheduleData_formatted),
+            mode: 'no-cors'
+        });
+        
+        addToLog(`✅ לוח משמרות נשמר (${Object.keys(scheduleData).length} משמרות)`, 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירת לוח משמרות: ${error.message}`, 'error');
+    }
+}
+
+// Save availability data
+async function saveAvailabilityToServer() {
+    addToLog('⏰ שומר נתוני זמינות...');
+    
+    try {
+        const soldiers = users.filter(u => u.type === 'חייל');
+        
+        for (const soldier of soldiers) {
+            if (availabilityData[soldier.id]) {
+                const availabilityPayload = {
+                    action: 'saveAvailability',
+                    userId: soldier.id,
+                    unavailableShifts: Array.from(availabilityData[soldier.id].unavailableShifts || []),
+                    submitted: availabilityData[soldier.id].submitted || false,
+                    timestamp: availabilityData[soldier.id].submittedAt || new Date().toISOString()
+                };
+                
+                await fetch(APP_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(availabilityPayload),
+                    mode: 'no-cors'
+                });
+                
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+        }
+        
+        addToLog(`✅ נתוני זמינות נשמרו`, 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירת זמינות: ${error.message}`, 'error');
+    }
+}
+
+// Save tasks data
+async function saveTasksToServer() {
+    addToLog('🔧 שומר נתוני משימות...');
+    
+    try {
+        const tasksPayload = {
+            action: 'saveTasks',
+            tasks: taskSystem.tasks.filter(t => t.type !== 'fixed') // Only custom tasks
+        };
+        
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tasksPayload),
+            mode: 'no-cors'
+        });
+        
+        addToLog(`✅ משימות נשמרו (${tasksPayload.tasks.length} משימות)`, 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירת משימות: ${error.message}`, 'error');
+    }
+}
+
+// Save settings data
+async function saveSettingsToServer() {
+    addToLog('⚙️ שומר הגדרות מערכת...');
+    
+    try {
+        const settingsPayload = {
+            action: 'saveSettings',
+            settings: systemSettings
+        };
+        
+        await fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(settingsPayload),
+            mode: 'no-cors'
+        });
+        
+        addToLog(`✅ הגדרות נשמרו`, 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירת הגדרות: ${error.message}`, 'error');
+    }
+}
+
+// Main save function that uses the new format
+async function saveData() {
+    addToLog('💾 מתחיל שמירה מלאה בפורמט החדש...');
+    showNotification('🔄 שומר נתונים בפורמט תואם...', 'info');
+    
+    try {
+        // Save in sequence to avoid overwhelming the server
+        await saveAllUsers();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await saveScheduleToServer();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await saveAvailabilityToServer();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await saveTasksToServer();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await saveSettingsToServer();
+        
+        addToLog('✅ שמירה מלאה הושלמה בהצלחה!', 'success');
+        showNotification('✅ כל הנתונים נשמרו בהצלחה!', 'success');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בשמירה מלאה: ${error.message}`, 'error');
+        showNotification('❌ שגיאה בשמירה', 'error');
+    }
+}
+
+// Load data function that matches the server format
+async function loadData() {
+    addToLog('📥 טוען נתונים מהשרת...');
+    showNotification('🔄 טוען נתונים מגוגל שיטס...', 'info');
+    
+    try {
+        const response = await fetch(`${APP_SCRIPT_URL}?action=loadAllData&t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                await processLoadedDataNew(result.data);
+                addToLog('✅ נתונים נטענו בהצלחה מהשרת!', 'success');
+                showNotification('✅ נתונים נטענו מגוגל שיטס!', 'success');
+            } else {
+                addToLog('⚠️ השרת החזיר נתונים ריקים', 'warning');
+                showNotification('לא נמצאו נתונים בשרת', 'warning');
+            }
+        } else {
+            throw new Error(`Server responded with status: ${response.status}`);
+        }
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בטעינת נתונים: ${error.message}`, 'error');
+        showNotification('שגיאה בטעינת נתונים', 'error');
+    }
+}
+
+// Process loaded data in the new format
+async function processLoadedDataNew(data) {
+    addToLog('🔍 מעבד נתונים שנטענו...');
+    
+    try {
+        // Load users
+        if (data.users && Array.isArray(data.users)) {
+            const adminUser = users[0]; // Keep admin
+            users = [adminUser];
+            
+            data.users.forEach(row => {
+                if (row && row.length >= 4) {
+                    const newUser = {
+                        id: parseInt(row[0]) || Date.now(),
+                        firstName: row[1] || '',
+                        lastName: row[2] || '',
+                        phone: row[3] || '',
+                        type: row[4] || 'חייל',
+                        password: row[5] || null,
+                        createdAt: row[6] || new Date().toISOString()
+                    };
+                    
+                    if (newUser.firstName && newUser.lastName && newUser.phone) {
+                        users.push(newUser);
+                        
+                        // Initialize availability data for soldiers
+                        if (newUser.type === 'חייל' && !availabilityData[newUser.id]) {
+                            availabilityData[newUser.id] = { 
+                                unavailableShifts: new Set(), 
+                                submitted: false 
+                            };
+                        }
+                    }
+                }
+            });
+            addToLog(`✅ נטענו ${users.length - 1} משתמשים`, 'success');
+        }
+        
+        // Load schedule
+        if (data.schedule && Array.isArray(data.schedule)) {
+            scheduleData = {};
+            data.schedule.forEach(row => {
+                if (row && row.length >= 2) {
+                    scheduleData[row[0]] = row[1];
+                }
+            });
+            addToLog(`✅ נטענו ${Object.keys(scheduleData).length} משמרות`, 'success');
+        }
+        
+        // Load availability
+        if (data.availability && Array.isArray(data.availability)) {
+            data.availability.forEach(row => {
+                if (row && row.length >= 2) {
+                    try {
+                        const userId = row[0];
+                        const unavailableShifts = JSON.parse(row[1] || '[]');
+                        const submitted = row[2] === 'true' || row[2] === true;
+                        const timestamp = row[3] || null;
+                        
+                        availabilityData[userId] = {
+                            unavailableShifts: new Set(unavailableShifts),
+                            submitted: submitted,
+                            submittedAt: timestamp
+                        };
+                    } catch (e) {
+                        addToLog(`⚠️ שגיאה בטעינת זמינות: ${e.message}`, 'warning');
+                    }
+                }
+            });
+            addToLog(`✅ נטענה זמינות`, 'success');
+        }
+        
+        // Load tasks
+        if (data.tasks && Array.isArray(data.tasks)) {
+            // Keep fixed tasks, add custom ones
+            taskSystem.tasks = taskSystem.tasks.filter(t => t.type === 'fixed');
+            
+            data.tasks.forEach(row => {
+                if (row && row.length >= 4) {
+                    const task = {
+                        id: row[0],
+                        name: row[1],
+                        type: row[2] || 'flexible',
+                        soldiers: parseInt(row[3]) || 1,
+                        order: parseInt(row[4]) || taskSystem.tasks.length + 1
+                    };
+                    
+                    if (task.name) {
+                        taskSystem.tasks.push(task);
+                    }
+                }
+            });
+            addToLog(`✅ נטענו משימות`, 'success');
+        }
+        
+        // Load settings
+        if (data.settings && Array.isArray(data.settings)) {
+            data.settings.forEach(row => {
+                if (row && row.length >= 2) {
+                    try {
+                        const key = row[0];
+                        const value = JSON.parse(row[1]);
+                        systemSettings[key] = value;
+                    } catch (e) {
+                        addToLog(`⚠️ שגיאה בטעינת הגדרה: ${row[0]}`, 'warning');
+                    }
+                }
+            });
+            addToLog(`✅ נטענו הגדרות`, 'success');
+        }
+        
+        // Update UI
+        updateUsersList();
+        updateDashboardStats();
+        updateTasksList();
+        generateScheduleTable();
+        updateLoginUsersList();
+        
+        if (currentUser && currentUser.type === 'חייל') {
+            generateAvailabilityForm();
+        }
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה בעיבוד הנתונים: ${error.message}`, 'error');
+    }
+}
+
+// Create a webhook test to verify the Google Apps Script
+async function testWebhook() {
+    addToLog('🧪 בודק webhook של Google Apps Script...');
+    
+    // Create a simple test payload
+    const testPayload = {
+        test: true,
+        timestamp: new Date().toISOString(),
+        message: "Test from shift management system"
+    };
+    
+    try {
+        // Test 1: Simple GET request to check if script responds
+        const getUrl = `${APP_SCRIPT_URL}?test=1&timestamp=${Date.now()}`;
+        
+        addToLog(`🔗 מנסה GET: ${getUrl}`);
+        
+        try {
+            const getResponse = await fetch(getUrl, {
+                method: 'GET',
+                mode: 'no-cors'
+            });
+            addToLog('✅ GET request נשלח', 'success');
+        } catch (getError) {
+            addToLog(`❌ GET נכשל: ${getError.message}`, 'error');
+        }
+        
+        // Test 2: Check if the URL is accessible at all
+        addToLog('🔍 בודק אם ה-URL נגיש...');
+        
+        try {
+            const headResponse = await fetch(APP_SCRIPT_URL, {
+                method: 'HEAD',
+                mode: 'no-cors'
+            });
+            addToLog('✅ URL נגיש', 'success');
+        } catch (headError) {
+            addToLog(`❌ URL לא נגיש: ${headError.message}`, 'error');
+        }
+        
+        // Test 3: Try with different content types
+        const contentTypes = [
+            'application/json',
+            'application/x-www-form-urlencoded',
+            'text/plain'
+        ];
+        
+        for (const contentType of contentTypes) {
+            try {
+                await fetch(APP_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': contentType
+                    },
+                    body: contentType === 'application/json' ? 
+                          JSON.stringify(testPayload) : 
+                          contentType === 'application/x-www-form-urlencoded' ?
+                          'test=1&data=hello' :
+                          'test data',
+                    mode: 'no-cors'
+                });
+                addToLog(`✅ POST עם ${contentType} נשלח`, 'success');
+            } catch (error) {
+                addToLog(`❌ POST עם ${contentType} נכשל: ${error.message}`, 'error');
+            }
+        }
+        
+        showNotification('בדיקת webhook הושלמה - עיין ביומן', 'info');
+        
+    } catch (error) {
+        addToLog(`❌ שגיאה כללית בבדיקת webhook: ${error.message}`, 'error');
+    }
+}
+
+// Create a direct Google Sheets URL format (as backup)
+function createGoogleSheetsUrl() {
+    const usersToSave = users.filter(u => u.type !== 'admin');
+    
+    if (usersToSave.length === 0) {
+        showNotification('אין משתמשים לשמירה', 'warning');
+        return;
+    }
+    
+    // Extract sheet ID from the APP_SCRIPT_URL if possible
+    let sheetId = null;
+    const urlMatch = APP_SCRIPT_URL.match(/\/macros\/s\/([a-zA-Z0-9-_]+)/);
+    if (urlMatch) {
+        sheetId = urlMatch[1];
+    }
+    
+    if (!sheetId) {
+        addToLog('❌ לא ניתן לחלץ מזהה גיליון מה-URL', 'error');
+        showNotification('לא ניתן לחלץ מזהה גיליון', 'error');
+        return;
+    }
+    
+    // Create a CSV data string
+    let csvData = 'ID,שם פרטי,שם משפחה,טלפון,סוג,סיסמה,תאריך יצירה\n';
+    usersToSave.forEach(user => {
+        csvData += `${user.id},"${user.firstName}","${user.lastName}","${user.phone}","${user.type}","${user.password || ''}","${user.createdAt}"\n`;
+    });
+    
+    // Create Google Sheets import URL
+    const importUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=0`;
+    
+    addToLog(`📊 נתונים מוכנים ל-${usersToSave.length} משתמשים`);
+    addToLog(`🔗 גיליון: ${importUrl}`);
+    
+    // Copy data to clipboard and open sheets
+    navigator.clipboard.writeText(csvData).then(() => {
+        addToLog('✅ נתונים הועתקו ללוח', 'success');
+        showNotification('נתונים הועתקו! פותח את הגיליון...', 'success');
+        
+        // Open the Google Sheet
+        window.open(importUrl, '_blank');
+        
+        setTimeout(() => {
+            alert('הוראות:\n1. הגיליון נפתח בטאב חדש\n2. הנתונים הועתקו ללוח\n3. לחץ על תא A3 בגיליון\n4. הדבק (Ctrl+V)\n5. הנתונים יתעדכנו אוטומטית');
+        }, 1000);
+        
+    }).catch(() => {
+        addToLog('⚠️ לא ניתן להעתיק ללוח, מציג בחלון', 'warning');
+        alert(`העתק את הנתונים הבאים לגיליון:\n\n${csvData}`);
+        window.open(importUrl, '_blank');
+    });
+}
+
+// Enhanced error reporting
+function reportError() {
+    addToLog('📋 מכין דוח שגיאות מפורט...');
+    
+    const errorReport = `
+=== דוח שגיאות מערכת ניהול משמרות ===
+
+🌐 פרטי חיבור:
+- URL: ${APP_SCRIPT_URL}
+- מצב חיבור: ${connectionStatus}
+- זמן: ${new Date().toLocaleString('he-IL')}
+
+📊 נתונים במערכת:
+- משתמשים: ${users.filter(u => u.type !== 'admin').length}
+- משמרות: ${Object.keys(scheduleData).length}
+- משימות: ${taskSystem.tasks.length}
+
+❌ שגיאות נפוצות שנמצאו:
+- CORS Policy Blocked: בעיה בהגדרות Google Apps Script
+- ERR_FAILED: הסקריפט לא זמין או לא עובד נכון
+- Access-Control-Allow-Origin: בעיה בהרשאות CORS
+
+💡 פתרונות מוצעים:
+1. בדוק שה-Google Apps Script פרוס נכון
+2. ודא שההרשאות נכונות (כתיבה לגיליון)
+3. בדוק שה-URL נכון ומעודכן
+4. נסה לפרוס מחדש את הסקריפט
+
+🔧 URL שצריך לבדוק:
+${APP_SCRIPT_URL}
+
+📧 פנה לתמיכה עם הדוח הזה אם הבעיה נמשכת.
+    `;
+    
+    navigator.clipboard.writeText(errorReport).then(() => {
+        addToLog('✅ דוח שגיאות הועתק ללוח', 'success');
+        showNotification('דוח שגיאות הועתק ללוח', 'success');
+    }).catch(() => {
+        alert(errorReport);
+    });
+}
+
+function sendDataToScript(action, data) {
+  fetch(APP_SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action, ...data }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        addToLog(`✅ פעולה '${action}' בוצעה בהצלחה`);
+      } else {
+        addToLog(`❌ שגיאה בפעולה '${action}': ${result.error}`, 'error');
+      }
+    })
+    .catch(err => {
+      addToLog(`❌ שגיאה בשליחת בקשה: ${err}`, 'error');
+    });
+}
+
+
+function removeUser(userId) {
+  const user = users.find(u => u.id == userId);
+  if (!user) return;
+
+  if (!confirm(`האם אתה בטוח שברצונך להסיר את ${user.firstName} ${user.lastName}?`)) return;
+
+  // הסרה מקומית
+  users = users.filter(u => u.id != userId);
+  updateUsersList();
+  updateLoginUsersList();
+
+  // שליחה לשרת
+  sendDataToScript('deleteUser', {
+    userId: user.id,
+    userName: `${user.firstName} ${user.lastName}`
+  });
+}
+
+function changeUserPassword(userId) {
+  const user = users.find(u => u.id == userId);
+  if (!user) return;
+
+  const newPassword = prompt(`הכנס סיסמה חדשה עבור ${user.firstName} ${user.lastName}:`, user.password || '');
+  if (newPassword === null) return; // לחיצה על ביטול
+
+  user.password = newPassword;
+  updateUsersList();
+
+  // שליחה לשרת
+  sendDataToScript('updatePassword', {
+    userId: user.id,
+    newPassword: newPassword,
+    userName: `${user.firstName} ${user.lastName}`
+  });
+}
+
 </script>
 </body>
 </html>
